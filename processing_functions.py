@@ -57,10 +57,10 @@ def get_binary_features(df):
 
 def scale_features(df):
     sc = StandardScaler()
-    df_scaled = df.drop('Diabetes_binary', axis=1)
+    df_scaled = df.drop('Cancer_binary', axis=1)
     df_scaled = sc.fit_transform(df_scaled)
     df_scaled = pd.DataFrame(df_scaled, columns=df.columns[1:])
-    df_scaled.insert(0, 'Diabetes_binary', df['Diabetes_binary'].to_numpy())
+    df_scaled.insert(0, 'Cancer_binary', df['Cancer_binary'].to_numpy())
     return df_scaled
 
 def scaling_tranform(X_train, X_test):
@@ -98,7 +98,7 @@ def get_accuracy(y_test, y_pred):
     return accuracy_score(y_test, y_pred)*100
 
 def display_confusion_matrix(ax, y_test, y_pred):
-    cm = pd.DataFrame(confusion_matrix(y_test, y_pred), columns=['Predicted Healthy', 'Predicted Diabetic'], index=['Healthy', 'Diabetic'])
+    cm = pd.DataFrame(confusion_matrix(y_test, y_pred), columns=['Predicted Healthy', 'Predicted Cancer'], index=['Healthy', 'Cancer'])
     sns.heatmap(cm, annot = True, fmt = 'd', cbar = False, ax=ax)
     ax.set_title('Confusion Matrix')
     # ax.set_yticks(rotation = 0)
@@ -119,3 +119,16 @@ def display_precision_recall(ax, y_pred, y_test):
     disp.plot(ax=ax)
     ax.set_title('Precision-Recall Curve')
 
+def mean_impute(df, columns):
+    for col in columns:
+        df[col].fillna(df[col].mean(), inplace=True)
+    return df
+
+def impute_with_val(df, columns, val):
+    for col in columns:
+        df[col].fillna(val, inplace=True)
+    return df
+
+def select_numeric_columns(df):
+    numeric_columns = df.select_dtypes(include=['float64','int64']).columns.tolist()
+    return numeric_columns
