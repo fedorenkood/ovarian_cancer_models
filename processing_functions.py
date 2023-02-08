@@ -14,7 +14,7 @@ from imblearn.over_sampling import SMOTE
 
 from sklearn.preprocessing import StandardScaler 
 
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegression, LinearRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.tree import DecisionTreeClassifier
@@ -121,12 +121,12 @@ def display_precision_recall(ax, y_pred, y_test):
 
 def mean_impute(df, columns):
     for col in columns:
-        df[col].fillna(df[col].mean(), inplace=True)
+        df[col] = df[col].fillna(df[col].mean())
     return df
 
 def impute_with_val(df, columns, val):
     for col in columns:
-        df[col].fillna(val, inplace=True)
+        df[col] = df[col].fillna(val)
     return df
 
 def select_numeric_columns(df):
