@@ -27,6 +27,9 @@ from sklearn.metrics import accuracy_score, confusion_matrix, roc_auc_score, Con
 from sklearn.model_selection import cross_val_score
 from collections import Counter
 from sklearn.model_selection import GridSearchCV
+from itertools import product
+from tabulate import tabulate
+import time
 
 
 def summarize_features(df):
@@ -132,3 +135,91 @@ def impute_with_val(df, columns, val):
 def select_numeric_columns(df):
     numeric_columns = df.select_dtypes(include=['float64','int64']).columns.tolist()
     return numeric_columns
+
+def print_records_vs_unique(df, col, dataset_name, print_vals=True):
+    # Get unique IDs
+    if print_vals:
+        print(f"Num of records in {dataset_name} dataset: {len(df)}")
+        print(f"Num of unique {col} in {dataset_name} dataset: {len(df[col].unique())}")
+    return len(df), len(df[col].unique())
+
+def print_df(df):
+    print(tabulate(df, headers='keys', tablefmt='psql'))
+
+def print_records_vs_unique_for(df, col, dataset_name, on):
+    print_records_vs_unique(df, col, dataset_name)
+    # Look at unique IDs for each of the years of study for screen dataset
+    for val in sorted(df[on].unique()):
+        # Get unique IDs
+        print_records_vs_unique(df[df[on] == val], col, f'{dataset_name}.{on}={val}')
+
+def get_missing_values_cols(df):
+    percent_missing = df.isnull().sum() * 100 / len(df)
+    missing_value_df = pd.DataFrame({'column_name': df.columns,
+                                    'num_missing': df.isnull().sum(),
+                                    'num_present': len(df) - df.isnull().sum(),
+                                    'percent_missing': percent_missing})
+    missing_value_df.sort_values('percent_missing', inplace=True)
+    # missing_value_df = missing_value_df[missing_value_df.percent_missing != 0]
+    return missing_value_df
+
+def get_unique_combinations(lists):
+    return set(product(*lists))
+
+def get_cols_missing_percentage(cutoff_percentage, df, name, show_missing=True):
+    df_missing_value = get_missing_values_cols(df)
+    df_missing_value.to_csv(f'./feature_selection/missing_percentage_{name}.csv', index=False)
+    df_missing_value = df_missing_value[df_missing_value.percent_missing >= cutoff_percentage]
+    if show_missing:
+        print(f'{len(df_missing_value)} columns were over {cutoff_percentage} missing. This is the list of columns: {df_missing_value["column_name"].to_list()}')
+    print(f'The table of features missing over {cutoff_percentage} percentage: ')
+    if show_missing:
+        print_df(df_missing_value)
+    return df_missing_value
+
+def drop_cols_missing_percentage(cutoff_percentage, df, name, show_missing=True):
+    print(f'Removing features that are over {cutoff_percentage}% missing')
+    df_missing_value = get_cols_missing_percentage(cutoff_percentage, df, name, show_missing=show_missing)
+    return df.drop(df_missing_value['column_name'].to_list(), axis=1)
+    
+def remove_featues_startswith(df, prefixes, exclude=[]):
+    for prefix in prefixes:
+        remove_cols = []
+        for col in df.columns:
+            if col.startswith(prefix):
+                remove_cols.append(col)
+        print(f'Number of {prefix} cols: {len(remove_cols)}')
+        print(remove_cols)
+        remove_cols = list(set(remove_cols) - set(exclude))
+        df = df.drop(remove_cols, axis=1)
+    return df
+
+def merge_df_into_features(sourse_df, on_col, make_unique_over_cols, join='outer'):
+    unique_vals_list = [sorted(sourse_df[make_unique_over_col].unique()) for make_unique_over_col in make_unique_over_cols]
+    unique_combinations_col_vals = get_unique_combinations(unique_vals_list)
+    merged_df = None
+    for unique_combination in unique_combinations_col_vals:
+        filter = True
+        col_suffix = ''
+        for i in range(len(make_unique_over_cols)):
+            variable_col = make_unique_over_cols[i]
+            val = unique_combination[i]
+            col_suffix += f'_{variable_col}_{val}'
+            filter = filter & (sourse_df[variable_col] == val)
+        df = sourse_df[filter]
+        # Drop cols which we use to create unique features
+        # df = df.drop(make_unique_over_cols, axis=1)
+        # Create new col names
+        cols = df.columns
+        cols_dict = {}
+        for col in cols:
+            if col not in [on_col]:
+                cols_dict[col] = f'{col}_{col_suffix}'
+        df = df.rename(columns=cols_dict)
+        # Get unique IDs
+        if merged_df is None:
+            merged_df = df
+        else:
+            merged_df = merged_df.merge(df, on=on_col, how=join)
+    return merged_df
+
