@@ -30,6 +30,9 @@ from sklearn.model_selection import GridSearchCV
 from itertools import product
 from tabulate import tabulate
 import time
+# https://scikit-learn.org/stable/modules/classes.html#module-sklearn.feature_selection
+from sklearn.feature_selection import SelectFromModel, SelectKBest, chi2, f_classif
+from sklearn import tree
 
 
 def summarize_features(df):
