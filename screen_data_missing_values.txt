@@ -1,0 +1,245 @@
+Num of records in Screen Data with cancer_0 dataset: 149793
+Num of unique plco_id in Screen Data with cancer_0 dataset: 30552
+Num of records in Screen Data with cancer_1 dataset: 1200
+Num of unique plco_id in Screen Data with cancer_1 dataset: 297
+
+
+Screen Data filtered on dummy: 0 
+Num of records in Screen Data filtered on dummy: 0  with cancer_0 dataset: 149793
+Num of unique plco_id in Screen Data filtered on dummy: 0  with cancer_0 dataset: 30552
+69 columns were over 0 missing. This is the list of columns: ['study_yr', 'ovar_result', 'ovcyst_morphr', 'ovcyst_morphl', 'ovcyst_morph', 'ovcyst_sumr', 'ovcyst_suml', 'ovcyst_sum', 'visl', 'visr', 'visboth', 'viseith', 'numcystl', 'numcystr', 'numcyst', 'plco_id', 'ca125_result', 'tvu_result', 'cancer', 'ovar_days', 'ca125_days', 'ca125_level', 'ca125ii_assess_days', 'tvu_days', 'tvu_ref', 'phycons', 'detr_p', 'detl_p', 'tvures_pvis1', 'ovcyst_diam', 'ovcyst_vol', 'ovary_diam', 'ovary_vol', 'physid', 'ovcyst_diamr', 'ovcyst_volr', 'ovary_diamr', 'ovary_volr', 'rtran_p', 'rlong_p', 'rantero_p', 'rvol_p', 'ovcyst_voll', 'ovcyst_diaml', 'ovary_voll', 'ovary_diaml', 'lantero_p', 'llong_p', 'ltran_p', 'lvol_p', 'ovcyst_solid', 'ovcyst_outline', 'ovcyst_solidr', 'detl_q', 'detr_q', 'ovcyst_outliner', 'ca125i_assess_days', 'ovcyst_solidl', 'ovcyst_outlinel', 'rvol_q', 'rtran_q', 'rlong_q', 'rantero_q', 'ltran_q', 'llong_q', 'lantero_q', 'lvol_q', 'tvures_pvis2', 'tvures_pvis3']
+The table of features missing over 0 percentage: 
++---------------------+---------------------+---------------+---------------+-------------------+
+|                     | column_name         |   num_missing |   num_present |   percent_missing |
+|---------------------+---------------------+---------------+---------------+-------------------|
+| study_yr            | study_yr            |             0 |        149793 |        0          |
+| ovar_result         | ovar_result         |             0 |        149793 |        0          |
+| ovcyst_morphr       | ovcyst_morphr       |             0 |        149793 |        0          |
+| ovcyst_morphl       | ovcyst_morphl       |             0 |        149793 |        0          |
+| ovcyst_morph        | ovcyst_morph        |             0 |        149793 |        0          |
+| ovcyst_sumr         | ovcyst_sumr         |             0 |        149793 |        0          |
+| ovcyst_suml         | ovcyst_suml         |             0 |        149793 |        0          |
+| ovcyst_sum          | ovcyst_sum          |             0 |        149793 |        0          |
+| visl                | visl                |             0 |        149793 |        0          |
+| visr                | visr                |             0 |        149793 |        0          |
+| visboth             | visboth             |             0 |        149793 |        0          |
+| viseith             | viseith             |             0 |        149793 |        0          |
+| numcystl            | numcystl            |             0 |        149793 |        0          |
+| numcystr            | numcystr            |             0 |        149793 |        0          |
+| numcyst             | numcyst             |             0 |        149793 |        0          |
+| plco_id             | plco_id             |             0 |        149793 |        0          |
+| ca125_result        | ca125_result        |             0 |        149793 |        0          |
+| tvu_result          | tvu_result          |             0 |        149793 |        0          |
+| cancer              | cancer              |             0 |        149793 |        0          |
+| ovar_days           | ovar_days           |             9 |        149784 |        0.00600829 |
+| ca125_days          | ca125_days          |            96 |        149697 |        0.0640884  |
+| ca125_level         | ca125_level         |           410 |        149383 |        0.273711   |
+| ca125ii_assess_days | ca125ii_assess_days |          7456 |        142337 |        4.97754    |
+| tvu_days            | tvu_days            |         44046 |        105747 |       29.4046     |
+| tvu_ref             | tvu_ref             |         44078 |        105715 |       29.4259     |
+| phycons             | phycons             |         44084 |        105709 |       29.4299     |
+| detr_p              | detr_p              |         44506 |        105287 |       29.7117     |
+| detl_p              | detl_p              |         44523 |        105270 |       29.723      |
+| tvures_pvis1        | tvures_pvis1        |         45192 |        104601 |       30.1696     |
+| ovcyst_diam         | ovcyst_diam         |         92670 |         57123 |       61.8654     |
+| ovcyst_vol          | ovcyst_vol          |         92671 |         57122 |       61.866      |
+| ovary_diam          | ovary_diam          |         93440 |         56353 |       62.3794     |
+| ovary_vol           | ovary_vol           |         93441 |         56352 |       62.3801     |
+| physid              | physid              |         98388 |         51405 |       65.6826     |
+| ovcyst_diamr        | ovcyst_diamr        |        104849 |         44944 |       69.9959     |
+| ovcyst_volr         | ovcyst_volr         |        104852 |         44941 |       69.9979     |
+| ovary_diamr         | ovary_diamr         |        105400 |         44393 |       70.3638     |
+| ovary_volr          | ovary_volr          |        105404 |         44389 |       70.3664     |
+| rtran_p             | rtran_p             |        105412 |         44381 |       70.3718     |
+| rlong_p             | rlong_p             |        105412 |         44381 |       70.3718     |
+| rantero_p           | rantero_p           |        105414 |         44379 |       70.3731     |
+| rvol_p              | rvol_p              |        105423 |         44370 |       70.3791     |
+| ovcyst_voll         | ovcyst_voll         |        105995 |         43798 |       70.761      |
+| ovcyst_diaml        | ovcyst_diaml        |        105995 |         43798 |       70.761      |
+| ovary_voll          | ovary_voll          |        106527 |         43266 |       71.1161     |
+| ovary_diaml         | ovary_diaml         |        106528 |         43265 |       71.1168     |
+| lantero_p           | lantero_p           |        106541 |         43252 |       71.1255     |
+| llong_p             | llong_p             |        106542 |         43251 |       71.1262     |
+| ltran_p             | ltran_p             |        106542 |         43251 |       71.1262     |
+| lvol_p              | lvol_p              |        106551 |         43242 |       71.1322     |
+| ovcyst_solid        | ovcyst_solid        |        137091 |         12702 |       91.5203     |
+| ovcyst_outline      | ovcyst_outline      |        137543 |         12250 |       91.822      |
+| ovcyst_solidr       | ovcyst_solidr       |        142381 |          7412 |       95.0518     |
+| detl_q              | detl_q              |        142406 |          7387 |       95.0685     |
+| detr_q              | detr_q              |        142407 |          7386 |       95.0692     |
+| ovcyst_outliner     | ovcyst_outliner     |        142662 |          7131 |       95.2394     |
+| ca125i_assess_days  | ca125i_assess_days  |        142731 |          7062 |       95.2855     |
+| ovcyst_solidl       | ovcyst_solidl       |        142827 |          6966 |       95.3496     |
+| ovcyst_outlinel     | ovcyst_outlinel     |        143074 |          6719 |       95.5145     |
+| rvol_q              | rvol_q              |        146076 |          3717 |       97.5186     |
+| rtran_q             | rtran_q             |        146076 |          3717 |       97.5186     |
+| rlong_q             | rlong_q             |        146076 |          3717 |       97.5186     |
+| rantero_q           | rantero_q           |        146076 |          3717 |       97.5186     |
+| ltran_q             | ltran_q             |        146204 |          3589 |       97.604      |
+| llong_q             | llong_q             |        146204 |          3589 |       97.604      |
+| lantero_q           | lantero_q           |        146204 |          3589 |       97.604      |
+| lvol_q              | lvol_q              |        146208 |          3585 |       97.6067     |
+| tvures_pvis2        | tvures_pvis2        |        148582 |          1211 |       99.1916     |
+| tvures_pvis3        | tvures_pvis3        |        149783 |            10 |       99.9933     |
++---------------------+---------------------+---------------+---------------+-------------------+
+Num of records in Screen Data filtered on dummy: 0  with cancer_1 dataset: 1200
+Num of unique plco_id in Screen Data filtered on dummy: 0  with cancer_1 dataset: 297
+69 columns were over 0 missing. This is the list of columns: ['study_yr', 'ovar_result', 'ovcyst_morphr', 'ovcyst_morphl', 'ovcyst_morph', 'ovcyst_sumr', 'ovcyst_suml', 'ovcyst_sum', 'visl', 'visr', 'visboth', 'viseith', 'numcystl', 'numcystr', 'numcyst', 'plco_id', 'ca125_days', 'ovar_days', 'ca125_result', 'tvu_result', 'cancer', 'ca125_level', 'ca125ii_assess_days', 'tvu_ref', 'phycons', 'tvu_days', 'detl_p', 'detr_p', 'tvures_pvis1', 'ovcyst_diam', 'ovcyst_vol', 'ovary_vol', 'ovary_diam', 'physid', 'ovcyst_volr', 'ovcyst_diamr', 'ovcyst_voll', 'ovcyst_diaml', 'ovary_volr', 'rlong_p', 'ovary_diamr', 'rantero_p', 'rtran_p', 'rvol_p', 'lvol_p', 'ovary_diaml', 'ovary_voll', 'llong_p', 'lantero_p', 'ltran_p', 'ovcyst_solid', 'ovcyst_outline', 'ovcyst_solidr', 'ovcyst_outliner', 'ovcyst_solidl', 'ovcyst_outlinel', 'ca125i_assess_days', 'detl_q', 'detr_q', 'rvol_q', 'rantero_q', 'rtran_q', 'rlong_q', 'llong_q', 'ltran_q', 'lantero_q', 'lvol_q', 'tvures_pvis2', 'tvures_pvis3']
+The table of features missing over 0 percentage: 
++---------------------+---------------------+---------------+---------------+-------------------+
+|                     | column_name         |   num_missing |   num_present |   percent_missing |
+|---------------------+---------------------+---------------+---------------+-------------------|
+| study_yr            | study_yr            |             0 |          1200 |         0         |
+| ovar_result         | ovar_result         |             0 |          1200 |         0         |
+| ovcyst_morphr       | ovcyst_morphr       |             0 |          1200 |         0         |
+| ovcyst_morphl       | ovcyst_morphl       |             0 |          1200 |         0         |
+| ovcyst_morph        | ovcyst_morph        |             0 |          1200 |         0         |
+| ovcyst_sumr         | ovcyst_sumr         |             0 |          1200 |         0         |
+| ovcyst_suml         | ovcyst_suml         |             0 |          1200 |         0         |
+| ovcyst_sum          | ovcyst_sum          |             0 |          1200 |         0         |
+| visl                | visl                |             0 |          1200 |         0         |
+| visr                | visr                |             0 |          1200 |         0         |
+| visboth             | visboth             |             0 |          1200 |         0         |
+| viseith             | viseith             |             0 |          1200 |         0         |
+| numcystl            | numcystl            |             0 |          1200 |         0         |
+| numcystr            | numcystr            |             0 |          1200 |         0         |
+| numcyst             | numcyst             |             0 |          1200 |         0         |
+| plco_id             | plco_id             |             0 |          1200 |         0         |
+| ca125_days          | ca125_days          |             0 |          1200 |         0         |
+| ovar_days           | ovar_days           |             0 |          1200 |         0         |
+| ca125_result        | ca125_result        |             0 |          1200 |         0         |
+| tvu_result          | tvu_result          |             0 |          1200 |         0         |
+| cancer              | cancer              |             0 |          1200 |         0         |
+| ca125_level         | ca125_level         |             1 |          1199 |         0.0833333 |
+| ca125ii_assess_days | ca125ii_assess_days |            88 |          1112 |         7.33333   |
+| tvu_ref             | tvu_ref             |           281 |           919 |        23.4167    |
+| phycons             | phycons             |           281 |           919 |        23.4167    |
+| tvu_days            | tvu_days            |           281 |           919 |        23.4167    |
+| detl_p              | detl_p              |           285 |           915 |        23.75      |
+| detr_p              | detr_p              |           285 |           915 |        23.75      |
+| tvures_pvis1        | tvures_pvis1        |           289 |           911 |        24.0833    |
+| ovcyst_diam         | ovcyst_diam         |           648 |           552 |        54         |
+| ovcyst_vol          | ovcyst_vol          |           648 |           552 |        54         |
+| ovary_vol           | ovary_vol           |           659 |           541 |        54.9167    |
+| ovary_diam          | ovary_diam          |           659 |           541 |        54.9167    |
+| physid              | physid              |           768 |           432 |        64         |
+| ovcyst_volr         | ovcyst_volr         |           771 |           429 |        64.25      |
+| ovcyst_diamr        | ovcyst_diamr        |           771 |           429 |        64.25      |
+| ovcyst_voll         | ovcyst_voll         |           780 |           420 |        65         |
+| ovcyst_diaml        | ovcyst_diaml        |           780 |           420 |        65         |
+| ovary_volr          | ovary_volr          |           781 |           419 |        65.0833    |
+| rlong_p             | rlong_p             |           781 |           419 |        65.0833    |
+| ovary_diamr         | ovary_diamr         |           781 |           419 |        65.0833    |
+| rantero_p           | rantero_p           |           781 |           419 |        65.0833    |
+| rtran_p             | rtran_p             |           781 |           419 |        65.0833    |
+| rvol_p              | rvol_p              |           781 |           419 |        65.0833    |
+| lvol_p              | lvol_p              |           786 |           414 |        65.5       |
+| ovary_diaml         | ovary_diaml         |           786 |           414 |        65.5       |
+| ovary_voll          | ovary_voll          |           786 |           414 |        65.5       |
+| llong_p             | llong_p             |           786 |           414 |        65.5       |
+| lantero_p           | lantero_p           |           786 |           414 |        65.5       |
+| ltran_p             | ltran_p             |           786 |           414 |        65.5       |
+| ovcyst_solid        | ovcyst_solid        |          1013 |           187 |        84.4167    |
+| ovcyst_outline      | ovcyst_outline      |          1022 |           178 |        85.1667    |
+| ovcyst_solidr       | ovcyst_solidr       |          1088 |           112 |        90.6667    |
+| ovcyst_outliner     | ovcyst_outliner     |          1092 |           108 |        91         |
+| ovcyst_solidl       | ovcyst_solidl       |          1097 |           103 |        91.4167    |
+| ovcyst_outlinel     | ovcyst_outlinel     |          1103 |            97 |        91.9167    |
+| ca125i_assess_days  | ca125i_assess_days  |          1113 |            87 |        92.75      |
+| detl_q              | detl_q              |          1135 |            65 |        94.5833    |
+| detr_q              | detr_q              |          1135 |            65 |        94.5833    |
+| rvol_q              | rvol_q              |          1159 |            41 |        96.5833    |
+| rantero_q           | rantero_q           |          1159 |            41 |        96.5833    |
+| rtran_q             | rtran_q             |          1159 |            41 |        96.5833    |
+| rlong_q             | rlong_q             |          1159 |            41 |        96.5833    |
+| llong_q             | llong_q             |          1165 |            35 |        97.0833    |
+| ltran_q             | ltran_q             |          1165 |            35 |        97.0833    |
+| lantero_q           | lantero_q           |          1165 |            35 |        97.0833    |
+| lvol_q              | lvol_q              |          1165 |            35 |        97.0833    |
+| tvures_pvis2        | tvures_pvis2        |          1191 |             9 |        99.25      |
+| tvures_pvis3        | tvures_pvis3        |          1200 |             0 |       100         |
++---------------------+---------------------+---------------+---------------+-------------------+
+The table of features missing over 0 percentage: 
+The table of features missing over 0 percentage: 
++----+---------------------+------------------------+------------------------+----------------------------+------------------------+------------------------+----------------------------+
+|    | column_name         |   num_missing_cancer_0 |   num_present_cancer_0 |   percent_missing_cancer_0 |   num_missing_cancer_1 |   num_present_cancer_1 |   percent_missing_cancer_1 |
+|----+---------------------+------------------------+------------------------+----------------------------+------------------------+------------------------+----------------------------|
+|  0 | study_yr            |                      0 |                 149793 |                 0          |                      0 |                   1200 |                  0         |
+|  1 | ovar_result         |                      0 |                 149793 |                 0          |                      0 |                   1200 |                  0         |
+|  2 | ovcyst_morphr       |                      0 |                 149793 |                 0          |                      0 |                   1200 |                  0         |
+|  3 | ovcyst_morphl       |                      0 |                 149793 |                 0          |                      0 |                   1200 |                  0         |
+|  4 | ovcyst_morph        |                      0 |                 149793 |                 0          |                      0 |                   1200 |                  0         |
+|  5 | ovcyst_sumr         |                      0 |                 149793 |                 0          |                      0 |                   1200 |                  0         |
+|  6 | ovcyst_suml         |                      0 |                 149793 |                 0          |                      0 |                   1200 |                  0         |
+|  7 | ovcyst_sum          |                      0 |                 149793 |                 0          |                      0 |                   1200 |                  0         |
+|  8 | visl                |                      0 |                 149793 |                 0          |                      0 |                   1200 |                  0         |
+|  9 | visr                |                      0 |                 149793 |                 0          |                      0 |                   1200 |                  0         |
+| 10 | visboth             |                      0 |                 149793 |                 0          |                      0 |                   1200 |                  0         |
+| 11 | viseith             |                      0 |                 149793 |                 0          |                      0 |                   1200 |                  0         |
+| 12 | numcystl            |                      0 |                 149793 |                 0          |                      0 |                   1200 |                  0         |
+| 13 | numcystr            |                      0 |                 149793 |                 0          |                      0 |                   1200 |                  0         |
+| 14 | numcyst             |                      0 |                 149793 |                 0          |                      0 |                   1200 |                  0         |
+| 15 | plco_id             |                      0 |                 149793 |                 0          |                      0 |                   1200 |                  0         |
+| 16 | ca125_result        |                      0 |                 149793 |                 0          |                      0 |                   1200 |                  0         |
+| 17 | tvu_result          |                      0 |                 149793 |                 0          |                      0 |                   1200 |                  0         |
+| 18 | cancer              |                      0 |                 149793 |                 0          |                      0 |                   1200 |                  0         |
+| 19 | ovar_days           |                      9 |                 149784 |                 0.00600829 |                      0 |                   1200 |                  0         |
+| 20 | ca125_days          |                     96 |                 149697 |                 0.0640884  |                      0 |                   1200 |                  0         |
+| 21 | ca125_level         |                    410 |                 149383 |                 0.273711   |                      1 |                   1199 |                  0.0833333 |
+| 22 | ca125ii_assess_days |                   7456 |                 142337 |                 4.97754    |                     88 |                   1112 |                  7.33333   |
+| 23 | tvu_days            |                  44046 |                 105747 |                29.4046     |                    281 |                    919 |                 23.4167    |
+| 24 | tvu_ref             |                  44078 |                 105715 |                29.4259     |                    281 |                    919 |                 23.4167    |
+| 25 | phycons             |                  44084 |                 105709 |                29.4299     |                    281 |                    919 |                 23.4167    |
+| 26 | detr_p              |                  44506 |                 105287 |                29.7117     |                    285 |                    915 |                 23.75      |
+| 27 | detl_p              |                  44523 |                 105270 |                29.723      |                    285 |                    915 |                 23.75      |
+| 28 | tvures_pvis1        |                  45192 |                 104601 |                30.1696     |                    289 |                    911 |                 24.0833    |
+| 29 | ovcyst_diam         |                  92670 |                  57123 |                61.8654     |                    648 |                    552 |                 54         |
+| 30 | ovcyst_vol          |                  92671 |                  57122 |                61.866      |                    648 |                    552 |                 54         |
+| 31 | ovary_diam          |                  93440 |                  56353 |                62.3794     |                    659 |                    541 |                 54.9167    |
+| 32 | ovary_vol           |                  93441 |                  56352 |                62.3801     |                    659 |                    541 |                 54.9167    |
+| 33 | physid              |                  98388 |                  51405 |                65.6826     |                    768 |                    432 |                 64         |
+| 34 | ovcyst_diamr        |                 104849 |                  44944 |                69.9959     |                    771 |                    429 |                 64.25      |
+| 35 | ovcyst_volr         |                 104852 |                  44941 |                69.9979     |                    771 |                    429 |                 64.25      |
+| 36 | ovary_diamr         |                 105400 |                  44393 |                70.3638     |                    781 |                    419 |                 65.0833    |
+| 37 | ovary_volr          |                 105404 |                  44389 |                70.3664     |                    781 |                    419 |                 65.0833    |
+| 38 | rtran_p             |                 105412 |                  44381 |                70.3718     |                    781 |                    419 |                 65.0833    |
+| 39 | rlong_p             |                 105412 |                  44381 |                70.3718     |                    781 |                    419 |                 65.0833    |
+| 40 | rantero_p           |                 105414 |                  44379 |                70.3731     |                    781 |                    419 |                 65.0833    |
+| 41 | rvol_p              |                 105423 |                  44370 |                70.3791     |                    781 |                    419 |                 65.0833    |
+| 42 | ovcyst_voll         |                 105995 |                  43798 |                70.761      |                    780 |                    420 |                 65         |
+| 43 | ovcyst_diaml        |                 105995 |                  43798 |                70.761      |                    780 |                    420 |                 65         |
+| 44 | ovary_voll          |                 106527 |                  43266 |                71.1161     |                    786 |                    414 |                 65.5       |
+| 45 | ovary_diaml         |                 106528 |                  43265 |                71.1168     |                    786 |                    414 |                 65.5       |
+| 46 | lantero_p           |                 106541 |                  43252 |                71.1255     |                    786 |                    414 |                 65.5       |
+| 47 | llong_p             |                 106542 |                  43251 |                71.1262     |                    786 |                    414 |                 65.5       |
+| 48 | ltran_p             |                 106542 |                  43251 |                71.1262     |                    786 |                    414 |                 65.5       |
+| 49 | lvol_p              |                 106551 |                  43242 |                71.1322     |                    786 |                    414 |                 65.5       |
+| 50 | ovcyst_solid        |                 137091 |                  12702 |                91.5203     |                   1013 |                    187 |                 84.4167    |
+| 51 | ovcyst_outline      |                 137543 |                  12250 |                91.822      |                   1022 |                    178 |                 85.1667    |
+| 52 | ovcyst_solidr       |                 142381 |                   7412 |                95.0518     |                   1088 |                    112 |                 90.6667    |
+| 53 | detl_q              |                 142406 |                   7387 |                95.0685     |                   1135 |                     65 |                 94.5833    |
+| 54 | detr_q              |                 142407 |                   7386 |                95.0692     |                   1135 |                     65 |                 94.5833    |
+| 55 | ovcyst_outliner     |                 142662 |                   7131 |                95.2394     |                   1092 |                    108 |                 91         |
+| 56 | ca125i_assess_days  |                 142731 |                   7062 |                95.2855     |                   1113 |                     87 |                 92.75      |
+| 57 | ovcyst_solidl       |                 142827 |                   6966 |                95.3496     |                   1097 |                    103 |                 91.4167    |
+| 58 | ovcyst_outlinel     |                 143074 |                   6719 |                95.5145     |                   1103 |                     97 |                 91.9167    |
+| 59 | rvol_q              |                 146076 |                   3717 |                97.5186     |                   1159 |                     41 |                 96.5833    |
+| 60 | rtran_q             |                 146076 |                   3717 |                97.5186     |                   1159 |                     41 |                 96.5833    |
+| 61 | rlong_q             |                 146076 |                   3717 |                97.5186     |                   1159 |                     41 |                 96.5833    |
+| 62 | rantero_q           |                 146076 |                   3717 |                97.5186     |                   1159 |                     41 |                 96.5833    |
+| 63 | ltran_q             |                 146204 |                   3589 |                97.604      |                   1165 |                     35 |                 97.0833    |
+| 64 | llong_q             |                 146204 |                   3589 |                97.604      |                   1165 |                     35 |                 97.0833    |
+| 65 | lantero_q           |                 146204 |                   3589 |                97.604      |                   1165 |                     35 |                 97.0833    |
+| 66 | lvol_q              |                 146208 |                   3585 |                97.6067     |                   1165 |                     35 |                 97.0833    |
+| 67 | tvures_pvis2        |                 148582 |                   1211 |                99.1916     |                   1191 |                      9 |                 99.25      |
+| 68 | tvures_pvis3        |                 149783 |                     10 |                99.9933     |                   1200 |                      0 |                100         |
++----+---------------------+------------------------+------------------------+----------------------------+------------------------+------------------------+----------------------------+
+
+
+
++----+----------------------------------+------------------------+--------------------------+------------------------+--------------------------+
+|    | filtered_on                      |   num_records_cancer:0 |   num_unique_id_cancer:0 |   num_records_cancer:1 |   num_unique_id_cancer:1 |
+|----+----------------------------------+------------------------+--------------------------+------------------------+--------------------------|
+|  1 | Screen Data filtered on dummy: 0 |                 149793 |                    30552 |                   1200 |                      297 |
+|  0 | Screen Data total                |                 149793 |                    30552 |                   1200 |                      297 |
++----+----------------------------------+------------------------+--------------------------+------------------------+--------------------------+

@@ -1,0 +1,88 @@
+Num of records in Screen Abnormalities Data dataset: 20186
+Num of unique plco_id in Screen Abnormalities Data dataset: 6992
+Num of records in Screen Abnormalities Data with cancer_0 dataset: 19860
+Num of unique plco_id in Screen Abnormalities Data with cancer_0 dataset: 6881
+Num of records in Screen Abnormalities Data with cancer_1 dataset: 326
+Num of unique plco_id in Screen Abnormalities Data with cancer_1 dataset: 111
+
+
+Screen Abnormalities Data filtered on dummy: 0 
+Num of records in Screen Abnormalities Data filtered on dummy: 0  with cancer_0 dataset: 19860
+Num of unique plco_id in Screen Abnormalities Data filtered on dummy: 0  with cancer_0 dataset: 6881
+16 columns were over 0 missing. This is the list of columns: ['VISIT', 'side', 'sbcd', 'study_yr', 'source', 'plco_id', 'build_cancers', 'build_incidence_cutoff', 'cancer', 'maxdi', 'solid', 'echo', 'volum', 'sepst', 'cyst', 'cystw']
+The table of features missing over 0 percentage: 
++------------------------+------------------------+---------------+---------------+-------------------+
+|                        | column_name            |   num_missing |   num_present |   percent_missing |
+|------------------------+------------------------+---------------+---------------+-------------------|
+| VISIT                  | VISIT                  |             0 |         19860 |         0         |
+| side                   | side                   |             0 |         19860 |         0         |
+| sbcd                   | sbcd                   |             0 |         19860 |         0         |
+| study_yr               | study_yr               |             0 |         19860 |         0         |
+| source                 | source                 |             0 |         19860 |         0         |
+| plco_id                | plco_id                |             0 |         19860 |         0         |
+| build_cancers          | build_cancers          |             0 |         19860 |         0         |
+| build_incidence_cutoff | build_incidence_cutoff |             0 |         19860 |         0         |
+| cancer                 | cancer                 |             0 |         19860 |         0         |
+| maxdi                  | maxdi                  |             9 |         19851 |         0.0453172 |
+| solid                  | solid                  |            12 |         19848 |         0.060423  |
+| echo                   | echo                   |            12 |         19848 |         0.060423  |
+| volum                  | volum                  |           284 |         19576 |         1.43001   |
+| sepst                  | sepst                  |           741 |         19119 |         3.73112   |
+| cyst                   | cyst                   |           742 |         19118 |         3.73615   |
+| cystw                  | cystw                  |           742 |         19118 |         3.73615   |
++------------------------+------------------------+---------------+---------------+-------------------+
+Num of records in Screen Abnormalities Data filtered on dummy: 0  with cancer_1 dataset: 326
+Num of unique plco_id in Screen Abnormalities Data filtered on dummy: 0  with cancer_1 dataset: 111
+16 columns were over 0 missing. This is the list of columns: ['VISIT', 'side', 'sbcd', 'study_yr', 'source', 'solid', 'echo', 'maxdi', 'plco_id', 'build_cancers', 'build_incidence_cutoff', 'cancer', 'volum', 'sepst', 'cyst', 'cystw']
+The table of features missing over 0 percentage: 
++------------------------+------------------------+---------------+---------------+-------------------+
+|                        | column_name            |   num_missing |   num_present |   percent_missing |
+|------------------------+------------------------+---------------+---------------+-------------------|
+| VISIT                  | VISIT                  |             0 |           326 |          0        |
+| side                   | side                   |             0 |           326 |          0        |
+| sbcd                   | sbcd                   |             0 |           326 |          0        |
+| study_yr               | study_yr               |             0 |           326 |          0        |
+| source                 | source                 |             0 |           326 |          0        |
+| solid                  | solid                  |             0 |           326 |          0        |
+| echo                   | echo                   |             0 |           326 |          0        |
+| maxdi                  | maxdi                  |             0 |           326 |          0        |
+| plco_id                | plco_id                |             0 |           326 |          0        |
+| build_cancers          | build_cancers          |             0 |           326 |          0        |
+| build_incidence_cutoff | build_incidence_cutoff |             0 |           326 |          0        |
+| cancer                 | cancer                 |             0 |           326 |          0        |
+| volum                  | volum                  |             3 |           323 |          0.920245 |
+| sepst                  | sepst                  |            13 |           313 |          3.98773  |
+| cyst                   | cyst                   |            13 |           313 |          3.98773  |
+| cystw                  | cystw                  |            13 |           313 |          3.98773  |
++------------------------+------------------------+---------------+---------------+-------------------+
+The table of features missing over 0 percentage: 
+The table of features missing over 0 percentage: 
++----+------------------------+------------------------+------------------------+----------------------------+------------------------+------------------------+----------------------------+
+|    | column_name            |   num_missing_cancer_0 |   num_present_cancer_0 |   percent_missing_cancer_0 |   num_missing_cancer_1 |   num_present_cancer_1 |   percent_missing_cancer_1 |
+|----+------------------------+------------------------+------------------------+----------------------------+------------------------+------------------------+----------------------------|
+|  0 | VISIT                  |                      0 |                  19860 |                  0         |                      0 |                    326 |                   0        |
+|  1 | side                   |                      0 |                  19860 |                  0         |                      0 |                    326 |                   0        |
+|  2 | sbcd                   |                      0 |                  19860 |                  0         |                      0 |                    326 |                   0        |
+|  3 | study_yr               |                      0 |                  19860 |                  0         |                      0 |                    326 |                   0        |
+|  4 | source                 |                      0 |                  19860 |                  0         |                      0 |                    326 |                   0        |
+|  5 | plco_id                |                      0 |                  19860 |                  0         |                      0 |                    326 |                   0        |
+|  6 | build_cancers          |                      0 |                  19860 |                  0         |                      0 |                    326 |                   0        |
+|  7 | build_incidence_cutoff |                      0 |                  19860 |                  0         |                      0 |                    326 |                   0        |
+|  8 | cancer                 |                      0 |                  19860 |                  0         |                      0 |                    326 |                   0        |
+|  9 | maxdi                  |                      9 |                  19851 |                  0.0453172 |                      0 |                    326 |                   0        |
+| 10 | solid                  |                     12 |                  19848 |                  0.060423  |                      0 |                    326 |                   0        |
+| 11 | echo                   |                     12 |                  19848 |                  0.060423  |                      0 |                    326 |                   0        |
+| 12 | volum                  |                    284 |                  19576 |                  1.43001   |                      3 |                    323 |                   0.920245 |
+| 13 | sepst                  |                    741 |                  19119 |                  3.73112   |                     13 |                    313 |                   3.98773  |
+| 14 | cyst                   |                    742 |                  19118 |                  3.73615   |                     13 |                    313 |                   3.98773  |
+| 15 | cystw                  |                    742 |                  19118 |                  3.73615   |                     13 |                    313 |                   3.98773  |
++----+------------------------+------------------------+------------------------+----------------------------+------------------------+------------------------+----------------------------+
+
+
+
++----+------------------------------------------------+------------------------+--------------------------+------------------------+--------------------------+
+|    | filtered_on                                    |   num_records_cancer:0 |   num_unique_id_cancer:0 |   num_records_cancer:1 |   num_unique_id_cancer:1 |
+|----+------------------------------------------------+------------------------+--------------------------+------------------------+--------------------------|
+|  1 | Screen Abnormalities Data filtered on dummy: 0 |                  19860 |                     6881 |                    326 |                      111 |
+|  0 | Screen Abnormalities Data total                |                  19860 |                     6881 |                    326 |                      111 |
++----+------------------------------------------------+------------------------+--------------------------+------------------------+--------------------------+

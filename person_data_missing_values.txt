@@ -1,0 +1,570 @@
+Num of unique plco_id in Personal Data dataset: 78209
+Num of records in Personal Data with cancer_0 dataset: 77596
+Num of unique plco_id in Personal Data with cancer_0 dataset: 77596
+Num of records in Personal Data with cancer_1 dataset: 613
+Num of unique plco_id in Personal Data with cancer_1 dataset: 613
+
+
+Personal Data filtered on dummy: 0 
+Num of records in Personal Data filtered on dummy: 0  with cancer_0 dataset: 77596
+Num of unique plco_id in Personal Data filtered on dummy: 0  with cancer_0 dataset: 77596
+177 columns were over 0 missing. This is the list of columns: ['ovar_cancer', 'bq_returned', 'race7', 'is_dead_with_cod', 'is_dead', 'mortality_exitage', 'mortality_exitstat', 'mortality_exitdays', 'ph_any_trial', 'ph_ovar_trial', 'in_TGWAS_population', 'center', 'arm', 'sex', 'age', 'agelevel', 'dual', 'reconsent_outcome', 'reconsent_outcome_days', 'fstcan_exitage', 'fstcan_exitdays', 'rndyear', 'ovary_trial_flag', 'cancer', 'biopolink5', 'plco_id', 'ovar_exitdays', 'biopolink0', 'biopolink1', 'biopolink2', 'biopolink3', 'biopolink4', 'bq_compdays', 'entrydays_bq', 'ph_any_bq', 'entryage_bq', 'menstrs_stat_type', 'post_menopausal', 'bq_age', 'ph_ovar_bq', 'smoked_f', 'cig_stat', 'ovariesr_f', 'preg_f', 'ca125_history', 'usound_history', 'pelvic_history', 'cigpd_f', 'hyster_f', 'livec', 'horm_stat', 'horm_f', 'mammo_history', 'bcontr_f', 'marital', 'papsmear_history', 'pregc', 'educat', 'fmenstr', 'bcontrt', 'asp', 'miscar', 'fh_cancer', 'tuballig', 'asppd', 'tubal', 'trypreg', 'bq_adminm', 'occupat', 'curhorm', 'hyperten_f', 'emphys_f', 'stroke_f', 'diabetes_f', 'height_f', 'ibup', 'breast_fh_cnt', 'ovarsumm_fh_cnt', 'breast_fh', 'ovarsumm_fh', 'hearta_f', 'bronchit_f', 'arthrit_f', 'stillb', 'liver_comorbidity', 'gallblad_f', 'polyps_f', 'divertic_f', 'ibuppd', 'lmenstr', 'thorm', 'cig_years', 'osteopor_f', 'pack_years', 'brothers', 'weight50_f', 'colon_comorbidity', 'weight_f', 'sisters', 'bmi_50', 'bmi_50c', 'weight20_f', 'bmi_curc', 'bmi_curr', 'pipe', 'cigar', 'bmi_20c', 'bmi_20', 'menstrs', 'hispanic_f', 'bbd', 'uterine_fib', 'benign_ovcyst', 'endometriosis', 'prega', 'fchilda', 'ph_any_dhq', 'entrydays_dhq', 'entryage_dhq', 'ph_any_sqx', 'entrydays_sqx', 'entryage_sqx', 'bcontra', 'tvu_result1', 'tvu_result0', 'tvu_result2', 'ca125_result4', 'tvu_result3', 'ca125_result0', 'ca125_result2', 'ca125_result3', 'ca125_result1', 'ca125_result5', 'ca125_prot', 'rsmoker_f', 'filtered_f', 'smokea_f', 'cig_stop', 'ph_ovar_dqx', 'ph_any_dqx', 'entrydays_dqx', 'entryage_dqx', 'ph_any_muq', 'entryage_muq', 'ca125_days0', 'ca125_src0', 'ca125_level0', 'ca125ii_level0', 'tvu_days0', 'ca125_days1', 'hystera', 'ca125_level1', 'ca125ii_level1', 'tvu_days1', 'ca125_days2', 'ca125_level2', 'ca125_src2', 'ca125ii_level2', 'tvu_days2', 'ssmokea_f', 'ca125_days3', 'ca125_src3', 'ca125_level3', 'ca125ii_level3', 'tvu_days3', 'ca125_days5', 'ca125ii_level5', 'ca125_src5', 'ca125_level5', 'ca125_days4', 'ca125ii_level4', 'ca125_src4', 'ca125_level4', 'breast_fh_age', 'orem_fyro', 'ovarsumm_fh_age', 'ovar_cancer_diagdays']
+The table of features missing over 0 percentage: 
++------------------------+------------------------+---------------+---------------+-------------------+
+|                        | column_name            |   num_missing |   num_present |   percent_missing |
+|------------------------+------------------------+---------------+---------------+-------------------|
+| ovar_cancer            | ovar_cancer            |             0 |         77596 |           0       |
+| bq_returned            | bq_returned            |             0 |         77596 |           0       |
+| race7                  | race7                  |             0 |         77596 |           0       |
+| is_dead_with_cod       | is_dead_with_cod       |             0 |         77596 |           0       |
+| is_dead                | is_dead                |             0 |         77596 |           0       |
+| mortality_exitage      | mortality_exitage      |             0 |         77596 |           0       |
+| mortality_exitstat     | mortality_exitstat     |             0 |         77596 |           0       |
+| mortality_exitdays     | mortality_exitdays     |             0 |         77596 |           0       |
+| ph_any_trial           | ph_any_trial           |             0 |         77596 |           0       |
+| ph_ovar_trial          | ph_ovar_trial          |             0 |         77596 |           0       |
+| in_TGWAS_population    | in_TGWAS_population    |             0 |         77596 |           0       |
+| center                 | center                 |             0 |         77596 |           0       |
+| arm                    | arm                    |             0 |         77596 |           0       |
+| sex                    | sex                    |             0 |         77596 |           0       |
+| age                    | age                    |             0 |         77596 |           0       |
+| agelevel               | agelevel               |             0 |         77596 |           0       |
+| dual                   | dual                   |             0 |         77596 |           0       |
+| reconsent_outcome      | reconsent_outcome      |             0 |         77596 |           0       |
+| reconsent_outcome_days | reconsent_outcome_days |             0 |         77596 |           0       |
+| fstcan_exitage         | fstcan_exitage         |             0 |         77596 |           0       |
+| fstcan_exitdays        | fstcan_exitdays        |             0 |         77596 |           0       |
+| rndyear                | rndyear                |             0 |         77596 |           0       |
+| ovary_trial_flag       | ovary_trial_flag       |             0 |         77596 |           0       |
+| cancer                 | cancer                 |             0 |         77596 |           0       |
+| biopolink5             | biopolink5             |             0 |         77596 |           0       |
+| plco_id                | plco_id                |             0 |         77596 |           0       |
+| ovar_exitdays          | ovar_exitdays          |             0 |         77596 |           0       |
+| biopolink0             | biopolink0             |             0 |         77596 |           0       |
+| biopolink1             | biopolink1             |             0 |         77596 |           0       |
+| biopolink2             | biopolink2             |             0 |         77596 |           0       |
+| biopolink3             | biopolink3             |             0 |         77596 |           0       |
+| biopolink4             | biopolink4             |             0 |         77596 |           0       |
+| bq_compdays            | bq_compdays            |          2078 |         75518 |           2.67797 |
+| entrydays_bq           | entrydays_bq           |          2078 |         75518 |           2.67797 |
+| ph_any_bq              | ph_any_bq              |          2078 |         75518 |           2.67797 |
+| entryage_bq            | entryage_bq            |          2078 |         75518 |           2.67797 |
+| menstrs_stat_type      | menstrs_stat_type      |          2078 |         75518 |           2.67797 |
+| post_menopausal        | post_menopausal        |          2078 |         75518 |           2.67797 |
+| bq_age                 | bq_age                 |          2078 |         75518 |           2.67797 |
+| ph_ovar_bq             | ph_ovar_bq             |          2078 |         75518 |           2.67797 |
+| smoked_f               | smoked_f               |          2086 |         75510 |           2.68828 |
+| cig_stat               | cig_stat               |          2087 |         75509 |           2.68957 |
+| ovariesr_f             | ovariesr_f             |          2098 |         75498 |           2.70375 |
+| preg_f                 | preg_f                 |          2099 |         75497 |           2.70504 |
+| ca125_history          | ca125_history          |          2099 |         75497 |           2.70504 |
+| usound_history         | usound_history         |          2101 |         75495 |           2.70761 |
+| pelvic_history         | pelvic_history         |          2104 |         75492 |           2.71148 |
+| cigpd_f                | cigpd_f                |          2173 |         75423 |           2.8004  |
+| hyster_f               | hyster_f               |          2191 |         75405 |           2.8236  |
+| livec                  | livec                  |          2200 |         75396 |           2.8352  |
+| horm_stat              | horm_stat              |          2206 |         75390 |           2.84293 |
+| horm_f                 | horm_f                 |          2206 |         75390 |           2.84293 |
+| mammo_history          | mammo_history          |          2209 |         75387 |           2.8468  |
+| bcontr_f               | bcontr_f               |          2211 |         75385 |           2.84937 |
+| marital                | marital                |          2248 |         75348 |           2.89706 |
+| papsmear_history       | papsmear_history       |          2249 |         75347 |           2.89835 |
+| pregc                  | pregc                  |          2253 |         75343 |           2.9035  |
+| educat                 | educat                 |          2276 |         75320 |           2.93314 |
+| fmenstr                | fmenstr                |          2285 |         75311 |           2.94474 |
+| bcontrt                | bcontrt                |          2305 |         75291 |           2.97051 |
+| asp                    | asp                    |          2340 |         75256 |           3.01562 |
+| miscar                 | miscar                 |          2344 |         75252 |           3.02077 |
+| fh_cancer              | fh_cancer              |          2353 |         75243 |           3.03237 |
+| tuballig               | tuballig               |          2389 |         75207 |           3.07877 |
+| asppd                  | asppd                  |          2391 |         75205 |           3.08134 |
+| tubal                  | tubal                  |          2398 |         75198 |           3.09037 |
+| trypreg                | trypreg                |          2413 |         75183 |           3.1097  |
+| bq_adminm              | bq_adminm              |          2454 |         75142 |           3.16253 |
+| occupat                | occupat                |          2472 |         75124 |           3.18573 |
+| curhorm                | curhorm                |          2532 |         75064 |           3.26305 |
+| hyperten_f             | hyperten_f             |          2542 |         75054 |           3.27594 |
+| emphys_f               | emphys_f               |          2557 |         75039 |           3.29527 |
+| stroke_f               | stroke_f               |          2560 |         75036 |           3.29914 |
+| diabetes_f             | diabetes_f             |          2561 |         75035 |           3.30043 |
+| height_f               | height_f               |          2572 |         75024 |           3.3146  |
+| ibup                   | ibup                   |          2586 |         75010 |           3.33265 |
+| breast_fh_cnt          | breast_fh_cnt          |          2591 |         75005 |           3.33909 |
+| ovarsumm_fh_cnt        | ovarsumm_fh_cnt        |          2591 |         75005 |           3.33909 |
+| breast_fh              | breast_fh              |          2591 |         75005 |           3.33909 |
+| ovarsumm_fh            | ovarsumm_fh            |          2591 |         75005 |           3.33909 |
+| hearta_f               | hearta_f               |          2600 |         74996 |           3.35069 |
+| bronchit_f             | bronchit_f             |          2604 |         74992 |           3.35584 |
+| arthrit_f              | arthrit_f              |          2611 |         74985 |           3.36486 |
+| stillb                 | stillb                 |          2643 |         74953 |           3.4061  |
+| liver_comorbidity      | liver_comorbidity      |          2647 |         74949 |           3.41126 |
+| gallblad_f             | gallblad_f             |          2648 |         74948 |           3.41255 |
+| polyps_f               | polyps_f               |          2649 |         74947 |           3.41384 |
+| divertic_f             | divertic_f             |          2664 |         74932 |           3.43317 |
+| ibuppd                 | ibuppd                 |          2714 |         74882 |           3.4976  |
+| lmenstr                | lmenstr                |          2716 |         74880 |           3.50018 |
+| thorm                  | thorm                  |          2719 |         74877 |           3.50405 |
+| cig_years              | cig_years              |          2735 |         74861 |           3.52467 |
+| osteopor_f             | osteopor_f             |          2736 |         74860 |           3.52595 |
+| pack_years             | pack_years             |          2799 |         74797 |           3.60714 |
+| brothers               | brothers               |          2814 |         74782 |           3.62648 |
+| weight50_f             | weight50_f             |          2856 |         74740 |           3.6806  |
+| colon_comorbidity      | colon_comorbidity      |          2903 |         74693 |           3.74117 |
+| weight_f               | weight_f               |          2908 |         74688 |           3.74762 |
+| sisters                | sisters                |          2929 |         74667 |           3.77468 |
+| bmi_50                 | bmi_50                 |          3116 |         74480 |           4.01567 |
+| bmi_50c                | bmi_50c                |          3116 |         74480 |           4.01567 |
+| weight20_f             | weight20_f             |          3158 |         74438 |           4.0698  |
+| bmi_curc               | bmi_curc               |          3170 |         74426 |           4.08526 |
+| bmi_curr               | bmi_curr               |          3170 |         74426 |           4.08526 |
+| pipe                   | pipe                   |          3178 |         74418 |           4.09557 |
+| cigar                  | cigar                  |          3355 |         74241 |           4.32368 |
+| bmi_20c                | bmi_20c                |          3414 |         74182 |           4.39971 |
+| bmi_20                 | bmi_20                 |          3414 |         74182 |           4.39971 |
+| menstrs                | menstrs                |          3469 |         74127 |           4.47059 |
+| hispanic_f             | hispanic_f             |          3866 |         73730 |           4.98222 |
+| bbd                    | bbd                    |          3920 |         73676 |           5.05181 |
+| uterine_fib            | uterine_fib            |          4821 |         72775 |           6.21295 |
+| benign_ovcyst          | benign_ovcyst          |          5491 |         72105 |           7.0764  |
+| endometriosis          | endometriosis          |          5791 |         71805 |           7.46301 |
+| prega                  | prega                  |          7969 |         69627 |          10.2699  |
+| fchilda                | fchilda                |          9455 |         68141 |          12.1849  |
+| ph_any_dhq             | ph_any_dhq             |         16749 |         60847 |          21.5849  |
+| entrydays_dhq          | entrydays_dhq          |         17691 |         59905 |          22.7989  |
+| entryage_dhq           | entryage_dhq           |         17691 |         59905 |          22.7989  |
+| ph_any_sqx             | ph_any_sqx             |         23257 |         54339 |          29.9719  |
+| entrydays_sqx          | entrydays_sqx          |         23257 |         54339 |          29.9719  |
+| entryage_sqx           | entryage_sqx           |         23257 |         54339 |          29.9719  |
+| bcontra                | bcontra                |         36772 |         40824 |          47.389   |
+| tvu_result1            | tvu_result1            |         38824 |         38772 |          50.0335  |
+| tvu_result0            | tvu_result0            |         38824 |         38772 |          50.0335  |
+| tvu_result2            | tvu_result2            |         38824 |         38772 |          50.0335  |
+| ca125_result4          | ca125_result4          |         38824 |         38772 |          50.0335  |
+| tvu_result3            | tvu_result3            |         38824 |         38772 |          50.0335  |
+| ca125_result0          | ca125_result0          |         38824 |         38772 |          50.0335  |
+| ca125_result2          | ca125_result2          |         38824 |         38772 |          50.0335  |
+| ca125_result3          | ca125_result3          |         38824 |         38772 |          50.0335  |
+| ca125_result1          | ca125_result1          |         38824 |         38772 |          50.0335  |
+| ca125_result5          | ca125_result5          |         38824 |         38772 |          50.0335  |
+| ca125_prot             | ca125_prot             |         38824 |         38772 |          50.0335  |
+| rsmoker_f              | rsmoker_f              |         44113 |         33483 |          56.8496  |
+| filtered_f             | filtered_f             |         44176 |         33420 |          56.9308  |
+| smokea_f               | smokea_f               |         44251 |         33345 |          57.0274  |
+| cig_stop               | cig_stop               |         44654 |         32942 |          57.5468  |
+| ph_ovar_dqx            | ph_ovar_dqx            |         46353 |         31243 |          59.7363  |
+| ph_any_dqx             | ph_any_dqx             |         46353 |         31243 |          59.7363  |
+| entrydays_dqx          | entrydays_dqx          |         46394 |         31202 |          59.7892  |
+| entryage_dqx           | entryage_dqx           |         46394 |         31202 |          59.7892  |
+| ph_any_muq             | ph_any_muq             |         46474 |         31122 |          59.8923  |
+| entryage_muq           | entryage_muq           |         46474 |         31122 |          59.8923  |
+| ca125_days0            | ca125_days0            |         48973 |         28623 |          63.1128  |
+| ca125_src0             | ca125_src0             |         49061 |         28535 |          63.2262  |
+| ca125_level0           | ca125_level0           |         49061 |         28535 |          63.2262  |
+| ca125ii_level0         | ca125ii_level0         |         49062 |         28534 |          63.2275  |
+| tvu_days0              | tvu_days0              |         49351 |         28245 |          63.5999  |
+| ca125_days1            | ca125_days1            |         50258 |         27338 |          64.7688  |
+| hystera                | hystera                |         50316 |         27280 |          64.8435  |
+| ca125_level1           | ca125_level1           |         50316 |         27280 |          64.8435  |
+| ca125ii_level1         | ca125ii_level1         |         50316 |         27280 |          64.8435  |
+| tvu_days1              | tvu_days1              |         50748 |         26848 |          65.4003  |
+| ca125_days2            | ca125_days2            |         51204 |         26392 |          65.9879  |
+| ca125_level2           | ca125_level2           |         51262 |         26334 |          66.0627  |
+| ca125_src2             | ca125_src2             |         51262 |         26334 |          66.0627  |
+| ca125ii_level2         | ca125ii_level2         |         51262 |         26334 |          66.0627  |
+| tvu_days2              | tvu_days2              |         51726 |         25870 |          66.6607  |
+| ssmokea_f              | ssmokea_f              |         51984 |         25612 |          66.9931  |
+| ca125_days3            | ca125_days3            |         52358 |         25238 |          67.4751  |
+| ca125_src3             | ca125_src3             |         52411 |         25185 |          67.5434  |
+| ca125_level3           | ca125_level3           |         52411 |         25185 |          67.5434  |
+| ca125ii_level3         | ca125ii_level3         |         52411 |         25185 |          67.5434  |
+| tvu_days3              | tvu_days3              |         52812 |         24784 |          68.0602  |
+| ca125_days5            | ca125_days5            |         55509 |         22087 |          71.5359  |
+| ca125ii_level5         | ca125ii_level5         |         55547 |         22049 |          71.5849  |
+| ca125_src5             | ca125_src5             |         55547 |         22049 |          71.5849  |
+| ca125_level5           | ca125_level5           |         55547 |         22049 |          71.5849  |
+| ca125_days4            | ca125_days4            |         57577 |         20019 |          74.201   |
+| ca125ii_level4         | ca125ii_level4         |         57596 |         20000 |          74.2255  |
+| ca125_src4             | ca125_src4             |         57596 |         20000 |          74.2255  |
+| ca125_level4           | ca125_level4           |         57596 |         20000 |          74.2255  |
+| breast_fh_age          | breast_fh_age          |         67227 |         10369 |          86.6372  |
+| orem_fyro              | orem_fyro              |         70738 |          6858 |          91.1619  |
+| ovarsumm_fh_age        | ovarsumm_fh_age        |         74745 |          2851 |          96.3258  |
+| ovar_cancer_diagdays   | ovar_cancer_diagdays   |         77596 |             0 |         100       |
++------------------------+------------------------+---------------+---------------+-------------------+
+Num of records in Personal Data filtered on dummy: 0  with cancer_1 dataset: 613
+Num of unique plco_id in Personal Data filtered on dummy: 0  with cancer_1 dataset: 613
+177 columns were over 0 missing. This is the list of columns: ['ovar_cancer', 'bq_returned', 'race7', 'is_dead_with_cod', 'is_dead', 'mortality_exitage', 'mortality_exitstat', 'mortality_exitdays', 'ph_any_trial', 'ph_ovar_trial', 'in_TGWAS_population', 'center', 'arm', 'sex', 'age', 'agelevel', 'dual', 'reconsent_outcome', 'reconsent_outcome_days', 'fstcan_exitage', 'fstcan_exitdays', 'rndyear', 'ovary_trial_flag', 'cancer', 'plco_id', 'ovar_exitdays', 'ovar_cancer_diagdays', 'biopolink0', 'biopolink1', 'biopolink2', 'biopolink3', 'biopolink4', 'biopolink5', 'ph_ovar_bq', 'ph_any_bq', 'bq_age', 'bq_compdays', 'cigpd_f', 'educat', 'menstrs_stat_type', 'entrydays_bq', 'smoked_f', 'entryage_bq', 'post_menopausal', 'cig_stat', 'asppd', 'marital', 'horm_stat', 'asp', 'papsmear_history', 'usound_history', 'ca125_history', 'preg_f', 'horm_f', 'mammo_history', 'pelvic_history', 'hyster_f', 'ovariesr_f', 'bcontr_f', 'trypreg', 'curhorm', 'livec', 'hyperten_f', 'arthrit_f', 'pregc', 'ibuppd', 'weight_f', 'height_f', 'fh_cancer', 'polyps_f', 'divertic_f', 'diabetes_f', 'bronchit_f', 'osteopor_f', 'stroke_f', 'tuballig', 'fmenstr', 'ibup', 'liver_comorbidity', 'cig_years', 'pack_years', 'weight50_f', 'breast_fh_cnt', 'ovarsumm_fh', 'breast_fh', 'ovarsumm_fh_cnt', 'emphys_f', 'gallblad_f', 'stillb', 'colon_comorbidity', 'bcontrt', 'occupat', 'sisters', 'brothers', 'miscar', 'hearta_f', 'bmi_curc', 'bmi_curr', 'lmenstr', 'tubal', 'weight20_f', 'bmi_50', 'thorm', 'bmi_50c', 'bq_adminm', 'bmi_20c', 'bmi_20', 'hispanic_f', 'pipe', 'bbd', 'cigar', 'menstrs', 'uterine_fib', 'benign_ovcyst', 'endometriosis', 'prega', 'fchilda', 'ph_any_dhq', 'entryage_dhq', 'entrydays_dhq', 'entrydays_sqx', 'ph_any_sqx', 'entryage_sqx', 'tvu_result3', 'ca125_result3', 'tvu_result2', 'ca125_result0', 'tvu_result1', 'tvu_result0', 'ca125_result1', 'ca125_result2', 'ca125_result4', 'ca125_result5', 'ca125_prot', 'ca125_src0', 'ca125ii_level0', 'ca125_level0', 'ca125_days0', 'bcontra', 'tvu_days0', 'ph_ovar_dqx', 'ph_any_dqx', 'entrydays_dqx', 'entryage_dqx', 'filtered_f', 'rsmoker_f', 'cig_stop', 'smokea_f', 'ca125_days1', 'ca125ii_level1', 'ca125_level1', 'tvu_days1', 'ssmokea_f', 'ca125_level2', 'ca125_src2', 'ca125ii_level2', 'ca125_days2', 'tvu_days2', 'ca125_days3', 'ca125_level3', 'ca125_src3', 'ca125ii_level3', 'tvu_days3', 'hystera', 'ph_any_muq', 'entryage_muq', 'ca125_days5', 'ca125ii_level5', 'ca125_src5', 'ca125_level5', 'ca125ii_level4', 'ca125_src4', 'ca125_days4', 'ca125_level4', 'breast_fh_age', 'orem_fyro', 'ovarsumm_fh_age']
+The table of features missing over 0 percentage: 
++------------------------+------------------------+---------------+---------------+-------------------+
+|                        | column_name            |   num_missing |   num_present |   percent_missing |
+|------------------------+------------------------+---------------+---------------+-------------------|
+| ovar_cancer            | ovar_cancer            |             0 |           613 |           0       |
+| bq_returned            | bq_returned            |             0 |           613 |           0       |
+| race7                  | race7                  |             0 |           613 |           0       |
+| is_dead_with_cod       | is_dead_with_cod       |             0 |           613 |           0       |
+| is_dead                | is_dead                |             0 |           613 |           0       |
+| mortality_exitage      | mortality_exitage      |             0 |           613 |           0       |
+| mortality_exitstat     | mortality_exitstat     |             0 |           613 |           0       |
+| mortality_exitdays     | mortality_exitdays     |             0 |           613 |           0       |
+| ph_any_trial           | ph_any_trial           |             0 |           613 |           0       |
+| ph_ovar_trial          | ph_ovar_trial          |             0 |           613 |           0       |
+| in_TGWAS_population    | in_TGWAS_population    |             0 |           613 |           0       |
+| center                 | center                 |             0 |           613 |           0       |
+| arm                    | arm                    |             0 |           613 |           0       |
+| sex                    | sex                    |             0 |           613 |           0       |
+| age                    | age                    |             0 |           613 |           0       |
+| agelevel               | agelevel               |             0 |           613 |           0       |
+| dual                   | dual                   |             0 |           613 |           0       |
+| reconsent_outcome      | reconsent_outcome      |             0 |           613 |           0       |
+| reconsent_outcome_days | reconsent_outcome_days |             0 |           613 |           0       |
+| fstcan_exitage         | fstcan_exitage         |             0 |           613 |           0       |
+| fstcan_exitdays        | fstcan_exitdays        |             0 |           613 |           0       |
+| rndyear                | rndyear                |             0 |           613 |           0       |
+| ovary_trial_flag       | ovary_trial_flag       |             0 |           613 |           0       |
+| cancer                 | cancer                 |             0 |           613 |           0       |
+| plco_id                | plco_id                |             0 |           613 |           0       |
+| ovar_exitdays          | ovar_exitdays          |             0 |           613 |           0       |
+| ovar_cancer_diagdays   | ovar_cancer_diagdays   |             0 |           613 |           0       |
+| biopolink0             | biopolink0             |             0 |           613 |           0       |
+| biopolink1             | biopolink1             |             0 |           613 |           0       |
+| biopolink2             | biopolink2             |             0 |           613 |           0       |
+| biopolink3             | biopolink3             |             0 |           613 |           0       |
+| biopolink4             | biopolink4             |             0 |           613 |           0       |
+| biopolink5             | biopolink5             |             0 |           613 |           0       |
+| ph_ovar_bq             | ph_ovar_bq             |            16 |           597 |           2.61011 |
+| ph_any_bq              | ph_any_bq              |            16 |           597 |           2.61011 |
+| bq_age                 | bq_age                 |            16 |           597 |           2.61011 |
+| bq_compdays            | bq_compdays            |            16 |           597 |           2.61011 |
+| cigpd_f                | cigpd_f                |            16 |           597 |           2.61011 |
+| educat                 | educat                 |            16 |           597 |           2.61011 |
+| menstrs_stat_type      | menstrs_stat_type      |            16 |           597 |           2.61011 |
+| entrydays_bq           | entrydays_bq           |            16 |           597 |           2.61011 |
+| smoked_f               | smoked_f               |            16 |           597 |           2.61011 |
+| entryage_bq            | entryage_bq            |            16 |           597 |           2.61011 |
+| post_menopausal        | post_menopausal        |            16 |           597 |           2.61011 |
+| cig_stat               | cig_stat               |            16 |           597 |           2.61011 |
+| asppd                  | asppd                  |            17 |           596 |           2.77325 |
+| marital                | marital                |            17 |           596 |           2.77325 |
+| horm_stat              | horm_stat              |            17 |           596 |           2.77325 |
+| asp                    | asp                    |            17 |           596 |           2.77325 |
+| papsmear_history       | papsmear_history       |            17 |           596 |           2.77325 |
+| usound_history         | usound_history         |            17 |           596 |           2.77325 |
+| ca125_history          | ca125_history          |            17 |           596 |           2.77325 |
+| preg_f                 | preg_f                 |            17 |           596 |           2.77325 |
+| horm_f                 | horm_f                 |            17 |           596 |           2.77325 |
+| mammo_history          | mammo_history          |            18 |           595 |           2.93638 |
+| pelvic_history         | pelvic_history         |            18 |           595 |           2.93638 |
+| hyster_f               | hyster_f               |            18 |           595 |           2.93638 |
+| ovariesr_f             | ovariesr_f             |            18 |           595 |           2.93638 |
+| bcontr_f               | bcontr_f               |            18 |           595 |           2.93638 |
+| trypreg                | trypreg                |            18 |           595 |           2.93638 |
+| curhorm                | curhorm                |            18 |           595 |           2.93638 |
+| livec                  | livec                  |            19 |           594 |           3.09951 |
+| hyperten_f             | hyperten_f             |            19 |           594 |           3.09951 |
+| arthrit_f              | arthrit_f              |            19 |           594 |           3.09951 |
+| pregc                  | pregc                  |            19 |           594 |           3.09951 |
+| ibuppd                 | ibuppd                 |            19 |           594 |           3.09951 |
+| weight_f               | weight_f               |            19 |           594 |           3.09951 |
+| height_f               | height_f               |            19 |           594 |           3.09951 |
+| fh_cancer              | fh_cancer              |            19 |           594 |           3.09951 |
+| polyps_f               | polyps_f               |            20 |           593 |           3.26264 |
+| divertic_f             | divertic_f             |            20 |           593 |           3.26264 |
+| diabetes_f             | diabetes_f             |            20 |           593 |           3.26264 |
+| bronchit_f             | bronchit_f             |            20 |           593 |           3.26264 |
+| osteopor_f             | osteopor_f             |            20 |           593 |           3.26264 |
+| stroke_f               | stroke_f               |            20 |           593 |           3.26264 |
+| tuballig               | tuballig               |            20 |           593 |           3.26264 |
+| fmenstr                | fmenstr                |            20 |           593 |           3.26264 |
+| ibup                   | ibup                   |            20 |           593 |           3.26264 |
+| liver_comorbidity      | liver_comorbidity      |            20 |           593 |           3.26264 |
+| cig_years              | cig_years              |            20 |           593 |           3.26264 |
+| pack_years             | pack_years             |            20 |           593 |           3.26264 |
+| weight50_f             | weight50_f             |            20 |           593 |           3.26264 |
+| breast_fh_cnt          | breast_fh_cnt          |            21 |           592 |           3.42577 |
+| ovarsumm_fh            | ovarsumm_fh            |            21 |           592 |           3.42577 |
+| breast_fh              | breast_fh              |            21 |           592 |           3.42577 |
+| ovarsumm_fh_cnt        | ovarsumm_fh_cnt        |            21 |           592 |           3.42577 |
+| emphys_f               | emphys_f               |            21 |           592 |           3.42577 |
+| gallblad_f             | gallblad_f             |            21 |           592 |           3.42577 |
+| stillb                 | stillb                 |            21 |           592 |           3.42577 |
+| colon_comorbidity      | colon_comorbidity      |            21 |           592 |           3.42577 |
+| bcontrt                | bcontrt                |            21 |           592 |           3.42577 |
+| occupat                | occupat                |            21 |           592 |           3.42577 |
+| sisters                | sisters                |            21 |           592 |           3.42577 |
+| brothers               | brothers               |            21 |           592 |           3.42577 |
+| miscar                 | miscar                 |            21 |           592 |           3.42577 |
+| hearta_f               | hearta_f               |            22 |           591 |           3.58891 |
+| bmi_curc               | bmi_curc               |            22 |           591 |           3.58891 |
+| bmi_curr               | bmi_curr               |            22 |           591 |           3.58891 |
+| lmenstr                | lmenstr                |            22 |           591 |           3.58891 |
+| tubal                  | tubal                  |            22 |           591 |           3.58891 |
+| weight20_f             | weight20_f             |            23 |           590 |           3.75204 |
+| bmi_50                 | bmi_50                 |            23 |           590 |           3.75204 |
+| thorm                  | thorm                  |            23 |           590 |           3.75204 |
+| bmi_50c                | bmi_50c                |            23 |           590 |           3.75204 |
+| bq_adminm              | bq_adminm              |            23 |           590 |           3.75204 |
+| bmi_20c                | bmi_20c                |            25 |           588 |           4.0783  |
+| bmi_20                 | bmi_20                 |            25 |           588 |           4.0783  |
+| hispanic_f             | hispanic_f             |            26 |           587 |           4.24144 |
+| pipe                   | pipe                   |            27 |           586 |           4.40457 |
+| bbd                    | bbd                    |            29 |           584 |           4.73083 |
+| cigar                  | cigar                  |            30 |           583 |           4.89396 |
+| menstrs                | menstrs                |            32 |           581 |           5.22023 |
+| uterine_fib            | uterine_fib            |            35 |           578 |           5.70962 |
+| benign_ovcyst          | benign_ovcyst          |            40 |           573 |           6.52529 |
+| endometriosis          | endometriosis          |            43 |           570 |           7.01468 |
+| prega                  | prega                  |            75 |           538 |          12.2349  |
+| fchilda                | fchilda                |            81 |           532 |          13.2137  |
+| ph_any_dhq             | ph_any_dhq             |           133 |           480 |          21.6966  |
+| entryage_dhq           | entryage_dhq           |           143 |           470 |          23.3279  |
+| entrydays_dhq          | entrydays_dhq          |           143 |           470 |          23.3279  |
+| entrydays_sqx          | entrydays_sqx          |           273 |           340 |          44.5351  |
+| ph_any_sqx             | ph_any_sqx             |           273 |           340 |          44.5351  |
+| entryage_sqx           | entryage_sqx           |           273 |           340 |          44.5351  |
+| tvu_result3            | tvu_result3            |           282 |           331 |          46.0033  |
+| ca125_result3          | ca125_result3          |           282 |           331 |          46.0033  |
+| tvu_result2            | tvu_result2            |           282 |           331 |          46.0033  |
+| ca125_result0          | ca125_result0          |           282 |           331 |          46.0033  |
+| tvu_result1            | tvu_result1            |           282 |           331 |          46.0033  |
+| tvu_result0            | tvu_result0            |           282 |           331 |          46.0033  |
+| ca125_result1          | ca125_result1          |           282 |           331 |          46.0033  |
+| ca125_result2          | ca125_result2          |           282 |           331 |          46.0033  |
+| ca125_result4          | ca125_result4          |           282 |           331 |          46.0033  |
+| ca125_result5          | ca125_result5          |           282 |           331 |          46.0033  |
+| ca125_prot             | ca125_prot             |           282 |           331 |          46.0033  |
+| ca125_src0             | ca125_src0             |           332 |           281 |          54.1599  |
+| ca125ii_level0         | ca125ii_level0         |           332 |           281 |          54.1599  |
+| ca125_level0           | ca125_level0           |           332 |           281 |          54.1599  |
+| ca125_days0            | ca125_days0            |           332 |           281 |          54.1599  |
+| bcontra                | bcontra                |           334 |           279 |          54.4861  |
+| tvu_days0              | tvu_days0              |           334 |           279 |          54.4861  |
+| ph_ovar_dqx            | ph_ovar_dqx            |           341 |           272 |          55.6281  |
+| ph_any_dqx             | ph_any_dqx             |           341 |           272 |          55.6281  |
+| entrydays_dqx          | entrydays_dqx          |           341 |           272 |          55.6281  |
+| entryage_dqx           | entryage_dqx           |           341 |           272 |          55.6281  |
+| filtered_f             | filtered_f             |           342 |           271 |          55.7912  |
+| rsmoker_f              | rsmoker_f              |           342 |           271 |          55.7912  |
+| cig_stop               | cig_stop               |           343 |           270 |          55.9543  |
+| smokea_f               | smokea_f               |           345 |           268 |          56.2806  |
+| ca125_days1            | ca125_days1            |           373 |           240 |          60.8483  |
+| ca125ii_level1         | ca125ii_level1         |           373 |           240 |          60.8483  |
+| ca125_level1           | ca125_level1           |           373 |           240 |          60.8483  |
+| tvu_days1              | tvu_days1              |           379 |           234 |          61.8271  |
+| ssmokea_f              | ssmokea_f              |           397 |           216 |          64.7635  |
+| ca125_level2           | ca125_level2           |           398 |           215 |          64.9266  |
+| ca125_src2             | ca125_src2             |           398 |           215 |          64.9266  |
+| ca125ii_level2         | ca125ii_level2         |           398 |           215 |          64.9266  |
+| ca125_days2            | ca125_days2            |           398 |           215 |          64.9266  |
+| tvu_days2              | tvu_days2              |           404 |           209 |          65.9054  |
+| ca125_days3            | ca125_days3            |           414 |           199 |          67.5367  |
+| ca125_level3           | ca125_level3           |           414 |           199 |          67.5367  |
+| ca125_src3             | ca125_src3             |           414 |           199 |          67.5367  |
+| ca125ii_level3         | ca125ii_level3         |           414 |           199 |          67.5367  |
+| tvu_days3              | tvu_days3              |           416 |           197 |          67.863   |
+| hystera                | hystera                |           420 |           193 |          68.5155  |
+| ph_any_muq             | ph_any_muq             |           469 |           144 |          76.509   |
+| entryage_muq           | entryage_muq           |           469 |           144 |          76.509   |
+| ca125_days5            | ca125_days5            |           475 |           138 |          77.4878  |
+| ca125ii_level5         | ca125ii_level5         |           476 |           137 |          77.6509  |
+| ca125_src5             | ca125_src5             |           476 |           137 |          77.6509  |
+| ca125_level5           | ca125_level5           |           476 |           137 |          77.6509  |
+| ca125ii_level4         | ca125ii_level4         |           486 |           127 |          79.2822  |
+| ca125_src4             | ca125_src4             |           486 |           127 |          79.2822  |
+| ca125_days4            | ca125_days4            |           486 |           127 |          79.2822  |
+| ca125_level4           | ca125_level4           |           486 |           127 |          79.2822  |
+| breast_fh_age          | breast_fh_age          |           528 |            85 |          86.1338  |
+| orem_fyro              | orem_fyro              |           537 |            76 |          87.602   |
+| ovarsumm_fh_age        | ovarsumm_fh_age        |           585 |            28 |          95.4323  |
++------------------------+------------------------+---------------+---------------+-------------------+
+The table of features missing over 0 percentage: 
+The table of features missing over 0 percentage: 
++-----+------------------------+------------------------+------------------------+----------------------------+------------------------+------------------------+----------------------------+
+|     | column_name            |   num_missing_cancer_0 |   num_present_cancer_0 |   percent_missing_cancer_0 |   num_missing_cancer_1 |   num_present_cancer_1 |   percent_missing_cancer_1 |
+|-----+------------------------+------------------------+------------------------+----------------------------+------------------------+------------------------+----------------------------|
+|   0 | ovar_cancer            |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|   1 | bq_returned            |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|   2 | race7                  |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|   3 | is_dead_with_cod       |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|   4 | is_dead                |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|   5 | mortality_exitage      |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|   6 | mortality_exitstat     |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|   7 | mortality_exitdays     |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|   8 | ph_any_trial           |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|   9 | ph_ovar_trial          |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|  10 | in_TGWAS_population    |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|  11 | center                 |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|  12 | arm                    |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|  13 | sex                    |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|  14 | age                    |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|  15 | agelevel               |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|  16 | dual                   |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|  17 | reconsent_outcome      |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|  18 | reconsent_outcome_days |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|  19 | fstcan_exitage         |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|  20 | fstcan_exitdays        |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|  21 | rndyear                |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|  22 | ovary_trial_flag       |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|  23 | cancer                 |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|  24 | biopolink5             |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|  25 | plco_id                |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|  26 | ovar_exitdays          |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|  27 | biopolink0             |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|  28 | biopolink1             |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|  29 | biopolink2             |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|  30 | biopolink3             |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|  31 | biopolink4             |                      0 |                  77596 |                    0       |                      0 |                    613 |                    0       |
+|  32 | bq_compdays            |                   2078 |                  75518 |                    2.67797 |                     16 |                    597 |                    2.61011 |
+|  33 | entrydays_bq           |                   2078 |                  75518 |                    2.67797 |                     16 |                    597 |                    2.61011 |
+|  34 | ph_any_bq              |                   2078 |                  75518 |                    2.67797 |                     16 |                    597 |                    2.61011 |
+|  35 | entryage_bq            |                   2078 |                  75518 |                    2.67797 |                     16 |                    597 |                    2.61011 |
+|  36 | menstrs_stat_type      |                   2078 |                  75518 |                    2.67797 |                     16 |                    597 |                    2.61011 |
+|  37 | post_menopausal        |                   2078 |                  75518 |                    2.67797 |                     16 |                    597 |                    2.61011 |
+|  38 | bq_age                 |                   2078 |                  75518 |                    2.67797 |                     16 |                    597 |                    2.61011 |
+|  39 | ph_ovar_bq             |                   2078 |                  75518 |                    2.67797 |                     16 |                    597 |                    2.61011 |
+|  40 | smoked_f               |                   2086 |                  75510 |                    2.68828 |                     16 |                    597 |                    2.61011 |
+|  41 | cig_stat               |                   2087 |                  75509 |                    2.68957 |                     16 |                    597 |                    2.61011 |
+|  42 | ovariesr_f             |                   2098 |                  75498 |                    2.70375 |                     18 |                    595 |                    2.93638 |
+|  43 | preg_f                 |                   2099 |                  75497 |                    2.70504 |                     17 |                    596 |                    2.77325 |
+|  44 | ca125_history          |                   2099 |                  75497 |                    2.70504 |                     17 |                    596 |                    2.77325 |
+|  45 | usound_history         |                   2101 |                  75495 |                    2.70761 |                     17 |                    596 |                    2.77325 |
+|  46 | pelvic_history         |                   2104 |                  75492 |                    2.71148 |                     18 |                    595 |                    2.93638 |
+|  47 | cigpd_f                |                   2173 |                  75423 |                    2.8004  |                     16 |                    597 |                    2.61011 |
+|  48 | hyster_f               |                   2191 |                  75405 |                    2.8236  |                     18 |                    595 |                    2.93638 |
+|  49 | livec                  |                   2200 |                  75396 |                    2.8352  |                     19 |                    594 |                    3.09951 |
+|  50 | horm_stat              |                   2206 |                  75390 |                    2.84293 |                     17 |                    596 |                    2.77325 |
+|  51 | horm_f                 |                   2206 |                  75390 |                    2.84293 |                     17 |                    596 |                    2.77325 |
+|  52 | mammo_history          |                   2209 |                  75387 |                    2.8468  |                     18 |                    595 |                    2.93638 |
+|  53 | bcontr_f               |                   2211 |                  75385 |                    2.84937 |                     18 |                    595 |                    2.93638 |
+|  54 | marital                |                   2248 |                  75348 |                    2.89706 |                     17 |                    596 |                    2.77325 |
+|  55 | papsmear_history       |                   2249 |                  75347 |                    2.89835 |                     17 |                    596 |                    2.77325 |
+|  56 | pregc                  |                   2253 |                  75343 |                    2.9035  |                     19 |                    594 |                    3.09951 |
+|  57 | educat                 |                   2276 |                  75320 |                    2.93314 |                     16 |                    597 |                    2.61011 |
+|  58 | fmenstr                |                   2285 |                  75311 |                    2.94474 |                     20 |                    593 |                    3.26264 |
+|  59 | bcontrt                |                   2305 |                  75291 |                    2.97051 |                     21 |                    592 |                    3.42577 |
+|  60 | asp                    |                   2340 |                  75256 |                    3.01562 |                     17 |                    596 |                    2.77325 |
+|  61 | miscar                 |                   2344 |                  75252 |                    3.02077 |                     21 |                    592 |                    3.42577 |
+|  62 | fh_cancer              |                   2353 |                  75243 |                    3.03237 |                     19 |                    594 |                    3.09951 |
+|  63 | tuballig               |                   2389 |                  75207 |                    3.07877 |                     20 |                    593 |                    3.26264 |
+|  64 | asppd                  |                   2391 |                  75205 |                    3.08134 |                     17 |                    596 |                    2.77325 |
+|  65 | tubal                  |                   2398 |                  75198 |                    3.09037 |                     22 |                    591 |                    3.58891 |
+|  66 | trypreg                |                   2413 |                  75183 |                    3.1097  |                     18 |                    595 |                    2.93638 |
+|  67 | bq_adminm              |                   2454 |                  75142 |                    3.16253 |                     23 |                    590 |                    3.75204 |
+|  68 | occupat                |                   2472 |                  75124 |                    3.18573 |                     21 |                    592 |                    3.42577 |
+|  69 | curhorm                |                   2532 |                  75064 |                    3.26305 |                     18 |                    595 |                    2.93638 |
+|  70 | hyperten_f             |                   2542 |                  75054 |                    3.27594 |                     19 |                    594 |                    3.09951 |
+|  71 | emphys_f               |                   2557 |                  75039 |                    3.29527 |                     21 |                    592 |                    3.42577 |
+|  72 | stroke_f               |                   2560 |                  75036 |                    3.29914 |                     20 |                    593 |                    3.26264 |
+|  73 | diabetes_f             |                   2561 |                  75035 |                    3.30043 |                     20 |                    593 |                    3.26264 |
+|  74 | height_f               |                   2572 |                  75024 |                    3.3146  |                     19 |                    594 |                    3.09951 |
+|  75 | ibup                   |                   2586 |                  75010 |                    3.33265 |                     20 |                    593 |                    3.26264 |
+|  76 | breast_fh_cnt          |                   2591 |                  75005 |                    3.33909 |                     21 |                    592 |                    3.42577 |
+|  77 | ovarsumm_fh_cnt        |                   2591 |                  75005 |                    3.33909 |                     21 |                    592 |                    3.42577 |
+|  78 | breast_fh              |                   2591 |                  75005 |                    3.33909 |                     21 |                    592 |                    3.42577 |
+|  79 | ovarsumm_fh            |                   2591 |                  75005 |                    3.33909 |                     21 |                    592 |                    3.42577 |
+|  80 | hearta_f               |                   2600 |                  74996 |                    3.35069 |                     22 |                    591 |                    3.58891 |
+|  81 | bronchit_f             |                   2604 |                  74992 |                    3.35584 |                     20 |                    593 |                    3.26264 |
+|  82 | arthrit_f              |                   2611 |                  74985 |                    3.36486 |                     19 |                    594 |                    3.09951 |
+|  83 | stillb                 |                   2643 |                  74953 |                    3.4061  |                     21 |                    592 |                    3.42577 |
+|  84 | liver_comorbidity      |                   2647 |                  74949 |                    3.41126 |                     20 |                    593 |                    3.26264 |
+|  85 | gallblad_f             |                   2648 |                  74948 |                    3.41255 |                     21 |                    592 |                    3.42577 |
+|  86 | polyps_f               |                   2649 |                  74947 |                    3.41384 |                     20 |                    593 |                    3.26264 |
+|  87 | divertic_f             |                   2664 |                  74932 |                    3.43317 |                     20 |                    593 |                    3.26264 |
+|  88 | ibuppd                 |                   2714 |                  74882 |                    3.4976  |                     19 |                    594 |                    3.09951 |
+|  89 | lmenstr                |                   2716 |                  74880 |                    3.50018 |                     22 |                    591 |                    3.58891 |
+|  90 | thorm                  |                   2719 |                  74877 |                    3.50405 |                     23 |                    590 |                    3.75204 |
+|  91 | cig_years              |                   2735 |                  74861 |                    3.52467 |                     20 |                    593 |                    3.26264 |
+|  92 | osteopor_f             |                   2736 |                  74860 |                    3.52595 |                     20 |                    593 |                    3.26264 |
+|  93 | pack_years             |                   2799 |                  74797 |                    3.60714 |                     20 |                    593 |                    3.26264 |
+|  94 | brothers               |                   2814 |                  74782 |                    3.62648 |                     21 |                    592 |                    3.42577 |
+|  95 | weight50_f             |                   2856 |                  74740 |                    3.6806  |                     20 |                    593 |                    3.26264 |
+|  96 | colon_comorbidity      |                   2903 |                  74693 |                    3.74117 |                     21 |                    592 |                    3.42577 |
+|  97 | weight_f               |                   2908 |                  74688 |                    3.74762 |                     19 |                    594 |                    3.09951 |
+|  98 | sisters                |                   2929 |                  74667 |                    3.77468 |                     21 |                    592 |                    3.42577 |
+|  99 | bmi_50                 |                   3116 |                  74480 |                    4.01567 |                     23 |                    590 |                    3.75204 |
+| 100 | bmi_50c                |                   3116 |                  74480 |                    4.01567 |                     23 |                    590 |                    3.75204 |
+| 101 | weight20_f             |                   3158 |                  74438 |                    4.0698  |                     23 |                    590 |                    3.75204 |
+| 102 | bmi_curc               |                   3170 |                  74426 |                    4.08526 |                     22 |                    591 |                    3.58891 |
+| 103 | bmi_curr               |                   3170 |                  74426 |                    4.08526 |                     22 |                    591 |                    3.58891 |
+| 104 | pipe                   |                   3178 |                  74418 |                    4.09557 |                     27 |                    586 |                    4.40457 |
+| 105 | cigar                  |                   3355 |                  74241 |                    4.32368 |                     30 |                    583 |                    4.89396 |
+| 106 | bmi_20c                |                   3414 |                  74182 |                    4.39971 |                     25 |                    588 |                    4.0783  |
+| 107 | bmi_20                 |                   3414 |                  74182 |                    4.39971 |                     25 |                    588 |                    4.0783  |
+| 108 | menstrs                |                   3469 |                  74127 |                    4.47059 |                     32 |                    581 |                    5.22023 |
+| 109 | hispanic_f             |                   3866 |                  73730 |                    4.98222 |                     26 |                    587 |                    4.24144 |
+| 110 | bbd                    |                   3920 |                  73676 |                    5.05181 |                     29 |                    584 |                    4.73083 |
+| 111 | uterine_fib            |                   4821 |                  72775 |                    6.21295 |                     35 |                    578 |                    5.70962 |
+| 112 | benign_ovcyst          |                   5491 |                  72105 |                    7.0764  |                     40 |                    573 |                    6.52529 |
+| 113 | endometriosis          |                   5791 |                  71805 |                    7.46301 |                     43 |                    570 |                    7.01468 |
+| 114 | prega                  |                   7969 |                  69627 |                   10.2699  |                     75 |                    538 |                   12.2349  |
+| 115 | fchilda                |                   9455 |                  68141 |                   12.1849  |                     81 |                    532 |                   13.2137  |
+| 116 | ph_any_dhq             |                  16749 |                  60847 |                   21.5849  |                    133 |                    480 |                   21.6966  |
+| 117 | entrydays_dhq          |                  17691 |                  59905 |                   22.7989  |                    143 |                    470 |                   23.3279  |
+| 118 | entryage_dhq           |                  17691 |                  59905 |                   22.7989  |                    143 |                    470 |                   23.3279  |
+| 119 | ph_any_sqx             |                  23257 |                  54339 |                   29.9719  |                    273 |                    340 |                   44.5351  |
+| 120 | entrydays_sqx          |                  23257 |                  54339 |                   29.9719  |                    273 |                    340 |                   44.5351  |
+| 121 | entryage_sqx           |                  23257 |                  54339 |                   29.9719  |                    273 |                    340 |                   44.5351  |
+| 122 | bcontra                |                  36772 |                  40824 |                   47.389   |                    334 |                    279 |                   54.4861  |
+| 123 | tvu_result1            |                  38824 |                  38772 |                   50.0335  |                    282 |                    331 |                   46.0033  |
+| 124 | tvu_result0            |                  38824 |                  38772 |                   50.0335  |                    282 |                    331 |                   46.0033  |
+| 125 | tvu_result2            |                  38824 |                  38772 |                   50.0335  |                    282 |                    331 |                   46.0033  |
+| 126 | ca125_result4          |                  38824 |                  38772 |                   50.0335  |                    282 |                    331 |                   46.0033  |
+| 127 | tvu_result3            |                  38824 |                  38772 |                   50.0335  |                    282 |                    331 |                   46.0033  |
+| 128 | ca125_result0          |                  38824 |                  38772 |                   50.0335  |                    282 |                    331 |                   46.0033  |
+| 129 | ca125_result2          |                  38824 |                  38772 |                   50.0335  |                    282 |                    331 |                   46.0033  |
+| 130 | ca125_result3          |                  38824 |                  38772 |                   50.0335  |                    282 |                    331 |                   46.0033  |
+| 131 | ca125_result1          |                  38824 |                  38772 |                   50.0335  |                    282 |                    331 |                   46.0033  |
+| 132 | ca125_result5          |                  38824 |                  38772 |                   50.0335  |                    282 |                    331 |                   46.0033  |
+| 133 | ca125_prot             |                  38824 |                  38772 |                   50.0335  |                    282 |                    331 |                   46.0033  |
+| 134 | rsmoker_f              |                  44113 |                  33483 |                   56.8496  |                    342 |                    271 |                   55.7912  |
+| 135 | filtered_f             |                  44176 |                  33420 |                   56.9308  |                    342 |                    271 |                   55.7912  |
+| 136 | smokea_f               |                  44251 |                  33345 |                   57.0274  |                    345 |                    268 |                   56.2806  |
+| 137 | cig_stop               |                  44654 |                  32942 |                   57.5468  |                    343 |                    270 |                   55.9543  |
+| 138 | ph_ovar_dqx            |                  46353 |                  31243 |                   59.7363  |                    341 |                    272 |                   55.6281  |
+| 139 | ph_any_dqx             |                  46353 |                  31243 |                   59.7363  |                    341 |                    272 |                   55.6281  |
+| 140 | entrydays_dqx          |                  46394 |                  31202 |                   59.7892  |                    341 |                    272 |                   55.6281  |
+| 141 | entryage_dqx           |                  46394 |                  31202 |                   59.7892  |                    341 |                    272 |                   55.6281  |
+| 142 | ph_any_muq             |                  46474 |                  31122 |                   59.8923  |                    469 |                    144 |                   76.509   |
+| 143 | entryage_muq           |                  46474 |                  31122 |                   59.8923  |                    469 |                    144 |                   76.509   |
+| 144 | ca125_days0            |                  48973 |                  28623 |                   63.1128  |                    332 |                    281 |                   54.1599  |
+| 145 | ca125_src0             |                  49061 |                  28535 |                   63.2262  |                    332 |                    281 |                   54.1599  |
+| 146 | ca125_level0           |                  49061 |                  28535 |                   63.2262  |                    332 |                    281 |                   54.1599  |
+| 147 | ca125ii_level0         |                  49062 |                  28534 |                   63.2275  |                    332 |                    281 |                   54.1599  |
+| 148 | tvu_days0              |                  49351 |                  28245 |                   63.5999  |                    334 |                    279 |                   54.4861  |
+| 149 | ca125_days1            |                  50258 |                  27338 |                   64.7688  |                    373 |                    240 |                   60.8483  |
+| 150 | hystera                |                  50316 |                  27280 |                   64.8435  |                    420 |                    193 |                   68.5155  |
+| 151 | ca125_level1           |                  50316 |                  27280 |                   64.8435  |                    373 |                    240 |                   60.8483  |
+| 152 | ca125ii_level1         |                  50316 |                  27280 |                   64.8435  |                    373 |                    240 |                   60.8483  |
+| 153 | tvu_days1              |                  50748 |                  26848 |                   65.4003  |                    379 |                    234 |                   61.8271  |
+| 154 | ca125_days2            |                  51204 |                  26392 |                   65.9879  |                    398 |                    215 |                   64.9266  |
+| 155 | ca125_level2           |                  51262 |                  26334 |                   66.0627  |                    398 |                    215 |                   64.9266  |
+| 156 | ca125_src2             |                  51262 |                  26334 |                   66.0627  |                    398 |                    215 |                   64.9266  |
+| 157 | ca125ii_level2         |                  51262 |                  26334 |                   66.0627  |                    398 |                    215 |                   64.9266  |
+| 158 | tvu_days2              |                  51726 |                  25870 |                   66.6607  |                    404 |                    209 |                   65.9054  |
+| 159 | ssmokea_f              |                  51984 |                  25612 |                   66.9931  |                    397 |                    216 |                   64.7635  |
+| 160 | ca125_days3            |                  52358 |                  25238 |                   67.4751  |                    414 |                    199 |                   67.5367  |
+| 161 | ca125_src3             |                  52411 |                  25185 |                   67.5434  |                    414 |                    199 |                   67.5367  |
+| 162 | ca125_level3           |                  52411 |                  25185 |                   67.5434  |                    414 |                    199 |                   67.5367  |
+| 163 | ca125ii_level3         |                  52411 |                  25185 |                   67.5434  |                    414 |                    199 |                   67.5367  |
+| 164 | tvu_days3              |                  52812 |                  24784 |                   68.0602  |                    416 |                    197 |                   67.863   |
+| 165 | ca125_days5            |                  55509 |                  22087 |                   71.5359  |                    475 |                    138 |                   77.4878  |
+| 166 | ca125ii_level5         |                  55547 |                  22049 |                   71.5849  |                    476 |                    137 |                   77.6509  |
+| 167 | ca125_src5             |                  55547 |                  22049 |                   71.5849  |                    476 |                    137 |                   77.6509  |
+| 168 | ca125_level5           |                  55547 |                  22049 |                   71.5849  |                    476 |                    137 |                   77.6509  |
+| 169 | ca125_days4            |                  57577 |                  20019 |                   74.201   |                    486 |                    127 |                   79.2822  |
+| 170 | ca125ii_level4         |                  57596 |                  20000 |                   74.2255  |                    486 |                    127 |                   79.2822  |
+| 171 | ca125_src4             |                  57596 |                  20000 |                   74.2255  |                    486 |                    127 |                   79.2822  |
+| 172 | ca125_level4           |                  57596 |                  20000 |                   74.2255  |                    486 |                    127 |                   79.2822  |
+| 173 | breast_fh_age          |                  67227 |                  10369 |                   86.6372  |                    528 |                     85 |                   86.1338  |
+| 174 | orem_fyro              |                  70738 |                   6858 |                   91.1619  |                    537 |                     76 |                   87.602   |
+| 175 | ovarsumm_fh_age        |                  74745 |                   2851 |                   96.3258  |                    585 |                     28 |                   95.4323  |
+| 176 | ovar_cancer_diagdays   |                  77596 |                      0 |                  100       |                      0 |                    613 |                    0       |
++-----+------------------------+------------------------+------------------------+----------------------------+------------------------+------------------------+----------------------------+
+
+
+
++----+------------------------------------+------------------------+--------------------------+------------------------+--------------------------+
+|    | filtered_on                        |   num_records_cancer:0 |   num_unique_id_cancer:0 |   num_records_cancer:1 |   num_unique_id_cancer:1 |
+|----+------------------------------------+------------------------+--------------------------+------------------------+--------------------------|
+|  1 | Personal Data filtered on dummy: 0 |                  77596 |                    77596 |                    613 |                      613 |
+|  0 | Personal Data total                |                  77596 |                    77596 |                    613 |                      613 |
++----+------------------------------------+------------------------+--------------------------+------------------------+--------------------------+
