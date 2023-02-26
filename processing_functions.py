@@ -36,6 +36,7 @@ from sklearn import tree
 
 from sklearn.model_selection import StratifiedKFold
 from sklearn.impute import SimpleImputer
+from sklearn.utils import resample
 
 
 def summarize_features(df):
@@ -312,3 +313,60 @@ def df_filter_val_distribution_on_cancer(source_df, make_unique_over_cols, name,
     df_no_cancer['cancer'] = 0
     df = pd.concat([df_cancer, df_no_cancer], axis=0)
     df_filter_val_distribution(df, 'cancer', make_unique_over_cols, name, hist=hist, cutoff_percentage=cutoff_percentage)
+
+
+def resample_max(df, label, n_max_per_class, replace=True):
+
+    df_majority = df[df[label] ==0]
+    df_minority = df[df[label] ==1]
+
+    # downsample df_majority class
+    df_majority_downsampled = resample(df_majority, 
+                                    replace=False,     # sample with replacement
+                                    n_samples=n_max_per_class,    # to match majority class
+                                    # random_state=44
+                                    ) 
+
+    # Upsample minority class
+    df_minority_upsampled = resample(df_minority, 
+                                    replace=replace,     # sample with replacement
+                                    n_samples=n_max_per_class,    # to match majority class
+                                    # random_state=44
+                                    ) 
+
+    # Combine majority class with upsampled minority class
+    df_sampled = pd.concat([df_majority_downsampled, df_minority_upsampled])
+
+    return df_sampled
+
+
+
+def process_and_impute_for_label(source_df, label, strategy, n_max_per_class=10000):
+    resampled_df = resample_max(source_df, label, n_max_per_class, replace=True)
+    x = resampled_df
+    y = x[label]
+    x = x.drop(['ovar_cancer_years', 'plco_id'], axis=1)
+    # TODO: One person should not appear in train and test data since there are duplicates?
+    # TODO: do splits of data on person id and then oversample from that space 
+    X_train, X_test, y_train, y_test = train_test_split(x, y, test_size = 0.2)
+
+    mean_imputer = SimpleImputer(missing_values=np.nan, strategy=strategy)
+    mean_imputer.fit(X_train)
+    X_test = mean_imputer.transform(X_test)
+    X_train = pd.DataFrame(X_train, columns=x.columns)
+    X_test = pd.DataFrame(X_test, columns=x.columns)
+
+    labeled_impute = LabeledImmpute()
+    labeled_impute.fit(X_train, label)
+    # X_train = labeled_impute.transform(X_train, label, strategy)
+    X_train = mean_imputer.transform(X_train)
+    X_train = pd.DataFrame(X_train, columns=x.columns)
+    try:
+        X_train = X_train.drop([label], axis=1)
+        X_test = X_test.drop([label], axis=1)
+        X_train = remove_featues_startswith(X_train, ['ovar_', 'cancer_'])
+        X_test = remove_featues_startswith(X_test, ['ovar_', 'cancer_'])
+    except:
+        pass
+
+    return X_train, X_test, y_train, y_test
