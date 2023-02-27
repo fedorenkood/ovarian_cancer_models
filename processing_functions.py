@@ -1,46 +1,40 @@
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-# Visualization
-import seaborn as sns
-import matplotlib.pyplot as plt
-import warnings
-import plotly.express as px
-px_template = "simple_white"
-# Split data
-from sklearn.model_selection import train_test_split, cross_validate
 
-
+from collections import Counter
 from imblearn.over_sampling import SMOTE
-
-from sklearn.preprocessing import StandardScaler 
-
-from sklearn.linear_model import LogisticRegression, LinearRegression
+from itertools import product
+from sklearn import datasets, linear_model, metrics, tree
+from sklearn.ensemble import (AdaBoostClassifier, GradientBoostingClassifier,
+                              RandomForestClassifier)
+from sklearn.feature_selection import (SelectFromModel, SelectKBest, chi2,
+                                       f_classif)
+from sklearn.impute import SimpleImputer
+from sklearn.linear_model import LinearRegression, LogisticRegression
+from sklearn.metrics import (ConfusionMatrixDisplay, PrecisionRecallDisplay,
+                             accuracy_score,
+                             auc, average_precision_score, classification_report,
+                             confusion_matrix, f1_score, plot_precision_recall_curve,
+                             plot_roc_curve, precision_recall_curve, precision_score,
+                             recall_score, roc_auc_score, roc_curve)
+from sklearn.model_selection import GridSearchCV, StratifiedKFold, cross_val_score, train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier
+from sklearn.utils import resample
+from tabulate import tabulate
 from xgboost import XGBClassifier
 
-# Libtune to tune model, get different metric scores
-from sklearn import datasets, linear_model, metrics
-from sklearn.metrics import accuracy_score, confusion_matrix, roc_auc_score, ConfusionMatrixDisplay, PrecisionRecallDisplay, precision_score, recall_score, f1_score, classification_report, roc_curve, plot_roc_curve, auc, precision_recall_curve, plot_precision_recall_curve, average_precision_score
-from sklearn.model_selection import cross_val_score
-from collections import Counter
-from sklearn.model_selection import GridSearchCV
-from itertools import product
-from tabulate import tabulate
+import plotly.express as px
+import seaborn as sns
 import time
+import warnings
+px_template = "simple_white"
+
 # https://scikit-learn.org/stable/modules/classes.html#module-sklearn.feature_selection
-from sklearn.feature_selection import SelectFromModel, SelectKBest, chi2, f_classif
-from sklearn import tree
-
-from sklearn.model_selection import StratifiedKFold
-from sklearn.impute import SimpleImputer
-from sklearn.utils import resample
-
-from sklearn.linear_model import LogisticRegression, LinearRegression
-from sklearn.pipeline import make_pipeline
-
 
 def summarize_features(df):
     # Summary of features
