@@ -38,6 +38,9 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.impute import SimpleImputer
 from sklearn.utils import resample
 
+from sklearn.linear_model import LogisticRegression, LinearRegression
+from sklearn.pipeline import make_pipeline
+
 
 def summarize_features(df):
     # Summary of features
@@ -83,8 +86,8 @@ def run_classifier(classifier, X_train, X_test, y_train, y_test):
     classifier.fit(X_train, y_train)
     y_pred = classifier.predict(X_test)
     y_prob = classifier.predict_proba(X_test)[:,1]
-    auc, accuracy = performance_analysis(y_pred, y_prob, y_test)
-    return auc, accuracy
+    auc, accuracy, precision, recall, f1 = performance_analysis(y_pred, y_prob, y_test)
+    return auc, accuracy, precision, recall, f1
 
 def performance_analysis(y_pred, y_prob, y_test):
     report = pd.DataFrame(classification_report(y_test, y_pred, output_dict=True)).transpose().iloc[0:2,:]
@@ -101,7 +104,7 @@ def performance_analysis(y_pred, y_prob, y_test):
 
     display_precision_recall(ax[2], y_prob, y_test)
     plt.show()
-    return auc, accuracy
+    return auc, accuracy, precision_score(y_test, y_pred), recall_score(y_test, y_pred), f1_score(y_test, y_pred)
 
 
 def get_accuracy(y_test, y_pred):
