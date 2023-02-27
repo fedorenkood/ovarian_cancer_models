@@ -76,28 +76,29 @@ def scaling_tranform(X_train, X_test):
     X_test = sc.transform(X_test)
     return X_train, X_test
 
-def run_classifier(classifier, X_train, X_test, y_train, y_test):
+def run_classifier(classifier, X_train, X_test, y_train, y_test, show_graph=True):
     classifier.fit(X_train, y_train)
     y_pred = classifier.predict(X_test)
     y_prob = classifier.predict_proba(X_test)[:,1]
-    auc, accuracy, precision, recall, f1 = performance_analysis(y_pred, y_prob, y_test)
+    auc, accuracy, precision, recall, f1 = performance_analysis(y_pred, y_prob, y_test, show_graph=show_graph)
     return auc, accuracy, precision, recall, f1
 
-def performance_analysis(y_pred, y_prob, y_test):
+def performance_analysis(y_pred, y_prob, y_test, show_graph=True):
     report = pd.DataFrame(classification_report(y_test, y_pred, output_dict=True)).transpose().iloc[0:2,:]
-    print(report)
     auc = roc_auc_score(y_test, y_prob)
     accuracy = accuracy_score(y_test, y_pred)
-    print(f'ROC AUC score: {auc}')
-    print(f'Accuracy Score: {accuracy}')
-    f, ax = plt.subplots(1, 3, figsize=(16, 5))
-    plt.yticks(rotation = 0)
-    display_confusion_matrix(ax[0], y_test, y_pred)
+    if show_graph:
+        print(report)
+        print(f'ROC AUC score: {auc}')
+        print(f'Accuracy Score: {accuracy}')
+        f, ax = plt.subplots(1, 3, figsize=(16, 5))
+        plt.yticks(rotation = 0)
+        display_confusion_matrix(ax[0], y_test, y_pred)
 
-    display_auc(ax[1], y_test, y_prob)
+        display_auc(ax[1], y_test, y_prob)
 
-    display_precision_recall(ax[2], y_prob, y_test)
-    plt.show()
+        display_precision_recall(ax[2], y_prob, y_test)
+        plt.show()
     return auc, accuracy, precision_score(y_test, y_pred), recall_score(y_test, y_pred), f1_score(y_test, y_pred)
 
 
@@ -186,14 +187,15 @@ def drop_cols_missing_percentage(cutoff_percentage, df, name, show_missing=True)
     df_missing_value = get_cols_missing_percentage(cutoff_percentage, df, name, show_missing=show_missing)
     return df.drop(df_missing_value['column_name'].to_list(), axis=1)
     
-def remove_featues_startswith(df, prefixes, exclude=[]):
+def remove_featues_startswith(df, prefixes, exclude=[], show_removed=True):
     for prefix in prefixes:
         remove_cols = []
         for col in df.columns:
             if col.startswith(prefix):
                 remove_cols.append(col)
-        print(f'Number of {prefix} cols: {len(remove_cols)}')
-        print(remove_cols)
+        if show_removed:
+            print(f'Number of {prefix} cols: {len(remove_cols)}')
+            print(remove_cols)
         remove_cols = list(set(remove_cols) - set(exclude))
         df = df.drop(remove_cols, axis=1)
     return df
