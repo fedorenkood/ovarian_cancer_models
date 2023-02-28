@@ -338,6 +338,35 @@ def resample_max(df, label, n_max_per_class, replace=True):
 
     return df_sampled
 
+class LabeledImmpute:
+    def __init__(self) -> None:
+        self.mean = None
+        self.median = None
+
+    def fit(self, df, label_col):
+        self.mean = df.groupby([label_col], as_index=False).mean()
+        self.median = df.groupby([label_col], as_index=False).median()
+
+    def transform_base(self, df, label_col, values_df):
+        df_list = []
+        for label in df[label_col].unique():
+            values_dict = values_df[values_df[label_col] == label].to_dict('records')[0]
+            filtered_df = df[df[label_col] == label]
+            filtered_df = filtered_df.fillna(values_dict)
+            df_list.append(filtered_df)
+
+        return pd.concat(df_list, axis=0)
+
+    def transform_median(self, df, label_col):
+        return self.transform_base(df, label_col, self.median)
+
+    def transform_mean(self, df, label_col):
+        return self.transform_base(df, label_col, self.mean)
+    
+    def transform(self, df, label_col, strategy):
+        if strategy == 'mean':
+            return self.transform_mean(df, label_col)
+        return self.transform_median(df, label_col)
 
 
 def process_and_impute_for_label(source_df, label, strategy, n_max_per_class=10000):
@@ -369,3 +398,130 @@ def process_and_impute_for_label(source_df, label, strategy, n_max_per_class=100
         pass
 
     return X_train, X_test, y_train, y_test
+
+def convert_numeric_to_float16(df):
+    numeric_cols = select_numeric_columns(df)
+    df[numeric_cols] = df[numeric_cols].astype(np.float16)
+    return df
+
+
+def bucket_age(age, bucket_size):
+    age_buckets = list(range(0, 101, bucket_size))
+    for i in range(len(age_buckets) - 1):
+        if age >= age_buckets[i] and age < age_buckets[i+1]:
+            return age_buckets[i]
+    return None
+
+
+def merge_data_over_years(person_df, screen_df, abnorm_df, screen_join='left', abrorm_join='left'):
+    on_col = 'ovar_cancer_years'
+    # Select max data for each of the features in the abnorm_df, while varied over plco_id and study_yr
+    abnorm_df = abnorm_df.groupby(['plco_id', 'study_yr'], as_index=False).max()
+    df_list = []
+    df_final = pd.DataFrame()
+    for base_year in range(0, 18):
+        df = person_df
+        # individuals who got cancer before the beginning of this window should not be included in the current window
+        df = df[df[on_col] >= base_year]
+        # increment certain features by base year
+        df['age'] = df['age'].apply(lambda age: bucket_age(age+base_year, 5))
+        # If base year is 0 through 5 we have data on the scan performed on that year, so we can attach that data
+        # we only use ca125ii_level features, but they are stored under different features for different years
+        # we need to only use the ones for the appropriate year
+        df = remove_featues_startswith(df, ['ca125ii_level'], [f'ca125ii_level{base_year}'], show_removed=False)
+        if base_year <= 5: 
+            df = df.rename({f'ca125ii_level{base_year}': 'ca125ii_level'}, axis=1)
+            # print([col for col in df.columns if 'ca125ii_level' in col])
+            df = df.merge(screen_df[screen_df['study_yr'] == base_year], how=screen_join)
+        # If base year is 0 through 53 we have data on the abnormality on that year, so we can attach that data
+        if base_year <= 3: 
+            filtered_abnorm = abnorm_df[abnorm_df['study_yr'] == base_year]
+            df = df.merge(filtered_abnorm, how=abrorm_join)
+        # Assign new labels whether people will get cancer withing next 1, 3, 5, 10 years based on the current data
+        for window_size in [1, 3, 5, 10]:
+            if base_year + window_size >= 20:
+                continue
+            label_feature = f'cancer_in_next_{window_size}_years'
+            df.loc[df[df[on_col] >= base_year + window_size].index, label_feature] = 0
+            # df[label_feature] = 0
+            index = df[df[on_col] < base_year + window_size].index
+            df.loc[index, label_feature] = 1
+        df_final = pd.concat([df_final, df])
+        df_final = df_final.drop_duplicates()
+    return df_final
+
+
+def impute_data(X_train: pd.DataFrame, X_test: pd.DataFrame, strategy, label):
+    mean_imputer = SimpleImputer(missing_values=np.nan, strategy=strategy)
+    mean_imputer.fit(X_train)
+    X_test = mean_imputer.transform(X_test)
+
+    # labeled_impute = LabeledImmpute()
+    # labeled_impute.fit(X_train, label)
+    # X_train = labeled_impute.transform(X_train, label, strategy)
+    X_train = mean_imputer.transform(X_train)
+    return X_train, X_test
+
+def process_train_test_split(source_df, train, test, label, train_size, test_size, strategy, stats=True):
+    train = source_df[source_df['plco_id'].isin(train['plco_id'])]
+    test = source_df[source_df['plco_id'].isin(test['plco_id'])]
+    y_train = train[label]
+    y_test = test[label]
+    # Printing stats
+    if stats:
+        print(f'Distribution of labels based on duplicate plco_id: {np.sum(y_test)/(np.sum(y_train) + np.sum(y_test))}')
+    
+    train = train.drop(['plco_id'], axis=1)
+    test = test.drop(['plco_id'], axis=1)
+    train = remove_featues_startswith(train, ['ovar_', 'cancer_'], [label], show_removed=False)
+    test = remove_featues_startswith(test, ['ovar_', 'cancer_'], [label], show_removed=False)
+    # Perform imputation before oversampling
+    columns = train.columns
+    train, test = impute_data(train, test, strategy, label)
+    # get_cols_missing_percentage(80, train, 'train', show_missing=True)
+
+    train = pd.DataFrame(train, columns=columns)
+    test = pd.DataFrame(test, columns=columns)
+    # Perform oversamping
+    train = resample_max(train, label, train_size, replace=True)
+    test = resample_max(test, label, test_size, replace=True)
+
+    y_train = train[label]
+    y_test = test[label]
+    X_train = train.drop([label], axis=1)
+    X_test = test.drop([label], axis=1)
+    return X_train, X_test, y_train, y_test
+
+def process_and_impute_for_label_kfold(source_df, label, strategy, n_max_per_class=10000, k=10, stats=True):
+    # remove features starting with cancer so that we could drop labels that are nan (e.g. people get cancer later on)
+    source_df = remove_featues_startswith(source_df, ['cancer_'], [label], show_removed=False)
+    source_df = source_df[source_df[label].notnull()]
+    # One person should not appear in train and test data since there are duplicates of a person
+    # we splits of data on person id and then oversample from that sample 
+    unique_id_df = source_df[['plco_id', label]].drop_duplicates()
+    X_train_unique, X_test_unique, y_train, y_test = train_test_split(unique_id_df, unique_id_df[label], test_size = 0.2)
+
+    # Printing stats
+    print(f'Distribution of labels based on unique plco_id: {np.sum(y_test)/(np.sum(y_train) + np.sum(y_test))}')
+    # print_df(X_train[X_train[label]==1][:100])
+    train_size = int(n_max_per_class * 0.8)
+    test_size  = int(n_max_per_class * 0.2)
+    train_fold_size  = int((k-1) * train_size / k)
+    test_fold_size  = int(train_size / k)
+
+    train_test_lambda = lambda: process_train_test_split(source_df, X_train_unique, X_test_unique, label, train_size, test_size, strategy, stats=stats)
+    # create list of lambdas for each fold
+    # Cross validation: https://vitalflux.com/k-fold-cross-validation-python-example/
+    strtfdKFold = StratifiedKFold(n_splits=k)
+    y_train = X_train_unique[label]
+    X_train = X_train_unique[['plco_id']]
+    kfold = strtfdKFold.split(X_train, y_train)
+    k_fold_lambdas = []
+    for train, test in kfold:
+        train = X_train_unique.iloc[train, :]
+        test = X_train_unique.iloc[test, :]
+        k_fold_lambdas.append(lambda: process_train_test_split(source_df, train, test, label, train_fold_size, test_fold_size, strategy, stats=False))
+
+    return train_test_lambda, k_fold_lambdas
+
+
