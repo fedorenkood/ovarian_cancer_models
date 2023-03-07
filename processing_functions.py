@@ -80,8 +80,8 @@ def run_classifier(classifier, X_train, X_test, y_train, y_test, show_graph=True
     classifier.fit(X_train, y_train)
     y_pred = classifier.predict(X_test)
     y_prob = classifier.predict_proba(X_test)[:,1]
-    auc, accuracy, precision, recall, f1 = performance_analysis(y_pred, y_prob, y_test, show_graph=show_graph)
-    return auc, accuracy, precision, recall, f1
+    auc, accuracy, report = performance_analysis(y_pred, y_prob, y_test, show_graph=show_graph)
+    return auc, accuracy, report
 
 def performance_analysis(y_pred, y_prob, y_test, show_graph=True):
     report = pd.DataFrame(classification_report(y_test, y_pred, output_dict=True)).transpose().iloc[0:2,:]
@@ -99,7 +99,17 @@ def performance_analysis(y_pred, y_prob, y_test, show_graph=True):
 
         display_precision_recall(ax[2], y_prob, y_test)
         plt.show()
-    return auc, accuracy, precision_score(y_test, y_pred), recall_score(y_test, y_pred), f1_score(y_test, y_pred)
+    report = report.drop(['support'], axis=1)
+    report['class'] = report.index
+    report['class'] = report['class'].astype('float')
+    report['class'] = report['class'].astype('int')
+    report['dummy'] = 0
+    report = merge_df_into_features(report, on_col='dummy', make_unique_over_cols=['class'])
+    report = report.drop(['dummy'], axis=1)
+    report = remove_featues_startswith(report, ['class'], show_removed=False)
+    report['accuracy'] = accuracy
+    report['auc'] = auc
+    return auc, accuracy, report
 
 
 def get_accuracy(y_test, y_pred):
@@ -513,13 +523,11 @@ def process_and_impute_for_label_kfold(source_df, label, strategy, n_max_per_cla
     # create list of lambdas for each fold
     # Cross validation: https://vitalflux.com/k-fold-cross-validation-python-example/
     strtfdKFold = StratifiedKFold(n_splits=k)
-    y_train = X_train_unique[label]
-    X_train = X_train_unique[['plco_id']]
-    kfold = strtfdKFold.split(X_train, y_train)
+    kfold = strtfdKFold.split(unique_id_df, unique_id_df[label])
     k_fold_lambdas = []
     for train, test in kfold:
-        train = X_train_unique.iloc[train, :]
-        test = X_train_unique.iloc[test, :]
+        train = unique_id_df.iloc[train, :]
+        test = unique_id_df.iloc[test, :]
         k_fold_lambdas.append(lambda: process_train_test_split(source_df, train, test, label, train_fold_size, test_fold_size, strategy, stats=False))
 
     return train_test_lambda, k_fold_lambdas
