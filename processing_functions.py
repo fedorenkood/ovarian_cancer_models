@@ -430,7 +430,7 @@ def merge_data_over_years(person_df, screen_df, abnorm_df, screen_join='left', a
     abnorm_df = abnorm_df.groupby(['plco_id', 'study_yr'], as_index=False).max()
     df_list = []
     df_final = pd.DataFrame()
-    for base_year in range(0, 18):
+    for base_year in range(0, 19):
         df = person_df
         # individuals who got cancer before the beginning of this window should not be included in the current window
         df = df[df[on_col] >= base_year]
