@@ -557,25 +557,26 @@ def process_train_test_split(source_df, train, test, label, train_size, test_siz
     return X_train, X_test, y_train, y_test
 
 def process_and_impute_for_label_kfold(source_df, label, strategy, n_max_per_class=10000, num_folds=10, stats=True):
-    # remove features starting with cancer so that we could drop labels that are nan (e.g. people get cancer later on)
-    source_df = remove_featues_startswith(source_df, ['cancer_'], [label], show_removed=False)
-    source_df = source_df[source_df[label].notnull()]
-    # One person should not appear in train and test data since there are duplicates of a person
-    # we splits of data on person id and then oversample from that sample 
-    # TODO: this line of code determines whether the model is leaking info or not
-    unique_id_df = source_df[['plco_id', label]].drop_duplicates(subset='plco_id') # subset='plco_id'
-    X_train_unique, X_test_unique, y_train, y_test = train_test_split(unique_id_df, unique_id_df[label], test_size = 0.2)
-    # print_records_vs_unique(X_train_unique, 'plco_id', f'Train set', print_vals=True)
-    # print_records_vs_unique(X_test_unique, 'plco_id', f'Test set', print_vals=True)
-
-    # Printing stats
-    print(f'Distribution of labels based on unique plco_id: {np.sum(y_test)/(np.sum(y_train) + np.sum(y_test))}')
-    # print_df(X_train[X_train[label]==1][:100])
     train_size = int(n_max_per_class * 0.8)
     test_size  = int(n_max_per_class * 0.2)
     train_fold_size  = int((num_folds-1) * train_size / num_folds)
     test_fold_size  = int(train_size / num_folds)
 
+    # remove features starting with cancer so that we could drop labels that are nan (e.g. people get cancer later on)
+    source_df = remove_featues_startswith(source_df, ['cancer_'], [label], show_removed=False)
+    source_df = source_df[source_df[label].notnull()]
+    
+    # One person should not appear in train and test data since there are duplicates of a person
+    # we splits of data on person id and then oversample from that sample 
+    # this line of code determines whether the model is leaking info or not
+    unique_id_df = source_df[['plco_id', label]].drop_duplicates(subset='plco_id')
+    X_train_unique, X_test_unique, y_train, y_test = train_test_split(unique_id_df, unique_id_df[label], test_size = 0.2)
+
+    # Printing stats
+    # print_records_vs_unique(X_train_unique, 'plco_id', f'Train set', print_vals=True)
+    # print_records_vs_unique(X_test_unique, 'plco_id', f'Test set', print_vals=True)
+    print(f'Distribution of labels based on unique plco_id: {np.sum(y_test)/(np.sum(y_train) + np.sum(y_test))}')
+    
     train_test_lambda = lambda: process_train_test_split(source_df, X_train_unique, X_test_unique, label, train_size, test_size, strategy, stats=stats)
     # create list of lambdas for each fold
     # Cross validation: https://vitalflux.com/k-fold-cross-validation-python-example/
@@ -584,8 +585,9 @@ def process_and_impute_for_label_kfold(source_df, label, strategy, n_max_per_cla
     k_fold_lambdas = []
     for k, (train, test) in enumerate(kfold):
         train = unique_id_df.iloc[train, :]
-        # print_records_vs_unique(train, 'plco_id', f'cv fold {k}', print_vals=True)
         test = unique_id_df.iloc[test, :]
+        # print_records_vs_unique(train, 'plco_id', f'Train cv fold {k}', print_vals=True)
+        # print_records_vs_unique(test, 'plco_id', f'Test cv fold {k}', print_vals=True)
         k_fold_lambdas.append(lambda: process_train_test_split(source_df, train, test, label, train_fold_size, test_fold_size, strategy, stats=False))
 
     return train_test_lambda, k_fold_lambdas
