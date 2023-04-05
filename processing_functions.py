@@ -34,6 +34,7 @@ import time
 import warnings
 import xgboost as xgb
 from scipy.spatial import distance
+import itertools
 
 px_template = "simple_white"
 
@@ -83,8 +84,14 @@ def run_classifier(classifier, X_train, X_test, y_train, y_test, show_graph=True
     classifier.fit(X_train, y_train)
     y_pred = classifier.predict(X_test)
     y_prob = classifier.predict_proba(X_test)[:,1]
-    auc, accuracy, report = performance_analysis(y_pred, y_prob, y_test, show_graph=show_graph)
-    return auc, accuracy, report
+
+    auc, accuracy, threshold, report = performance_analysis(y_pred, y_prob, y_test, show_graph=show_graph)
+    
+    print(f'Threshold: {threshold}')
+    # Find prediction to the dataframe applying threshold
+    y_pred_threathold = np.array(pd.Series(y_prob).map(lambda x: 1 if x > threshold else 0))
+    performance_analysis(y_pred_threathold, y_prob, y_test, show_graph=show_graph)
+    return classifier, auc, accuracy, threshold, report
 
 def performance_analysis(y_pred, y_prob, y_test, show_graph=True):
     report = pd.DataFrame(classification_report(y_test, y_pred, output_dict=True)).transpose().iloc[0:2,:]
@@ -98,9 +105,8 @@ def performance_analysis(y_pred, y_prob, y_test, show_graph=True):
         plt.yticks(rotation = 0)
         display_confusion_matrix(ax[0], y_test, y_pred)
 
-        display_auc(ax[1], y_test, y_prob)
-
-        display_precision_recall(ax[2], y_prob, y_test)
+        threshold = display_auc(ax[-2], y_test, y_prob)
+        display_precision_recall(ax[-1], y_prob, y_test)
         plt.show()
     report = report.drop(['support'], axis=1)
     report['class'] = report.index
@@ -111,7 +117,7 @@ def performance_analysis(y_pred, y_prob, y_test, show_graph=True):
     report = remove_featues_startswith(report, ['class', 'dummy'], show_removed=False)
     report['accuracy'] = accuracy
     report['auc'] = auc
-    return auc, accuracy, report
+    return auc, accuracy, threshold, report
 
 
 def get_accuracy(y_test, y_pred):
@@ -124,14 +130,24 @@ def display_confusion_matrix(ax, y_test, y_pred):
     # ax.set_yticks(rotation = 0)
 
 def display_auc(ax, y_test, y_pred):
-    fp_rate, tp_rate, thresholds = roc_curve(y_test, y_pred)
-    roc_auc = auc(fp_rate, tp_rate)
-    ax.plot(fp_rate,tp_rate, color = '#b50000', label = 'AUC = %0.3f' % roc_auc)
+    fpr, tpr, thresholds = roc_curve(y_test, y_pred)
+    i = np.arange(len(tpr)) 
+    roc = pd.DataFrame({'tf' : pd.Series(tpr-(1-fpr), index=i), 'threshold' : pd.Series(thresholds, index=i)})
+    roc_t = roc.iloc[(roc.tf-0).abs().argsort()[:1]]
+    optimal_idx = np.argmax(tpr - fpr)
+    optimal_threshold = thresholds[optimal_idx]
+    print(optimal_threshold)
+
+    roc_auc = auc(fpr, tpr)
+    ax.plot(fpr,tpr, color = '#b50000', label = 'AUC = %0.3f' % roc_auc)
     ax.plot([0, 1], [0, 1], linestyle = '-.', color = 'gray')
+    ax.plot(fpr[optimal_idx],tpr[optimal_idx],'ro', label='Optimal point') 
     ax.set_ylabel('TP Rate')
     ax.set_xlabel('FP Rate')
     ax.set_title('ROC AUC Curve')
     ax.legend()
+    # return list(roc_t['threshold']) 
+    return optimal_threshold
 
 def display_precision_recall(ax, y_pred, y_test):
     precision, recall, _ = precision_recall_curve(y_test, y_pred)
@@ -505,16 +521,20 @@ def impute_data(X_train: pd.DataFrame, X_test: pd.DataFrame, strategy, label):
     # X_test.loc[X_test['was_screened'] == 1] = X_test.loc[X_test['was_screened'] == 1].fillna(fill_const)
     X_train = X_train.fillna(fill_const)
     X_test = X_test.fillna(fill_const)
-    X_train[const_val_cols] = X_train[const_val_cols].astype(np.int16)
-    X_test[const_val_cols]  = X_test[const_val_cols].astype(np.int16)
-    # Impute particular values with means
-    mean_imputer = SimpleImputer(missing_values=np.nan, strategy='mean')
-    mean_imputer.fit(X_train[const_val_cols])
-    # print_df(X_train[const_val_cols].describe().T)
-    # print(X_test[const_val_cols].shape)
-    # print(mean_imputer.transform(X_test[const_val_cols]).shape)
-    X_test[const_val_cols] = mean_imputer.transform(X_test[const_val_cols])
-    X_train[const_val_cols] = mean_imputer.transform(X_train[const_val_cols])
+    try: 
+        X_train[const_val_cols] = X_train[const_val_cols].astype(np.int16)
+        X_test[const_val_cols]  = X_test[const_val_cols].astype(np.int16)
+        # Impute particular values with means
+        mean_imputer = SimpleImputer(missing_values=np.nan, strategy='mean')
+        mean_imputer.fit(X_train[const_val_cols])
+        # print_df(X_train[const_val_cols].describe().T)
+        # print(X_test[const_val_cols].shape)
+        # print(mean_imputer.transform(X_test[const_val_cols]).shape)
+        X_test[const_val_cols] = mean_imputer.transform(X_test[const_val_cols])
+        X_train[const_val_cols] = mean_imputer.transform(X_train[const_val_cols])
+    except:
+        pass
+    
 
     # Others with whatever strategy we decide
     mean_imputer = SimpleImputer(missing_values=np.nan, strategy=strategy)
@@ -527,7 +547,12 @@ def impute_data(X_train: pd.DataFrame, X_test: pd.DataFrame, strategy, label):
     # X_train = labeled_impute.transform(X_train, label, strategy)
     return X_train, X_test
 
-def process_train_test_split(source_df, train, test, label, train_size, test_size, strategy, stats=True):
+def split_xy_drop(df, label, drop_cols):
+    y = df[label]
+    X = df.drop([label, *drop_cols], axis=1)
+    return X, y
+
+def process_train_test_split(source_df, train, test, label, train_size, test_size, strategy, stats=True, differentiate_confusion_matrix_over=None):
     train = source_df[source_df['plco_id'].isin(train['plco_id'])]
     test = source_df[source_df['plco_id'].isin(test['plco_id'])]
     # train = train.merge(source_df, how='left')
@@ -537,11 +562,13 @@ def process_train_test_split(source_df, train, test, label, train_size, test_siz
     # Printing stats
     if stats:
         print(f'Distribution of labels based on duplicate plco_id: {np.sum(y_test)/(np.sum(y_train) + np.sum(y_test))}')
-    
+    # drop non-cancer records without screen records
+    # condition = (train['was_screened'] == 1) | (train['ovar_cancer'] == 1)
+    # train = train[condition]
     train = train.drop(['plco_id'], axis=1)
     test = test.drop(['plco_id'], axis=1)
-    train = remove_featues_startswith(train, ['ovar_', 'cancer_'], [label], show_removed=False)
-    test = remove_featues_startswith(test, ['ovar_', 'cancer_'], [label], show_removed=False)
+    train = remove_featues_startswith(train, ['ovar_', 'cancer_'], [label, 'ovar_histtype', 'ovar_behavior'], show_removed=False)
+    test = remove_featues_startswith(test, ['ovar_', 'cancer_'], [label, 'ovar_histtype', 'ovar_behavior'], show_removed=False)
     # Perform imputation before oversampling
     columns = train.columns
     train, test = impute_data(train, test, strategy, label)
@@ -553,13 +580,25 @@ def process_train_test_split(source_df, train, test, label, train_size, test_siz
     train = resample_max(train, label, train_size, replace=True)
     # test = resample_max(test, label, test_size, replace=True)
 
-    y_train = train[label]
-    y_test = test[label]
-    X_train = train.drop([label, 'was_screened'], axis=1)
-    X_test = test.drop([label, 'was_screened'], axis=1)
+    drop_cols = ['was_screened', 'ovar_histtype', 'ovar_behavior']
+    differentiated_test_sets = []
+    if differentiate_confusion_matrix_over:
+        filtered_on = list(itertools.chain.from_iterable([zip([key]*len(vals), vals) for key, vals in differentiate_confusion_matrix_over.items()]))
+        for col, values in filtered_on:
+            filtered_test = test[test[col].isin(values)]
+            X_test_filtered, y_test_filtered = split_xy_drop(filtered_test, label, drop_cols)
+            differentiated_test_sets.append((X_test_filtered, y_test_filtered))
+
+
+    X_train, y_train = split_xy_drop(train, label, drop_cols)
+    X_test, y_test = split_xy_drop(test, label, drop_cols)
+
+    if differentiate_confusion_matrix_over:
+        return X_train, X_test, y_train, y_test, differentiated_test_sets
     return X_train, X_test, y_train, y_test
 
-def process_and_impute_for_label_kfold(source_df, label, strategy, n_max_per_class=10000, num_folds=10, stats=True):
+
+def process_and_impute_for_label_kfold(source_df, label, strategy, n_max_per_class=10000, num_folds=10, stats=True, differentiate_confusion_matrix_over=None):
     train_size = int(n_max_per_class * 0.8)
     test_size  = int(n_max_per_class * 0.2)
     train_fold_size  = int((num_folds-1) * train_size / num_folds)
@@ -580,7 +619,7 @@ def process_and_impute_for_label_kfold(source_df, label, strategy, n_max_per_cla
     # print_records_vs_unique(X_test_unique, 'plco_id', f'Test set', print_vals=True)
     print(f'Distribution of labels based on unique plco_id: {np.sum(y_test)/(np.sum(y_train) + np.sum(y_test))}')
     
-    train_test_lambda = lambda: process_train_test_split(source_df, X_train_unique, X_test_unique, label, train_size, test_size, strategy, stats=stats)
+    train_test_lambda = lambda: process_train_test_split(source_df, X_train_unique, X_test_unique, label, train_size, test_size, strategy, stats=stats, differentiate_confusion_matrix_over=differentiate_confusion_matrix_over)
     # create list of lambdas for each fold
     # Cross validation: https://vitalflux.com/k-fold-cross-validation-python-example/
     strtfdKFold = StratifiedKFold(n_splits=num_folds)
