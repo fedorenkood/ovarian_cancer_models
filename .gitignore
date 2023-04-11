@@ -5,6 +5,7 @@ __pycache__/
 *$py.class
 *.csv
 *.png
+.idea/*
 
 # C extensions
 *.so
