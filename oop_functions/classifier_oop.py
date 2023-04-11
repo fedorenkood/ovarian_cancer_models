@@ -99,20 +99,20 @@ class ClassifierDataUtil:
         y_test = self.test_df[self.label]
         print(f'Distribution of positive labels based on duplicate plco_id: {np.sum(y_test)/(np.sum(y_train) + np.sum(y_test))}')
 
-    def split_xy(self, df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    def split_xy(self, df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.Series]:
         y = df[self.label]
         X = df.drop([self.label], axis=1)
         return X, y
     
-    def get_train_data(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    def get_train_data(self) -> Tuple[pd.DataFrame, pd.Series]:
         df = remove_featues_startswith(self.train_df, self.cols_to_remove, [self.label], show_removed=False)
         return self.split_xy(df)
     
-    def get_test_data(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    def get_test_data(self) -> Tuple[pd.DataFrame, pd.Series]:
         df = remove_featues_startswith(self.test_df, self.cols_to_remove, [self.label], show_removed=False)
         return self.split_xy(df)
     
-    def get_filtered_test_data(self) -> Tuple[pd.DataFrame, pd.DataFrame, Tuple[str, List[int]]]:
+    def get_filtered_test_data(self) -> Tuple[pd.DataFrame, pd.Series, Tuple[str, List[int]]]:
         differentiated_test_sets = []
         filtered_on = list(itertools.chain.from_iterable([zip([key]*len(vals), vals) for key, vals in self.filtered_tests.items()]))
         for col, values in filtered_on:
