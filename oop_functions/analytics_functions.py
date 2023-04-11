@@ -27,6 +27,9 @@ def performance_analysis(y_pred, y_prob, y_test, show_graph=True):
     report = pd.DataFrame(classification_report(y_test, y_pred, output_dict=True)).transpose().iloc[0:2 ,:]
     auc = roc_auc_score(y_test, y_prob)
     accuracy = accuracy_score(y_test, y_pred)
+    fpr, tpr, thresholds = roc_curve(y_test, y_pred)
+    optimal_idx = np.argmax(tpr - fpr)
+    threshold = thresholds[optimal_idx]
     if show_graph:
         print(report)
         print(f'ROC AUC score: {auc}')

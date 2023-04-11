@@ -141,12 +141,8 @@ class AnalyticsUtil:
         # TODO: load trained classifier from file
         pass
 
-    def check_if_data_util_initialized(self) -> None:
-        if self.data_util.train_df is None or self.data_util.test_df is None:
-            raise Exception("Data Util was not initialized")
-
     def fit(self) -> AnalyticsUtil:
-        self.check_if_data_util_initialized()
+        self.data_util.check_if_data_util_initialized()
 
         X_train, y_train = self.data_util.get_train_data()
         self.classifier.fit(X_train, y_train)

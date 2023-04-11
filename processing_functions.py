@@ -197,6 +197,7 @@ def process_and_impute_for_label_kfold(source_df, label, strategy, n_max_per_cla
     # remove features starting with cancer so that we could drop labels that are nan (e.g. people get cancer later on)
     source_df = remove_featues_startswith(source_df, ['cancer_'], [label], show_removed=False)
     source_df = source_df[source_df[label].notnull()]
+    print(len(source_df))
     
     # One person should not appear in train and test data since there are duplicates of a person
     # we splits of data on person id and then oversample from that sample 

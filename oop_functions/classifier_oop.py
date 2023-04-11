@@ -79,6 +79,18 @@ class ClassifierDataUtil:
             filtered_tests=self.filtered_tests,
             debug=self.debug
         )
+    
+    def load_train_test_df(self, filename: str) -> ClassifierDataUtil:
+        # TODO: be able to load and store the imputed data to be able to run experiments faster
+        pass
+    
+    def store_train_test_df(self, filename: str) -> ClassifierDataUtil:
+        # TODO: be able to load and store the imputed data to be able to run experiments faster
+        pass
+    
+    def check_if_data_util_initialized(self) -> None:
+        if self.train_df is None or self.test_df is None:
+            raise Exception("Data Util was not initialized")
 
     def get_record_from_train_index(self, index: int) -> str:
         return self.train_df.loc[index, :]
@@ -93,8 +105,7 @@ class ClassifierDataUtil:
         return self.get_record_from_test_index(index)[self.id_col]
 
     def get_stats(self) -> None:
-        if not self.train_df or not self.test_df:
-            return
+        self.check_if_data_util_initialized()
         y_train = self.train_df[self.label]
         y_test = self.test_df[self.label]
         print(f'Distribution of positive labels based on duplicate plco_id: {np.sum(y_test)/(np.sum(y_train) + np.sum(y_test))}')
