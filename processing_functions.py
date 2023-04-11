@@ -368,6 +368,19 @@ def resample_max(df, label, n_max_per_class, is_test=False, replace=True):
 
     return df_sampled
 
+def resample_class(df, label, label_val, n_max_per_class, is_test=False, replace=True):
+
+    df_majority = df[df[label] == label_val]
+    df_minority = df[df[label] != label_val]
+
+    # downsample df_majority class
+    df_majority = resample(df_majority, 
+                                    replace=False,     # sample with replacement
+                                    n_samples=n_max_per_class,    # to match majority class
+                                    # random_state=44
+                                    ) 
+    return pd.concat([df_majority, df_minority])
+
 class LabeledImmpute:
     def __init__(self) -> None:
         self.mean = None

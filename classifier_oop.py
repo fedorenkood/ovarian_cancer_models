@@ -1,3 +1,4 @@
+from __future__ import annotations
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -15,8 +16,7 @@ from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.metrics import (ConfusionMatrixDisplay, PrecisionRecallDisplay,
                              accuracy_score,
                              auc, average_precision_score, classification_report,
-                             confusion_matrix, f1_score, plot_precision_recall_curve,
-                             plot_roc_curve, precision_recall_curve, precision_score,
+                             confusion_matrix, f1_score, precision_recall_curve, precision_score,
                              recall_score, roc_auc_score, roc_curve)
 from sklearn.model_selection import GridSearchCV, StratifiedKFold, cross_val_score, train_test_split
 from sklearn.neighbors import KNeighborsClassifier
@@ -329,38 +329,6 @@ def df_filter_val_distribution_on_cancer(source_df, make_unique_over_cols, name,
     df_filter_val_distribution(df, 'cancer', make_unique_over_cols, name, hist=hist, cutoff_percentage=cutoff_percentage)
 
 
-class LabeledImmpute:
-    def __init__(self) -> None:
-        self.mean = None
-        self.median = None
-
-    def fit(self, df, label_col):
-        self.mean = df.groupby([label_col], as_index=False).mean()
-        self.median = df.groupby([label_col], as_index=False).median()
-
-    def transform_base(self, df, label_col, values_df):
-        df_list = []
-        for label in df[label_col].unique():
-            values_dict = values_df[values_df[label_col] == label].to_dict('records')[0]
-            filtered_df = df[df[label_col] == label]
-            filtered_df = filtered_df.fillna(values_dict)
-            df_list.append(filtered_df)
-
-        return pd.concat(df_list, axis=0)
-
-    def transform_median(self, df, label_col):
-        return self.transform_base(df, label_col, self.median)
-
-    def transform_mean(self, df, label_col):
-        return self.transform_base(df, label_col, self.mean)
-    
-    def transform(self, df, label_col, strategy):
-        if strategy == 'mean':
-            return self.transform_mean(df, label_col)
-        return self.transform_median(df, label_col)
-
-
-
 def convert_numeric_to_float16(df):
     numeric_cols = select_numeric_columns(df)
     df[numeric_cols] = df[numeric_cols].astype(np.float16)
@@ -416,7 +384,33 @@ def merge_data_over_years(person_df, screen_df, abnorm_df, screen_join='left', a
     df_final.loc[condition, 'was_screened'] = 1
     return df_final
 
-def resample_class(df, label, label_val, n_max_per_class, is_test=False, replace=True):
+def resample_max(df: pd.DataFrame, label: str, n_max_per_class, is_test=False, replace=True) -> pd.DataFrame:
+
+    df_majority = df[df[label] ==0]
+    df_minority = df[df[label] ==1]
+
+    # downsample df_majority class
+    df_majority_downsampled = resample(df_majority, 
+                                    replace=False,     # sample with replacement
+                                    n_samples=n_max_per_class,    # to match majority class
+                                    # random_state=44
+                                    ) 
+
+    df_minority_upsampled = df_minority
+    if not is_test:
+        # Upsample minority class
+        df_minority_upsampled = resample(df_minority, 
+                                        replace=replace,     # sample with replacement
+                                        n_samples=n_max_per_class,    # to match majority class
+                                        # random_state=44
+                                        ) 
+
+    # Combine majority class with upsampled minority class
+    df_sampled = pd.concat([df_majority_downsampled, df_minority_upsampled])
+
+    return df_sampled
+
+def resample_class(df: pd.DataFrame, label: str, label_val: object, n_max_per_class: int) -> pd.DataFrame:
     df_majority = df[df[label] == label_val]
     df_minority = df[df[label] != label_val]
 
@@ -433,36 +427,6 @@ class ImputerUtil:
         self.impute_const_dict = impute_const_dict
         self.impute_mean_cols = impute_mean_cols
         self.impute_median_cols = impute_median_cols
-        # TODO: this should be injected
-        if self.impute_const_dict == None:
-            self.impute_const_dict = {
-            'numcyst': 0,
-            'ovcyst_morph': 0,
-            'ovcyst_outline': 0,
-            'ovcyst_solid': 0,
-            'ovcyst_sum': 0,
-            'ovcyst_vol': 0,
-            'numcyst': 0,
-            'tvu_result': 1,
-            'numcystl': 0,
-            'numcystr': 0,
-            'ovcyst_diaml': 0,
-            'ovcyst_diamr': 0,
-            'ovcyst_morphl': 0,
-            'ovcyst_morphr': 0,
-            'ovcyst_outlinel': 0,
-            'ovcyst_outliner': 0,
-            'ovcyst_solidl': 0,
-            'ovcyst_solidr': 0,
-            'ovcyst_suml': 0,
-            'ovcyst_sumr': 0,
-            'ovcyst_voll': 0,
-            'ovcyst_volr': 0,
-            'visboth': 0,
-            'viseith': 0,
-            'visl': 0,
-            'visr': 0
-        }
         
     def impute_data_const(self, train: pd.DataFrame, test: pd.DataFrame):
         const_val_cols = list(self.impute_const_dict.keys())
@@ -481,10 +445,11 @@ class ImputerUtil:
         return train, test
     
     def impute_general(self, train: pd.DataFrame, test: pd.DataFrame, cols: List[str], strategy: str):
-        mean_imputer = SimpleImputer(missing_values=np.nan, strategy=strategy)
-        mean_imputer.fit(train[cols])
-        train[cols] = mean_imputer.transform(train[cols])
-        test[cols] = mean_imputer.transform(test[cols])
+        if len(cols) > 0:
+            imputer = SimpleImputer(missing_values=np.nan, strategy=strategy)
+            imputer.fit(train[cols])
+            train[cols] = imputer.transform(train[cols])
+            test[cols] = imputer.transform(test[cols])
         return train, test
 
     def impute_data_mean(self, train: pd.DataFrame, test: pd.DataFrame):
@@ -494,24 +459,18 @@ class ImputerUtil:
         return self.impute_general(train, test, self.impute_median_cols, 'median')
     
     def impute_data(self, train: pd.DataFrame, test: pd.DataFrame):
-        # TODO: remove columns from here
-        columns = train.columns
-        # TODO: keep in mind that it should stay float16 and not float64
+        # keep in mind that it should stay float16 and not float64 use convert_numeric_to_float16(df)
         train, test = self.impute_data_const(train, test)
         train, test = self.impute_data_mean(train, test)
         train, test = self.impute_data_median(train, test)
-        return pd.DataFrame(train, columns=columns), pd.DataFrame(test, columns=columns)
-
+        return convert_numeric_to_float16(train), convert_numeric_to_float16(test)
 
 class ClassifierDataUtil:
-    def __init__(self, source_df: pd.DataFrame, train_ids: pd.Series, test_ids: pd.Series, label: str, imputer: ImputerUtil, train_size: int = 10000, filtered_tests: dict = {}, debug: bool = False) -> None:
-        self.source_df = source_df
-        self.train_ids = train_ids
-        self.test_ids = test_ids
+    def __init__(self, label: str, imputer: ImputerUtil, id_col: str = 'plco_id', train_size: int = 10000, filtered_tests: dict = {}, debug: bool = False) -> None:
         # Train and test dfs contain split and imputed data, but still contain columns that have to be removed for training
         self.train_df = None
         self.test_df = None
-        self.id_col = 'plco_id'
+        self.id_col = id_col
         self.label = label
         self.imputer = imputer
         self.debug = debug
@@ -520,9 +479,27 @@ class ClassifierDataUtil:
         self.cols_to_remove = ['ovar_', 'cancer_', self.id_col, *self.stratify_tests_over_cols]
         self.train_size = train_size
 
-    def get_id_from_index(self):
-        # TODO: finish this one for diagnostics
-        pass 
+    def copy(self) -> ClassifierDataUtil:
+        return ClassifierDataUtil(
+            label=self.label,
+            imputer=self.imputer,
+            id_col=self.id_col,
+            train_size=self.train_size,
+            filtered_tests=self.filtered_tests,
+            debug=self.debug
+        )
+
+    def get_record_from_train_index(self, index: int) -> str:
+        return self.train_df.loc[index, :]
+
+    def get_record_from_test_index(self, index: int) -> str:
+        return self.test_df.loc[index, :]
+
+    def get_id_from_train_index(self, index: int) -> str:
+        return self.get_record_from_train_index(index)[self.id_col]
+
+    def get_id_from_test_index(self, index: int) -> str:
+        return self.get_record_from_test_index(index)[self.id_col]
 
     def get_stats(self) -> None:
         if not self.train_df or not self.test_df:
@@ -531,7 +508,7 @@ class ClassifierDataUtil:
         y_test = self.test_df[self.label]
         print(f'Distribution of positive labels based on duplicate plco_id: {np.sum(y_test)/(np.sum(y_train) + np.sum(y_test))}')
 
-    def split_xy(self, df) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    def split_xy(self, df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
         y = df[self.label]
         X = df.drop([self.label], axis=1)
         return X, y
@@ -554,61 +531,39 @@ class ClassifierDataUtil:
             differentiated_test_sets.append((X_test_filtered, y_test_filtered, (col, values)))
         return differentiated_test_sets
 
-    def process_train_test_split(self):
-        train = self.source_df[self.source_df[self.id_col].isin(self.train_ids)]
-        test = self.source_df[self.source_df[self.id_col].isin(self.test_ids)]
+    def process_train_test_split(self, source_df: pd.DataFrame, train_ids: pd.Series, test_ids: pd.Series) -> ClassifierDataUtil:
+        train = source_df[source_df[self.id_col].isin(train_ids)]
+        test = source_df[source_df[self.id_col].isin(test_ids)]
 
         # Perform imputation before oversampling
         train, test = self.imputer.impute_data(train, test)
 
         # Perform oversamping and reshuffle
-        train = resample_class(train, self.label, self.train_size, replace=True).sample(frac = 1)
-        self.train_df = train.reset_index()
-        self.test_df = test.reset_index()
-
+        train = resample_max(train, self.label, self.train_size).sample(frac = 1)
+        # TODO: if memory becomes tight, only store index to id tuples
+        self.train_df, self.test_df = train, test
         return self
 
 
 class TrainTestSplitUtil:
-    def __init__(self, source_df: pd.DataFrame, label: str, debug: bool = False) -> None:
+    def __init__(self, source_df: pd.DataFrame, data_util: ClassifierDataUtil, debug: bool = False) -> None:
         self.source_df = source_df
-        self.id_col = 'plco_id'
-        self.label = label
+        self.data_util = data_util
         self.debug = debug
 
-    def split_kfold(self, strategy, n_max_per_class=10000, num_folds=10, differentiate_confusion_matrix_over=None):
-        train_size = int(n_max_per_class * 0.8)
-        test_size  = int(n_max_per_class * 0.2)
-        train_fold_size  = int((num_folds-1) * train_size / num_folds)
-        test_fold_size  = int(train_size / num_folds)
-
-        # remove features starting with cancer so that we could drop labels that are nan (e.g. people get cancer later on)
-        # TODO: this should happen before df is passed here
-        source_df = remove_featues_startswith(source_df, ['cancer_'], [self.label], show_removed=False)
-        source_df = source_df[source_df[self.label].notnull()]
-        
+    def split_kfold(self, num_folds: int = 10):        
         # One person should not appear in train and test data since there are duplicates of a person
         # we splits of data on person id and then oversample from that sample 
         # this line of code determines whether the model is leaking info or not
-        unique_id_df = source_df[['plco_id', self.label]].drop_duplicates(subset='plco_id')
-        X_train_unique, X_test_unique, y_train, y_test = train_test_split(unique_id_df, unique_id_df[self.label], test_size = 0.2)
+        unique_id_df = self.source_df[['plco_id', self.data_util.label]].drop_duplicates(subset='plco_id')
 
-        # Printing stats
-        # print_records_vs_unique(X_train_unique, 'plco_id', f'Train set', print_vals=True)
-        # print_records_vs_unique(X_test_unique, 'plco_id', f'Test set', print_vals=True)
-        print(f'Distribution of labels based on unique plco_id: {np.sum(y_test)/(np.sum(y_train) + np.sum(y_test))}')
-        
-        train_test_lambda = lambda: self.process_train_test_split(source_df, X_train_unique, X_test_unique, self.label, train_size, test_size, strategy, differentiate_confusion_matrix_over=differentiate_confusion_matrix_over)
         # create list of lambdas for each fold
-        # Cross validation: https://vitalflux.com/k-fold-cross-validation-python-example/
         strtfdKFold = StratifiedKFold(n_splits=num_folds)
-        kfold = strtfdKFold.split(unique_id_df, unique_id_df[self.label])
+        kfold = strtfdKFold.split(unique_id_df, unique_id_df[self.data_util.label])
         k_fold_lambdas = []
         for k, (train, test) in enumerate(kfold):
             train = unique_id_df.iloc[train, :]
             test = unique_id_df.iloc[test, :]
-            # print_records_vs_unique(train, 'plco_id', f'Train cv fold {k}', print_vals=True)
-            # print_records_vs_unique(test, 'plco_id', f'Test cv fold {k}', print_vals=True)
-            k_fold_lambdas.append(lambda: self.process_train_test_split(source_df, train, test, self.label, train_fold_size, test_fold_size, strategy, stats=False))
+            k_fold_lambdas.append(lambda: self.data_util.copy().process_train_test_split(self.source_df, train[self.data_util.id_col], test[self.data_util.id_col]))
 
-        return train_test_lambda, k_fold_lambdas
+        return k_fold_lambdas
