@@ -17,55 +17,47 @@ from .merge_dataset_functions import merge_df_into_features
 from .util_functions import remove_featues_startswith
 
 
-def get_roc_threshold_point(y_test, y_prob) -> Tuple[float, float, float]:
+def get_roc_threshold_point(fpr: np.array, tpr: np.array, thresholds: np.array) -> Tuple[float, float, float]:
     # https://stackoverflow.com/questions/28719067/roc-curve-and-cut-off-point-python
-    fpr, tpr, thresholds = roc_curve(y_test, y_prob)
     optimal_idx = np.argmax(tpr - fpr)
     optimal_threshold = thresholds[optimal_idx]
     return float(optimal_threshold), fpr[optimal_idx], tpr[optimal_idx]
 
 
+# TODO: finigh typing this one
 class VisualizationUtil:
-    def __init__(self, y_test: np.array, y_pred: np.array, y_prob: np.array, cm: pd.DataFrame) -> None:
-        self.y_test = y_test
-        self.y_pred = y_pred
-        self.y_prob = y_prob
-        # Confution matrix
-        self.cm = cm
-        # TODO: add confidence intervals
+    def __init__(self) -> None:
+        pass
 
-    def display_confusion_matrix(self, ax) -> VisualizationUtil:
-        sns.heatmap(self.cm, annot = True, fmt = 'd', cbar = False, ax=ax)
+    def display_confusion_matrix(self, ax: plt.axis, cm: pd.DataFrame) -> VisualizationUtil:
+        sns.heatmap(cm, annot = True, fmt = 'd', cbar = False, ax=ax)
         ax.set_title('Confusion Matrix')
         return self
 
-    def display_auc(self, ax) -> VisualizationUtil:
-        fpr, tpr, thresholds = roc_curve(self.y_test, self.y_prob)
-        optimal_threshold, fpr_optimal, tpr_optimal = get_roc_threshold_point(self.y_test, self.y_prob)
+    def display_roc_graph(self, ax: plt.axis, fpr: np.array, tpr: np.array, thresholds: np.array, tpr_std: np.array = None) -> VisualizationUtil:
         roc_auc = auc(fpr, tpr)
         ax.plot(fpr,tpr, color = '#b50000', label = 'AUC = %0.3f' % roc_auc)
         ax.plot([0, 1], [0, 1], linestyle = '-.', color = 'gray')
-        ax.plot(fpr_optimal, tpr_optimal,'ro', label=f'Optimal threshold: {round(optimal_threshold, 2)}')
+        if tpr_std is not None:
+            tpr_upper    = np.clip(tpr+tpr_std, 0, 1)
+            tpr_lower    = np.clip(tpr-tpr_std, 0, 1)
+            ax.fill_between(fpr, tpr_lower, tpr_upper, color='b', alpha=.1, label='Confidence Interval')
         ax.set_ylabel('TP Rate')
         ax.set_xlabel('FP Rate')
         ax.set_title('ROC AUC Curve')
         ax.legend()
         return self
 
-    def display_precision_recall(self, ax) -> VisualizationUtil:
-        precision, recall, _ = precision_recall_curve(self.y_test, self.y_prob)
+    def display_roc_threshold(self, ax: plt.axis, fpr: np.array, tpr: np.array, thresholds: np.array, tpr_std: np.array = None) -> VisualizationUtil:
+        optimal_threshold, fpr_optimal, tpr_optimal = get_roc_threshold_point(fpr, tpr, thresholds)
+        ax.plot(fpr_optimal, tpr_optimal,'ro', label=f'Optimal threshold: {round(optimal_threshold, 2)}')
+        ax.legend()
+        return self
+
+    def display_precision_recall(self, ax: plt.axis, precision: np.array, recall: np.array, thresholds: np.array) -> VisualizationUtil:
         disp = PrecisionRecallDisplay(precision=precision, recall=recall)
         disp.plot(ax=ax)
         ax.set_title('Precision-Recall Curve')
-        return self
-    
-    def display_graph(self) -> VisualizationUtil:
-        f, ax = plt.subplots(1, 3, figsize=(16, 5))
-        plt.yticks(rotation = 0)
-        self.display_confusion_matrix(ax[0])
-        self.display_auc(ax[-2])
-        self.display_precision_recall(ax[-1])
-        plt.show()
         return self
     
 class GenerateReportUtil:
@@ -80,7 +72,8 @@ class GenerateReportUtil:
         self.generate_report()
     
     def get_roc_threshold(self) -> float:
-        optimal_threshold, _, _ = get_roc_threshold_point(self.y_test, self.y_prob)
+        fpr, tpr, thresholds = roc_curve(self.y_test, self.y_prob)
+        optimal_threshold, _, _ = get_roc_threshold_point(fpr, tpr, thresholds)
         return optimal_threshold
 
     def apply_default_pred(self) -> GenerateReportUtil:
@@ -121,14 +114,51 @@ class GenerateReportUtil:
         print(f'Accuracy Score: {self.accuracy}')
         return self
     
-    def get_confusion_matrix(self):
+    def get_confusion_matrix(self) -> pd.DataFrame:
         return pd.DataFrame(confusion_matrix(self.y_test, self.y_pred_threshold), columns=['Predicted Healthy', 'Predicted Cancer'], index=['Healthy', 'Cancer'])
     
+    def get_roc_results(self) -> Tuple[np.array, np.array, np.array]:
+        fpr, tpr, thresholds = roc_curve(self.y_test, self.y_prob)
+        return fpr, tpr, thresholds
+    
+    def get_roc_results_interp(self) -> Tuple[np.array, np.array, np.array]:
+        fpr, tpr, thresholds = roc_curve(self.y_test, self.y_prob)
+        fpr_mean    = np.linspace(0, 1, 100)
+        interp_tpr    = np.interp(fpr_mean, fpr, tpr)
+        interp_tpr[0] = 0.0
+        # TODO: not sure if interpolated thresholds are even correct
+        interp_thresholds = np.interp(fpr_mean, fpr, thresholds)
+        interp_thresholds[0] = 0.0
+        return fpr_mean, interp_tpr, interp_thresholds
+    
+    def get_precison_recall_results(self) -> Tuple[np.array, np.array, np.array]:
+        precision, recall, thresholds = precision_recall_curve(self.y_test, self.y_prob)
+        return precision, recall, thresholds
+    
     def get_visualization_util(self) -> VisualizationUtil:
-        return VisualizationUtil(self.y_test, self.y_pred_threshold, self.y_prob, self.get_confusion_matrix())
+        return VisualizationUtil()
+    
+    def display_graph_interp(self) -> VisualizationUtil:
+        f, ax = plt.subplots(1, 3, figsize=(16, 5))
+        plt.yticks(rotation = 0)
+        visualization_util = self.get_visualization_util()
+        visualization_util.display_confusion_matrix(ax[0], self.get_confusion_matrix())
+        visualization_util.display_roc_graph(ax[-2], *self.get_roc_results_interp())
+        visualization_util.display_roc_threshold(ax[-2], *self.get_roc_results_interp())
+        visualization_util.display_precision_recall(ax[-1], *self.get_precison_recall_results())
+        plt.show()
+        return visualization_util
     
     def display_graph(self) -> VisualizationUtil:
-        return self.get_visualization_util().display_graph()
+        f, ax = plt.subplots(1, 3, figsize=(16, 5))
+        plt.yticks(rotation = 0)
+        visualization_util = self.get_visualization_util()
+        visualization_util.display_confusion_matrix(ax[0], self.get_confusion_matrix())
+        visualization_util.display_roc_graph(ax[-2], *self.get_roc_results())
+        visualization_util.display_roc_threshold(ax[-2], *self.get_roc_results())
+        visualization_util.display_precision_recall(ax[-1], *self.get_precison_recall_results())
+        plt.show()
+        return visualization_util
 
 
 class AnalyticsUtil:
