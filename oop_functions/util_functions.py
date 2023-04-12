@@ -1,9 +1,17 @@
 from itertools import product
+from typing import Tuple
 
 import numpy as np
 import pandas as pd
 from sklearn.utils import resample
 from tabulate import tabulate
+
+
+def get_roc_threshold_point(fpr: np.array, tpr: np.array, thresholds: np.array) -> Tuple[float, float, float]:
+    # https://stackoverflow.com/questions/28719067/roc-curve-and-cut-off-point-python
+    optimal_idx = np.argmax(tpr - fpr)
+    optimal_threshold = thresholds[optimal_idx]
+    return float(optimal_threshold), fpr[optimal_idx], tpr[optimal_idx]
 
 
 def summarize_features(df):

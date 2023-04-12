@@ -1,60 +1,14 @@
 from __future__ import annotations
 
-import itertools
-from typing import List, Dict, Tuple, Callable
+from typing import List, Tuple, Callable
 
 import numpy as np
 import pandas as pd
-from sklearn.impute import SimpleImputer
 from sklearn.model_selection import StratifiedKFold
 
-from .util_functions import remove_featues_startswith, convert_numeric_to_float16, resample_max, select_numeric_columns
+from .imputer_util import ImputerUtil
+from .util_functions import remove_featues_startswith, resample_max
 
-px_template = "simple_white"
-
-
-class ImputerUtil:
-    def __init__(self, impute_const_dict: Dict[str, float], impute_mean_cols: List[str] = [], impute_median_cols: List[str] = []) -> None:
-        self.impute_const_dict = impute_const_dict
-        self.impute_mean_cols = impute_mean_cols
-        self.impute_median_cols = impute_median_cols
-        
-    def impute_data_const(self, train: pd.DataFrame, test: pd.DataFrame):
-        const_val_cols = list(self.impute_const_dict.keys())
-        # TODO: do I need this?
-        # Only fill with const people who were screened
-        # print(X_train[list(fill_const.keys())].describe().T)
-        # X_train.loc[X_train['was_screened'] == 1] = X_train.loc[X_train['was_screened'] == 1].fillna(fill_const)
-        # X_test.loc[X_test['was_screened'] == 1] = X_test.loc[X_test['was_screened'] == 1].fillna(fill_const)
-        train = train.fillna(self.impute_const_dict)
-        test = test.fillna(self.impute_const_dict)
-        try: 
-            train[const_val_cols] = train[const_val_cols].astype(np.int16)
-            test[const_val_cols]  = test[const_val_cols].astype(np.int16)
-        except:
-            pass
-        return train, test
-    
-    def impute_general(self, train: pd.DataFrame, test: pd.DataFrame, cols: List[str], strategy: str):
-        if len(cols) > 0:
-            imputer = SimpleImputer(missing_values=np.nan, strategy=strategy)
-            imputer.fit(train[cols])
-            train[cols] = imputer.transform(train[cols])
-            test[cols] = imputer.transform(test[cols])
-        return train, test
-
-    def impute_data_mean(self, train: pd.DataFrame, test: pd.DataFrame):
-        return self.impute_general(train, test, self.impute_mean_cols, 'mean')
-
-    def impute_data_median(self, train: pd.DataFrame, test: pd.DataFrame):
-        return self.impute_general(train, test, self.impute_median_cols, 'median')
-    
-    def impute_data(self, train: pd.DataFrame, test: pd.DataFrame):
-        # keep in mind that it should stay float16 and not float64 use convert_numeric_to_float16(df)
-        train, test = self.impute_data_const(train, test)
-        train, test = self.impute_data_mean(train, test)
-        train, test = self.impute_data_median(train, test)
-        return convert_numeric_to_float16(train), convert_numeric_to_float16(test)
 
 class ClassifierDataUtil:
     def __init__(self, label: str, imputer: ImputerUtil, id_col: str = 'plco_id', train_size: int = 10000, stratify_tests_over_cols: list = [], debug: bool = False) -> None:
@@ -167,75 +121,3 @@ class TrainTestSplitUtil:
             k_fold_lambdas.append(lambda: self.data_util.copy().process_train_test_split(self.source_df, train[self.data_util.id_col], test[self.data_util.id_col]))
 
         return k_fold_lambdas
-
-
-class ExperimentDataHelper:
-    def __init__(self, source_df: pd.DataFrame, label: str, other_lebels: List[str], imputer_util: ImputerUtil = None, data_util: ClassifierDataUtil = None, train_test_split_util: TrainTestSplitUtil = None) -> None:
-        self.source_df = source_df
-        self.label = label
-        self.other_lebels = other_lebels
-        self.imputer_util = imputer_util
-        self.data_util = data_util
-        self.train_test_split_util = train_test_split_util
-        self._process_source()
-
-        if not imputer_util:
-            self._init_imputer() 
-        if not data_util:
-            self._init_data_util()
-        if not train_test_split_util:
-            self._init_train_test_split_util()
-
-    def _process_source(self) -> None:
-        self.source_df = remove_featues_startswith(self.source_df, self.other_lebels, [self.label], show_removed=False).drop_duplicates()
-        self.source_df = self.source_df[self.source_df[self.label].notnull()]
-
-    def _init_imputer(self) -> None:
-        pass
-
-    def _init_data_util(self) -> None:
-        self.data_util = ClassifierDataUtil(self.label, self.imputer_util)
-
-    def _init_train_test_split_util(self) -> None:
-        self.train_test_split_util = TrainTestSplitUtil(self.source_df, self.data_util, False)
-        
-
-class ExperimentDataHelper1(ExperimentDataHelper):
-    def _init_imputer(self) -> None:
-        impute_const_dict = {
-            'numcyst': 0,
-            'ovcyst_morph': 0,
-            'ovcyst_outline': 0,
-            'ovcyst_solid': 0,
-            'ovcyst_sum': 0,
-            'ovcyst_vol': 0,
-            'numcyst': 0,
-            'tvu_result': 1,
-            'numcystl': 0,
-            'numcystr': 0,
-            'ovcyst_diaml': 0,
-            'ovcyst_diamr': 0,
-            'ovcyst_morphl': 0,
-            'ovcyst_morphr': 0,
-            'ovcyst_outlinel': 0,
-            'ovcyst_outliner': 0,
-            'ovcyst_solidl': 0,
-            'ovcyst_solidr': 0,
-            'ovcyst_suml': 0,
-            'ovcyst_sumr': 0,
-            'ovcyst_voll': 0,
-            'ovcyst_volr': 0,
-            'visboth': 0,
-            'viseith': 0,
-            'visl': 0,
-            'visr': 0
-        }
-        numeric_columns = select_numeric_columns(self.source_df)
-        numeric_columns = list(set(numeric_columns) - set(impute_const_dict.keys()))
-        self.imputer_util = ImputerUtil(impute_const_dict, impute_mean_cols=numeric_columns, impute_median_cols=[])
-
-    def _process_source(self) -> None:
-        super(ExperimentDataHelper1, self)._process_source()
-        # drop non-cancer records without screen records
-        condition = (self.source_df['was_screened'] == 1) | (self.source_df['ovar_cancer'] == 1)
-        self.source_df = self.source_df[condition]
