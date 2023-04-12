@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import itertools
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Callable
 
 import numpy as np
 import pandas as pd
@@ -57,7 +57,7 @@ class ImputerUtil:
         return convert_numeric_to_float16(train), convert_numeric_to_float16(test)
 
 class ClassifierDataUtil:
-    def __init__(self, label: str, imputer: ImputerUtil, id_col: str = 'plco_id', train_size: int = 10000, filtered_tests: dict = {}, debug: bool = False) -> None:
+    def __init__(self, label: str, imputer: ImputerUtil, id_col: str = 'plco_id', train_size: int = 10000, stratify_tests_over_cols: list = [], debug: bool = False) -> None:
         # Train and test dfs contain split and imputed data, but still contain columns that have to be removed for training
         self.train_df = None
         self.test_df = None
@@ -65,9 +65,8 @@ class ClassifierDataUtil:
         self.label = label
         self.imputer = imputer
         self.debug = debug
-        self.filtered_tests = filtered_tests
-        self.stratify_tests_over_cols = list(self.filtered_tests.values())
-        self.cols_to_remove = ['ovar_', 'cancer_', self.id_col, *self.stratify_tests_over_cols]
+        self.stratify_tests_over_cols = stratify_tests_over_cols
+        self.cols_to_remove = ['ovar_', 'cancer_', self.id_col, *stratify_tests_over_cols]
         self.train_size = train_size
 
     def copy(self) -> ClassifierDataUtil:
@@ -76,7 +75,7 @@ class ClassifierDataUtil:
             imputer=self.imputer,
             id_col=self.id_col,
             train_size=self.train_size,
-            filtered_tests=self.filtered_tests,
+            stratify_tests_over_cols=self.stratify_tests_over_cols,
             debug=self.debug
         )
     
@@ -126,15 +125,11 @@ class ClassifierDataUtil:
         X, y = self.split_xy(pd.DataFrame([], columns=self.test_df.columns))
         return list(X.columns)
     
-    def get_filtered_test_data(self) -> Tuple[pd.DataFrame, pd.Series, Tuple[str, List[int]]]:
-        differentiated_test_sets = []
-        filtered_on = list(itertools.chain.from_iterable([zip([key]*len(vals), vals) for key, vals in self.filtered_tests.items()]))
-        for col, values in filtered_on:
-            filtered_test = self.test_df[self.test_df[col].isin(values)]
-            filtered_test = remove_featues_startswith(filtered_test, self.cols_to_remove, [self.label], show_removed=False)
-            X_test_filtered, y_test_filtered = self.split_xy(filtered_test, self.label)
-            differentiated_test_sets.append((X_test_filtered, y_test_filtered, (col, values)))
-        return differentiated_test_sets
+    def get_filtered_test_data(self, filter: Callable[[pd.DataFrame], pd.DataFrame]) -> Tuple[pd.DataFrame, pd.Series]:
+        filtered_test = filter(self.test_df)
+        filtered_test = remove_featues_startswith(filtered_test, self.cols_to_remove, [self.label], show_removed=False)
+        X_test_filtered, y_test_filtered = self.split_xy(filtered_test, self.label)
+        return X_test_filtered, y_test_filtered
 
     def process_train_test_split(self, source_df: pd.DataFrame, train_ids: pd.Series, test_ids: pd.Series) -> ClassifierDataUtil:
         train = source_df[source_df[self.id_col].isin(train_ids)]

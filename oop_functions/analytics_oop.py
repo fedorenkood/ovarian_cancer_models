@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Tuple
+from typing import Tuple, Callable
 
 import numpy as np
 import pandas as pd
@@ -165,9 +165,10 @@ class AnalyticsUtil:
         y_pred, y_prob = self.get_predictions() 
         return GenerateReportUtil(y_test, y_pred, y_prob)
     
-    def get_report_generation_util_filtered(self) -> GenerateReportUtil:
-        # TODO: finish this one
-        pass
+    def get_report_generation_util_filtered(self, filter: Callable[[pd.DataFrame], pd.DataFrame]) -> GenerateReportUtil:
+        X_test, y_test = self.data_util.get_filtered_test_data(filter)
+        y_pred, y_prob = self.get_predictions_general(X_test) 
+        return GenerateReportUtil(y_test, y_pred, y_prob)
 
     def plot_save_tree(self, plot_tree=False, filepath=None) -> AnalyticsUtil:
         return self
@@ -189,6 +190,7 @@ class TreeAnalyticsUtil(AnalyticsUtil):
         feature_importances = feature_importances[['column_name', 'importance']]
         # TODO: boundary and confusion matrix
         tree_depth = self.get_max_depth()
+        # TODO: results for filtered tests?
         report_util = self.get_report_generation_util()
         top_feature_stats = {
             'top_feature': feature_importances.iloc[0]['column_name'],
