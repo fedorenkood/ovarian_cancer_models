@@ -111,17 +111,20 @@ class ClassifierDataUtil:
         print(f'Distribution of positive labels based on duplicate plco_id: {np.sum(y_test)/(np.sum(y_train) + np.sum(y_test))}')
 
     def split_xy(self, df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.Series]:
+        df = remove_featues_startswith(df, self.cols_to_remove, [self.label], show_removed=False)
         y = df[self.label]
         X = df.drop([self.label], axis=1)
         return X, y
     
     def get_train_data(self) -> Tuple[pd.DataFrame, pd.Series]:
-        df = remove_featues_startswith(self.train_df, self.cols_to_remove, [self.label], show_removed=False)
-        return self.split_xy(df)
+        return self.split_xy(self.train_df)
     
     def get_test_data(self) -> Tuple[pd.DataFrame, pd.Series]:
-        df = remove_featues_startswith(self.test_df, self.cols_to_remove, [self.label], show_removed=False)
-        return self.split_xy(df)
+        return self.split_xy(self.test_df)
+    
+    def get_feature_names(self) -> List[str]:
+        X, y = self.split_xy(pd.DataFrame([], columns=self.test_df.columns))
+        return list(X.columns)
     
     def get_filtered_test_data(self) -> Tuple[pd.DataFrame, pd.Series, Tuple[str, List[int]]]:
         differentiated_test_sets = []
@@ -235,3 +238,9 @@ class ExperimentDataHelper1(ExperimentDataHelper):
         numeric_columns = select_numeric_columns(self.source_df)
         numeric_columns = list(set(numeric_columns) - set(impute_const_dict.keys()))
         self.imputer_util = ImputerUtil(impute_const_dict, impute_mean_cols=numeric_columns, impute_median_cols=[])
+
+    def _process_source(self) -> None:
+        super(ExperimentDataHelper1, self)._process_source()
+        # drop non-cancer records without screen records
+        condition = (self.source_df['was_screened'] == 1) | (self.source_df['ovar_cancer'] == 1)
+        self.source_df = self.source_df[condition]
