@@ -38,7 +38,7 @@ class GenerateReportUtil:
         return self.generate_report()
 
     def apply_roc_threshold(self) -> GenerateReportUtil:
-        return self.apply_roc_threshold(self.get_roc_threshold())
+        return self.apply_threshold(self.get_roc_threshold())
 
     def generate_report(self) -> GenerateReportUtil:
         report = pd.DataFrame(
@@ -86,11 +86,11 @@ class GenerateReportUtil:
         interp_thresholds[0] = 0.0
         return fpr_mean, interp_tpr, interp_thresholds
 
-    def get_precison_recall_results(self) -> Tuple[np.array, np.array, np.array]:
+    def get_precision_recall_results(self) -> Tuple[np.array, np.array]:
         precision, recall, thresholds = precision_recall_curve(self.y_test, self.y_prob)
         return precision, recall
 
-    def get_precison_recall_results_interp(self) -> Tuple[np.array, np.array, np.array]:
+    def get_precision_recall_results_interp(self) -> Tuple[np.array, np.array]:
         precision, recall, thresholds = precision_recall_curve(self.y_test, self.y_prob)
         precision_recall_df = pd.DataFrame({'precision': precision, 'recall': recall})
         precision_recall_df = precision_recall_df.sort_values('recall')
@@ -108,7 +108,7 @@ class GenerateReportUtil:
         visualization_util.display_confusion_matrix(ax[0], self.get_confusion_matrix())
         visualization_util.display_roc_graph(ax[-2], *self.get_roc_results_interp())
         visualization_util.display_roc_threshold(ax[-2], *self.get_roc_results_interp())
-        visualization_util.display_precision_recall(ax[-1], *self.get_precison_recall_results_interp())
+        visualization_util.display_precision_recall(ax[-1], *self.get_precision_recall_results_interp())
         plt.show()
         return visualization_util
 
@@ -119,6 +119,6 @@ class GenerateReportUtil:
         visualization_util.display_confusion_matrix(ax[0], self.get_confusion_matrix())
         visualization_util.display_roc_graph(ax[-2], *self.get_roc_results())
         visualization_util.display_roc_threshold(ax[-2], *self.get_roc_results())
-        visualization_util.display_precision_recall(ax[-1], *self.get_precison_recall_results())
+        visualization_util.display_precision_recall(ax[-1], *self.get_precision_recall_results())
         plt.show()
         return visualization_util

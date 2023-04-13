@@ -8,6 +8,7 @@ import xgboost as xgb
 from matplotlib import pyplot as plt
 from sklearn import tree
 from sklearn.base import clone
+from sklearn.preprocessing import StandardScaler
 
 from .classifier_data_util import ClassifierDataUtil
 from .report_util import GenerateReportUtil
@@ -35,7 +36,7 @@ class AnalyticsUtil:
 
     def get_predictions_general(self, X_test: pd.DataFrame) -> Tuple[np.array, np.array]:
         y_pred = self.classifier.predict(X_test)
-        y_prob = self.classifier.predict_proba(X_test)[: ,1]
+        y_prob = self.classifier.predict_proba(X_test)[:, 1]
         return y_pred, y_prob
 
     def get_predictions(self) -> Tuple[np.array, np.array]:
@@ -57,6 +58,68 @@ class AnalyticsUtil:
 
     def feature_selection(self):
         pass
+    
+    def scale_features(self, df):
+        sc = StandardScaler()
+        df_scaled = df.copy()
+        df_scaled = sc.fit_transform(df_scaled)
+        df_scaled = pd.DataFrame(df_scaled, columns=df.columns, index=df.index)
+        return df_scaled
+
+    def get_nearest_neighbors(self, df1, df2, top=5):
+        df1 = df1.drop_duplicates()
+        df2 = df2.drop_duplicates()
+        df1 = self.scale_features(df1)
+        df2 = self.scale_features(df2)
+        euclidean_distances = []
+        indexes = []
+        for i in range(len(df1)):
+            row1 = df1.iloc[i]
+            distances = []
+            for j, row2 in df2.iterrows():
+                distances.append((j, distance.euclidean(row1, row2)))
+            distances = sorted(distances, key=lambda x: x[1], reverse=False)[:top]
+            distances = pd.DataFrame(distances, columns=['index', 'distance'])
+            indexes.append((distances['index'].to_list()))
+            euclidean_distances.append(distances['distance'].to_list())
+        return euclidean_distances, indexes
+    
+    def get_high_confidence_errors(self, classifier, X_train, X_test, y_train, y_test, label, label_val=0):
+        # Insert predicted class and its likelihood
+        X_train = X_train.copy()
+        X_test = X_test.copy()
+        y_pred = classifier.predict(X_test)
+        y_prob = classifier.predict_proba(X_test)[:,1]
+        X_test_mismatch = X_test.copy()
+        X_test_mismatch[label] = y_test
+        X_test_mismatch[f'{label}_pred'] = y_pred
+        X_test_mismatch[f'{label}_prob'] = y_prob
+        X_test_mismatch = X_test_mismatch.drop_duplicates()
+        X_test_mismatch = X_test_mismatch[X_test_mismatch[label] != X_test_mismatch[f'{label}_pred']]
+        
+        # X_test_high_conf = X_test_mismatch[(X_test_mismatch[f'{label}_prob'] < 0.2) | (X_test_mismatch[f'{label}_prob'] > 0.8)]
+        X_test_high_conf = X_test_mismatch
+        X_test_high_conf = X_test_high_conf[X_test_high_conf[f'{label}_pred'] == label_val]
+        
+        # Select 5 nearest neightbors 
+        X_train[label] = y_train
+        X_train_filtered = X_train[X_train[label] == label_val].drop(label, axis=1)
+        # X_test_high_conf = X_test.loc[X_test_high_conf.index, :]
+        # Calculated euclidean distances
+        distances, indices = self.get_nearest_neighbors(X_test.loc[X_test_high_conf.index, :], X_train_filtered)
+        fp_mismatches = []
+        X_train[f'{label}_pred'] = -1
+        X_train[f'{label}_prob'] = -1
+        X_train = X_train.drop_duplicates()
+        # print_df(X_train)
+        for i in range(len(X_test_high_conf)):
+            idx = indices[i]
+            missed_record = X_test_high_conf.iloc[[i], :]
+            missed_record['distance'] = 0
+            close_records = X_train.loc[idx, :]
+            close_records['distance'] = distances[i]
+            fp_mismatches.append((missed_record, close_records))
+        return fp_mismatches
 
 
 class TreeAnalyticsUtil(AnalyticsUtil):
@@ -90,9 +153,10 @@ class TreeAnalyticsUtil(AnalyticsUtil):
         return top_feature_stats, feature_importances
 
 
-class DesicionTreeAnalyticsUtil(TreeAnalyticsUtil):
-    def plot_save_tree(self, plot_tree: bool = False, filepath: str = None) -> DesicionTreeAnalyticsUtil:
+class DecisionTreeAnalyticsUtil(TreeAnalyticsUtil):
+    def plot_save_tree(self, plot_tree: bool = False, filepath: str = None) -> DecisionTreeAnalyticsUtil:
         if plot_tree or filepath is not None:
+            print('Plots tree')
             cn=['no cancer', 'cancer']
             fig, axes = plt.subplots(nrows = 1,ncols = 1, dpi=3000)
             tree.plot_tree(self.classifier,
