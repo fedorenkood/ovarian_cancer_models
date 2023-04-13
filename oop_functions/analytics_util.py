@@ -6,12 +6,14 @@ import numpy as np
 import pandas as pd
 import xgboost as xgb
 from matplotlib import pyplot as plt
+from scipy.spatial import distance
 from sklearn import tree
 from sklearn.base import clone
 from sklearn.preprocessing import StandardScaler
 
 from .classifier_data_util import ClassifierDataUtil
 from .report_util import GenerateReportUtil
+from .util_functions import get_nearest_neighbors
 
 
 class AnalyticsUtil:
@@ -59,37 +61,14 @@ class AnalyticsUtil:
     def feature_selection(self):
         pass
     
-    def scale_features(self, df):
-        sc = StandardScaler()
-        df_scaled = df.copy()
-        df_scaled = sc.fit_transform(df_scaled)
-        df_scaled = pd.DataFrame(df_scaled, columns=df.columns, index=df.index)
-        return df_scaled
-
-    def get_nearest_neighbors(self, df1, df2, top=5):
-        df1 = df1.drop_duplicates()
-        df2 = df2.drop_duplicates()
-        df1 = self.scale_features(df1)
-        df2 = self.scale_features(df2)
-        euclidean_distances = []
-        indexes = []
-        for i in range(len(df1)):
-            row1 = df1.iloc[i]
-            distances = []
-            for j, row2 in df2.iterrows():
-                distances.append((j, distance.euclidean(row1, row2)))
-            distances = sorted(distances, key=lambda x: x[1], reverse=False)[:top]
-            distances = pd.DataFrame(distances, columns=['index', 'distance'])
-            indexes.append((distances['index'].to_list()))
-            euclidean_distances.append(distances['distance'].to_list())
-        return euclidean_distances, indexes
-    
-    def get_high_confidence_errors(self, classifier, X_train, X_test, y_train, y_test, label, label_val=0):
+    def get_high_confidence_errors(self, label_val: int = 0, top_n: int = 5):
+        label = self.data_util.label
         # Insert predicted class and its likelihood
+        X_train, y_train = self.data_util.get_train_data()
+        X_test, y_test = self.data_util.get_test_data()
         X_train = X_train.copy()
         X_test = X_test.copy()
-        y_pred = classifier.predict(X_test)
-        y_prob = classifier.predict_proba(X_test)[:,1]
+        y_pred, y_prob = self.get_predictions() 
         X_test_mismatch = X_test.copy()
         X_test_mismatch[label] = y_test
         X_test_mismatch[f'{label}_pred'] = y_pred
@@ -106,7 +85,7 @@ class AnalyticsUtil:
         X_train_filtered = X_train[X_train[label] == label_val].drop(label, axis=1)
         # X_test_high_conf = X_test.loc[X_test_high_conf.index, :]
         # Calculated euclidean distances
-        distances, indices = self.get_nearest_neighbors(X_test.loc[X_test_high_conf.index, :], X_train_filtered)
+        distances, indices = get_nearest_neighbors(X_test.loc[X_test_high_conf.index, :], X_train_filtered, top_n)
         fp_mismatches = []
         X_train[f'{label}_pred'] = -1
         X_train[f'{label}_prob'] = -1
@@ -134,9 +113,7 @@ class TreeAnalyticsUtil(AnalyticsUtil):
                                                                 ascending=False)
         feature_importances['column_name'] = feature_importances.index
         feature_importances = feature_importances[['column_name', 'importance']]
-        # TODO: boundary and confusion matrix
         tree_depth = self.get_max_depth()
-        # TODO: results for filtered tests?
         report_util = self.get_report_generation_util()
         top_feature_stats = {
             'top_feature': feature_importances.iloc[0]['column_name'],

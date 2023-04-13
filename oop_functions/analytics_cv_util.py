@@ -104,7 +104,6 @@ class CvAnalyticsUtil:
         pass
 
     def store_cv_results(self):
-        # TODO: inject base directory?
         # I assume that all of the analytics_utils have the same classifier type
         classifier_type = self.get_classifier_type()
         cv_scores, measures_df = self.get_cv_report()

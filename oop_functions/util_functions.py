@@ -3,8 +3,37 @@ from typing import Tuple
 
 import numpy as np
 import pandas as pd
+from scipy.spatial import distance
+from sklearn.preprocessing import StandardScaler
 from sklearn.utils import resample
 from tabulate import tabulate
+    
+    
+def scale_features(df):
+    sc = StandardScaler()
+    df_scaled = df.copy()
+    df_scaled = sc.fit_transform(df_scaled)
+    df_scaled = pd.DataFrame(df_scaled, columns=df.columns, index=df.index)
+    return df_scaled
+
+
+def get_nearest_neighbors(df1, df2, top=5):
+    df1 = df1.drop_duplicates()
+    df2 = df2.drop_duplicates()
+    df1 = scale_features(df1)
+    df2 = scale_features(df2)
+    euclidean_distances = []
+    indexes = []
+    for i in range(len(df1)):
+        row1 = df1.iloc[i]
+        distances = []
+        for j, row2 in df2.iterrows():
+            distances.append((j, distance.euclidean(row1, row2)))
+        distances = sorted(distances, key=lambda x: x[1], reverse=False)[:top]
+        distances = pd.DataFrame(distances, columns=['index', 'distance'])
+        indexes.append((distances['index'].to_list()))
+        euclidean_distances.append(distances['distance'].to_list())
+    return euclidean_distances, indexes
 
 
 def get_roc_threshold_point(fpr: np.array, tpr: np.array, thresholds: np.array) -> Tuple[float, float, float]:
