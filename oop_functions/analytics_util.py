@@ -51,6 +51,8 @@ class AnalyticsUtil:
         return GenerateReportUtil(y_test, y_pred, y_prob)
     
     def get_report_generation_util_filtered(self, filter: Callable[[pd.DataFrame], pd.DataFrame]) -> GenerateReportUtil:
+        if filter is None: 
+            return self.get_report_generation_util()
         X_test, y_test = self.data_util.get_filtered_test_data(filter)
         y_pred, y_prob = self.get_predictions_general(X_test) 
         return GenerateReportUtil(y_test, y_pred, y_prob)

@@ -10,19 +10,14 @@ from oop_functions.visualization_util import VisualizationUtil
 
 
 class CvAnalyticsUtil:
-    def __init__(self, analytics_utils: List[AnalyticsUtil], missing_df: pd.DataFrame) -> None:
+    def __init__(self, analytics_utils: List[AnalyticsUtil], missing_df: pd.DataFrame, experiment_name: str = '') -> None:
         self.analytics_utils = analytics_utils
         self.missing_df = missing_df
+        self.experiment_name = experiment_name
+        self.filter = None
 
-    def run_experiment_on_filter(self, filter):
-        # TODO: run experiment on particular filter
-        # filtered_on = list(itertools.chain.from_iterable([zip([key]*len(vals), vals) for key, vals in differentiate_confusion_matrix_over.items()]))
-        # for i, (X_test_filtered, y_test_filtered) in enumerate(differentiated_test_sets):
-        #     print(f'Filtered on: {filtered_on[i]}')
-        #     y_pred = trained_classifier.predict(X_test_filtered)
-        #     y_prob = trained_classifier.predict_proba(X_test_filtered)[:,1]
-        #     performance_analysis(y_pred, y_prob, y_test_filtered, show_graph=True)
-        pass
+    def set_filter(self, filter):
+        self.filter = filter
 
     def get_label(self) -> str:
         return self.analytics_utils[0].data_util.label
@@ -34,7 +29,7 @@ class CvAnalyticsUtil:
         return len(self.analytics_utils)
     
     def get_file_suffix(self) -> str:
-        return f'_for_{self.get_classifier_type()}_{self.get_label()}__{self.get_num_folds()}_trials'
+        return f'_for_experiment_{self.experiment_name}_{self.get_classifier_type()}_{self.get_label()}__{self.get_num_folds()}_trials'
 
     def update_thresholds(self):
         # TODO: update thresholds for each of the analytics utils
@@ -43,7 +38,7 @@ class CvAnalyticsUtil:
     def get_cv_report(self):
         cv_scores = []
         for k, analytics_util in enumerate(self.analytics_utils):
-            report = analytics_util.get_report_generation_util().generate_report().get_report()
+            report = analytics_util.get_report_generation_util_filtered(self.filter).generate_report().get_report()
             cv_scores.append(report)
         cv_scores = pd.concat(cv_scores)
         cv_scores = cv_scores.reset_index()
@@ -56,21 +51,21 @@ class CvAnalyticsUtil:
     def get_confusion_matrix(self):
         confusion_matirices = []
         for k, analytics_util in enumerate(self.analytics_utils):
-            cm = analytics_util.get_report_generation_util().get_confusion_matrix()
+            cm = analytics_util.get_report_generation_util_filtered(self.filter).get_confusion_matrix()
             confusion_matirices.append(cm)
         columns = confusion_matirices[0].columns
         index = confusion_matirices[0].index
         cv_cm = np.array(confusion_matirices)
         cv_cm = cv_cm.mean(axis=0)
         cv_cm = cv_cm.round(0)
-        return pd.DataFrame(cv_cm, columns=columns, index=index).astype(np.int16)
+        return pd.DataFrame(cv_cm, columns=columns, index=index).astype(np.int32)
 
     def roc_with_interval(self):
         fpr_mean = np.linspace(0, 1, 100)
         interp_tprs = []
         thresholds_list = []
         for k, analytics_util in enumerate(self.analytics_utils):
-            fpr, tpr, thresholds = analytics_util.get_report_generation_util().get_roc_results_interp()
+            fpr, tpr, thresholds = analytics_util.get_report_generation_util_filtered(self.filter).get_roc_results_interp()
             interp_tprs.append(tpr)
             thresholds_list.append(thresholds)
         tpr_mean = np.mean(interp_tprs, axis=0)
@@ -83,7 +78,7 @@ class CvAnalyticsUtil:
         recall_mean = np.linspace(0, 1, 100)
         interp_precision = []
         for k, analytics_util in enumerate(self.analytics_utils):
-            precision, recall = analytics_util.get_report_generation_util().get_precision_recall_results_interp()
+            precision, recall = analytics_util.get_report_generation_util_filtered(self.filter).get_precision_recall_results_interp()
             interp_precision.append(precision)
         precision_mean = np.mean(interp_precision, axis=0)
         precision_std = np.std(interp_precision, axis=0)

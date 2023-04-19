@@ -49,4 +49,4 @@ class ExperimentRunner:
             data_util = data_util_lambdas[i]()
             analytics_util = self.get_analytics_util()(self.classifier, data_util).fit()
             analytics_utils.append(analytics_util)
-        return self.get_cv_analytics_util()(analytics_utils, self.missing_df)
+        return self.get_cv_analytics_util()(analytics_utils, self.missing_df, self.experiment_data_helper.get_name())
