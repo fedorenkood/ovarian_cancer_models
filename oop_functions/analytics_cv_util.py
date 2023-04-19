@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import List
 
 import numpy as np
@@ -116,7 +118,7 @@ class CvAnalyticsUtil:
         self.analytics_utils = analytics_utils
 
     @classmethod
-    def load_cv_analytics_utils(cls, filesuffix: str) -> None:
+    def load_cv_analytics_utils(cls, filesuffix: str) -> CvAnalyticsUtil:
         cv_analytics_util = pickle.load(open(f'./stored_classes/cv_analytics_util/{filesuffix}.sav', 'rb'))
         analytics_utils = []
         for k in range(cv_analytics_util.k):

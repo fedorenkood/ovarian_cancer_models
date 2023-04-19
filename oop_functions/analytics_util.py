@@ -23,7 +23,7 @@ class AnalyticsUtil:
         self.data_util = data_util
 
     def store_analytics_util(self, filesuffix: str) -> None:
-        self.data_util.store_train_test_df(f'./imputed_data/{filesuffix}.csv')
+        self.data_util.store_train_test_df(filesuffix)
         train_df = self.data_util.train_df
         test_df  = self.data_util.test_df
         self.data_util.train_df = None
@@ -37,7 +37,7 @@ class AnalyticsUtil:
     def load_analytics_util(filesuffix: str) -> AnalyticsUtil:
         # load trained classifier from file
         analytics_util = pickle.load(open(f'./stored_classes/analytics_util/{filesuffix}.sav', 'rb'))
-        analytics_util.data_util.load_train_test_df(f'./imputed_data/{filesuffix}.csv')
+        analytics_util.data_util.load_train_test_df(filesuffix)
         return analytics_util
 
     def fit(self) -> AnalyticsUtil:

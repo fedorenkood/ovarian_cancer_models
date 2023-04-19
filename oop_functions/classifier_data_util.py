@@ -34,16 +34,16 @@ class ClassifierDataUtil:
             debug=self.debug
         )
     
-    def load_train_test_df(self, filename: str) -> ClassifierDataUtil:
+    def load_train_test_df(self, filesuffix: str) -> ClassifierDataUtil:
         # be able to load and store the imputed data to be able to run experiments faster
-        self.train_df = pd.read_csv(filename)
-        self.test_df = pd.read_csv(filename)
+        self.train_df = pd.read_csv(f'./imputed_data/train_{filesuffix}.csv')
+        self.test_df = pd.read_csv(f'./imputed_data/test_{filesuffix}.csv')
         return self
     
-    def store_train_test_df(self, filename: str) -> ClassifierDataUtil:
+    def store_train_test_df(self, filesuffix: str) -> ClassifierDataUtil:
         # be able to load and store the imputed data to be able to run experiments faster
-        self.train_df.to_csv(filename)
-        self.test_df.to_csv(filename)
+        self.train_df.to_csv(f'./imputed_data/train_{filesuffix}.csv', index=False)
+        self.test_df.to_csv(f'./imputed_data/test_{filesuffix}.csv', index=False)
         return self
     
     def check_if_data_util_initialized(self) -> None:
