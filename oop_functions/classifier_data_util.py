@@ -82,7 +82,7 @@ class ClassifierDataUtil:
     def get_filtered_test_data(self, filter: Callable[[pd.DataFrame], pd.DataFrame]) -> Tuple[pd.DataFrame, pd.Series]:
         filtered_test = filter(self.test_df)
         filtered_test = remove_featues_startswith(filtered_test, self.cols_to_remove, [self.label], show_removed=False)
-        X_test_filtered, y_test_filtered = self.split_xy(filtered_test, self.label)
+        X_test_filtered, y_test_filtered = self.split_xy(filtered_test)
         return X_test_filtered, y_test_filtered
 
     def process_train_test_split(self, source_df: pd.DataFrame, train_ids: pd.Series, test_ids: pd.Series) -> ClassifierDataUtil:
