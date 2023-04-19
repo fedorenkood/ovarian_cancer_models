@@ -117,6 +117,16 @@ class ExperimentDataHelperScreenedOrCancer(ExperimentDataHelperWithImputer):
         # drop non-cancer records without screen records
         condition = (self.source_df['was_screened'] == 1) | (self.source_df['ovar_cancer'] == 1)
         self.source_df = self.source_df[condition]
+
+class ExperimentDataHelperScreened(ExperimentDataHelperWithImputer):
+    def get_name(self) -> str:
+        return 'participants_screened'
+    
+    def _process_source(self) -> None:
+        super(ExperimentDataHelperScreened, self)._process_source()
+        # drop non-cancer records without screen records
+        condition = (self.source_df['was_screened'] == 1)
+        self.source_df = self.source_df[condition]
         
 class ExperimentDataHelperNotScreenedCols(ExperimentDataHelperWithImputer):
     def get_name(self) -> str:
