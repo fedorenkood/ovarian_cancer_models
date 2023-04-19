@@ -116,7 +116,7 @@ class TrainTestSplitUtil:
         # One person should not appear in train and test data since there are duplicates of a person
         # we splits of data on person id and then oversample from that sample 
         # this line of code determines whether the model is leaking info or not
-        unique_id_df = self.source_df[['plco_id', self.data_util.label]].drop_duplicates(subset='plco_id')
+        unique_id_df = self.source_df[[self.data_util.id_col, self.data_util.label]].drop_duplicates(subset=self.data_util.id_col)
 
         # create list of lambdas for each fold
         strtfdKFold = StratifiedKFold(n_splits=num_folds)

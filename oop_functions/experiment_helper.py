@@ -26,7 +26,7 @@ screen_abnorm_data_cols = ['study_yr', 'solid', 'sepst', 'cyst', 'cystw', 'echo'
 screened_cols = screen_data_cols + screen_abnorm_data_cols + ['ca125ii', 'ca125_result']
 
 class ExperimentDataHelper:
-    def __init__(self, source_df: pd.DataFrame, label: str, other_lebels: List[str], imputer_util: ImputerUtil = None,
+    def __init__(self, source_df: pd.DataFrame, label: str, other_lebels: List[str], train_size: int = 10000, imputer_util: ImputerUtil = None,
                  data_util: ClassifierDataUtil = None, train_test_split_util: TrainTestSplitUtil = None) -> None:
         self.source_df = source_df
         self.label = label
@@ -35,7 +35,7 @@ class ExperimentDataHelper:
         self.data_util = data_util
         self.train_test_split_util = train_test_split_util
         self.stratify_over_cols = self.set_stratify_over_cols_default()
-        self.train_size = 10000
+        self.train_size = train_size
         self._process_source()
         
 
@@ -46,7 +46,8 @@ class ExperimentDataHelper:
         if not train_test_split_util:
             self._init_train_test_split_util()
 
-    def get_name(self) -> str:
+    @staticmethod
+    def get_name() -> str:
         return 'experiment'
     
     def set_stratify_over_cols_default(self) -> List[str]:
@@ -56,8 +57,8 @@ class ExperimentDataHelper:
         self.train_size = val
         self.data_util.train_size = val
     
-    def set_train_size_to_max(self) -> None:
-        self.set_train_size_to_val(len(self.data_util.train_df))
+    def set_train_size_to_max(self, k: int) -> None:
+        self.set_train_size_to_val(int(self.source_df[self.source_df[self.label] == 0][self.data_util.id_col].nunique()/10*9))
         
     def _process_source(self) -> None:
         self.source_df = remove_featues_startswith(self.source_df, self.other_lebels, [self.label],
@@ -107,11 +108,75 @@ class ExperimentDataHelperWithImputer(ExperimentDataHelper):
         numeric_columns = select_numeric_columns(self.source_df)
         numeric_columns = list(set(numeric_columns) - set(impute_const_dict.keys()))
         self.imputer_util = ImputerUtil(impute_const_dict, impute_mean_cols=numeric_columns, impute_median_cols=[])
+    
+
+class ExperimentDataHelperWithImputerSingleLabel(ExperimentDataHelperWithImputer):
+    def _process_source(self) -> None:
+        super(ExperimentDataHelperWithImputerSingleLabel, self)._process_source()
+        # experiment where participants cannot be classified by two different labels i.e. first classfied as not having cancer and then classified as having cancer
+        condition = ~( (self.source_df[self.label] == 0) & (self.source_df['ovar_cancer'] == 1))
+        self.source_df = self.source_df[ condition]
 
 
-# TODO: experiment where participants cannot be classified by two different labels i.e. first classfied as not having cancer and then classified as having cancer
+class ExperimentDataHelperSingleLabelScreenedOrCancer(ExperimentDataHelperWithImputerSingleLabel):
+    @staticmethod
+    def get_name() -> str:
+        return 'participants_screened_or_cancer_single_label'
+    
+    def _process_source(self) -> None:
+        super(ExperimentDataHelperSingleLabelScreenedOrCancer, self)._process_source()
+        # drop non-cancer records without screen records
+        condition = (self.source_df['was_screened'] == 1) | (self.source_df['ovar_cancer'] == 1)
+        self.source_df = self.source_df[condition]
+
+class ExperimentDataHelperSingleLabelScreened(ExperimentDataHelperWithImputerSingleLabel):
+    @staticmethod
+    def get_name() -> str:
+        return 'participants_screened_single_label'
+    
+    def _process_source(self) -> None:
+        super(ExperimentDataHelperSingleLabelScreened, self)._process_source()
+        # drop non-cancer records without screen records
+        condition = (self.source_df['was_screened'] == 1)
+        self.source_df = self.source_df[condition]
+        
+class ExperimentDataHelperSingleLabelNotScreenedCols(ExperimentDataHelperWithImputerSingleLabel):
+    @staticmethod
+    def get_name() -> str:
+        return 'not_screened_cols_single_label'
+    
+    def _process_source(self) -> None:
+        super(ExperimentDataHelperSingleLabelNotScreenedCols, self)._process_source()
+        self.source_df = remove_featues_startswith(self.source_df, screened_cols, exclude=['plco_id', *self.stratify_over_cols], show_removed=False)
+        
+class ExperimentDataHelperSingleLabelScreenedCols(ExperimentDataHelperWithImputerSingleLabel):
+    @staticmethod
+    def get_name() -> str:
+        return 'screened_cols_single_label'
+    
+    def _process_source(self) -> None:
+        super(ExperimentDataHelperSingleLabelScreenedCols, self)._process_source()
+        # drop non screen records
+        condition = (self.source_df['was_screened'] == 1)
+        self.source_df = self.source_df[condition]
+        keep_cols_screen = []
+        for col in screened_cols + self.stratify_over_cols + [self.label]:
+            if col in self.source_df.columns:
+                keep_cols_screen.append(col)
+        self.source_df = self.source_df[list(set(keep_cols_screen))]
+        
+class ExperimentDataHelperSingleLabelAll(ExperimentDataHelperWithImputerSingleLabel):
+    @staticmethod
+    def get_name() -> str:
+        return 'participants_all_single_label'
+    
+    def _process_source(self) -> None:
+        super(ExperimentDataHelperSingleLabelAll, self)._process_source()
+
+
 class ExperimentDataHelperScreenedOrCancer(ExperimentDataHelperWithImputer):
-    def get_name(self) -> str:
+    @staticmethod
+    def get_name() -> str:
         return 'participants_screened_or_cancer'
     
     def _process_source(self) -> None:
@@ -121,7 +186,8 @@ class ExperimentDataHelperScreenedOrCancer(ExperimentDataHelperWithImputer):
         self.source_df = self.source_df[condition]
 
 class ExperimentDataHelperScreened(ExperimentDataHelperWithImputer):
-    def get_name(self) -> str:
+    @staticmethod
+    def get_name() -> str:
         return 'participants_screened'
     
     def _process_source(self) -> None:
@@ -131,7 +197,8 @@ class ExperimentDataHelperScreened(ExperimentDataHelperWithImputer):
         self.source_df = self.source_df[condition]
         
 class ExperimentDataHelperNotScreenedCols(ExperimentDataHelperWithImputer):
-    def get_name(self) -> str:
+    @staticmethod
+    def get_name() -> str:
         return 'not_screened_cols'
     
     def _process_source(self) -> None:
@@ -139,7 +206,8 @@ class ExperimentDataHelperNotScreenedCols(ExperimentDataHelperWithImputer):
         self.source_df = remove_featues_startswith(self.source_df, screened_cols, exclude=['plco_id', *self.stratify_over_cols], show_removed=False)
         
 class ExperimentDataHelperScreenedCols(ExperimentDataHelperWithImputer):
-    def get_name(self) -> str:
+    @staticmethod
+    def get_name() -> str:
         return 'screened_cols'
     
     def _process_source(self) -> None:
@@ -154,7 +222,8 @@ class ExperimentDataHelperScreenedCols(ExperimentDataHelperWithImputer):
         self.source_df = self.source_df[list(set(keep_cols_screen))]
         
 class ExperimentDataHelperAll(ExperimentDataHelperWithImputer):
-    def get_name(self) -> str:
+    @staticmethod
+    def get_name() -> str:
         return 'participants_all'
     
     def _process_source(self) -> None:
