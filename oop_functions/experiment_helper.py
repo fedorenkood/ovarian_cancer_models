@@ -108,6 +108,8 @@ class ExperimentDataHelperWithImputer(ExperimentDataHelper):
         numeric_columns = list(set(numeric_columns) - set(impute_const_dict.keys()))
         self.imputer_util = ImputerUtil(impute_const_dict, impute_mean_cols=numeric_columns, impute_median_cols=[])
 
+
+# TODO: experiment where participants cannot be classified by two different labels i.e. first classfied as not having cancer and then classified as having cancer
 class ExperimentDataHelperScreenedOrCancer(ExperimentDataHelperWithImputer):
     def get_name(self) -> str:
         return 'participants_screened_or_cancer'

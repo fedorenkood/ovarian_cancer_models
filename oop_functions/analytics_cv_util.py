@@ -3,6 +3,7 @@ from typing import List
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
+import pickle
 
 from oop_functions.analytics_util import AnalyticsUtil
 from oop_functions.util_functions import print_df
@@ -14,6 +15,7 @@ class CvAnalyticsUtil:
         self.analytics_utils = analytics_utils
         self.missing_df = missing_df
         self.experiment_name = experiment_name
+        self.k = self.get_num_folds()
         self.filter = None
 
     def set_filter(self, filter):
@@ -98,12 +100,30 @@ class CvAnalyticsUtil:
     def get_cv_feature_selection(self) -> pd.DataFrame:
         pass
 
-    def store_cv_results(self):
+    def store_cv_results(self) -> None:
         # I assume that all of the analytics_utils have the same classifier type
-        classifier_type = self.get_classifier_type()
         cv_scores, measures_df = self.get_cv_report()
         cv_scores.to_csv(f'./cv_scores/cv_scores_{self.get_file_suffix()}.csv')
         measures_df.to_csv(f'./cv_scores/cv_stats_{self.get_file_suffix()}.csv')
+
+    def store_cv_analytics_utils(self, filesuffix: str) -> None:
+        for k, analytics_util in enumerate(self.analytics_utils):
+            analytics_util.store_analytics_util(f'{filesuffix}_{k+1}_fold')
+            
+        analytics_utils = self.analytics_utils
+        self.analytics_utils = None
+        pickle.dump(self, open(f'./stored_classes/cv_analytics_util/{filesuffix}.sav', 'wb'))
+        self.analytics_utils = analytics_utils
+
+    @classmethod
+    def load_cv_analytics_utils(cls, filesuffix: str) -> None:
+        cv_analytics_util = pickle.load(open(f'./stored_classes/cv_analytics_util/{filesuffix}.sav', 'rb'))
+        analytics_utils = []
+        for k in range(cv_analytics_util.k):
+            analytics_util = AnalyticsUtil.load_analytics_util(f'{filesuffix}_{k+1}_fold')
+            analytics_utils.append(analytics_util)
+        cv_analytics_util.analytics_utils = analytics_utils
+        return cv_analytics_util
 
 
 class FeatureImportanceCvAnalyticsUtil(CvAnalyticsUtil):

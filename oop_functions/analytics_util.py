@@ -10,6 +10,7 @@ from scipy.spatial import distance
 from sklearn import tree
 from sklearn.base import clone
 from sklearn.preprocessing import StandardScaler
+import pickle
 
 from .classifier_data_util import ClassifierDataUtil
 from .report_util import GenerateReportUtil
@@ -21,13 +22,23 @@ class AnalyticsUtil:
         self.classifier = clone(classifier)
         self.data_util = data_util
 
-    def store_classifier(self) -> None:
-        # TODO: save trained classifier
-        pass
+    def store_analytics_util(self, filesuffix: str) -> None:
+        self.data_util.store_train_test_df(f'./imputed_data/{filesuffix}.csv')
+        train_df = self.data_util.train_df
+        test_df  = self.data_util.test_df
+        self.data_util.train_df = None
+        self.data_util.test_df  = None
+        # store class in a pickle
+        pickle.dump(self, open(f'./stored_classes/analytics_util/{filesuffix}.sav', 'wb'))
+        self.data_util.train_df = train_df
+        self.data_util.test_df  = test_df
 
-    def load_classifier(self, filename: str) -> None:
-        # TODO: load trained classifier from file
-        pass
+    @staticmethod
+    def load_analytics_util(filesuffix: str) -> AnalyticsUtil:
+        # load trained classifier from file
+        analytics_util = pickle.load(open(f'./stored_classes/analytics_util/{filesuffix}.sav', 'rb'))
+        analytics_util.data_util.load_train_test_df(f'./imputed_data/{filesuffix}.csv')
+        return analytics_util
 
     def fit(self) -> AnalyticsUtil:
         self.data_util.check_if_data_util_initialized()

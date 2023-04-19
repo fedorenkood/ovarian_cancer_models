@@ -5,6 +5,7 @@ from typing import List, Tuple, Callable
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import StratifiedKFold
+import pickle
 
 from .imputer_util import ImputerUtil
 from .util_functions import remove_featues_startswith, resample_max
@@ -34,12 +35,16 @@ class ClassifierDataUtil:
         )
     
     def load_train_test_df(self, filename: str) -> ClassifierDataUtil:
-        # TODO: be able to load and store the imputed data to be able to run experiments faster
-        pass
+        # be able to load and store the imputed data to be able to run experiments faster
+        self.train_df = pd.read_csv(filename)
+        self.test_df = pd.read_csv(filename)
+        return self
     
     def store_train_test_df(self, filename: str) -> ClassifierDataUtil:
-        # TODO: be able to load and store the imputed data to be able to run experiments faster
-        pass
+        # be able to load and store the imputed data to be able to run experiments faster
+        self.train_df.to_csv(filename)
+        self.test_df.to_csv(filename)
+        return self
     
     def check_if_data_util_initialized(self) -> None:
         if self.train_df is None or self.test_df is None:
@@ -86,6 +91,8 @@ class ClassifierDataUtil:
         return X_test_filtered, y_test_filtered
 
     def process_train_test_split(self, source_df: pd.DataFrame, train_ids: pd.Series, test_ids: pd.Series) -> ClassifierDataUtil:
+        if self.imputer is None:
+            return self
         train = source_df[source_df[self.id_col].isin(train_ids)]
         test = source_df[source_df[self.id_col].isin(test_ids)]
 
