@@ -125,6 +125,6 @@ class TrainTestSplitUtil:
         for k, (train, test) in enumerate(kfold):
             train = unique_id_df.iloc[train, :]
             test = unique_id_df.iloc[test, :]
-            k_fold_lambdas.append(lambda: self.data_util.copy().process_train_test_split(self.source_df, train[self.data_util.id_col], test[self.data_util.id_col]))
+            k_fold_lambdas.append(self.data_util.copy().process_train_test_split(self.source_df, train[self.data_util.id_col], test[self.data_util.id_col]))
 
         return k_fold_lambdas

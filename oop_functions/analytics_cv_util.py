@@ -19,6 +19,7 @@ class CvAnalyticsUtil:
         self.experiment_name = experiment_name
         self.k = self.get_num_folds()
         self.filter = None
+        self.threshold = None
 
     def set_filter(self, filter):
         self.filter = filter
@@ -35,14 +36,17 @@ class CvAnalyticsUtil:
     def get_file_suffix(self) -> str:
         return f'_for_experiment_{self.experiment_name}_{self.get_classifier_type()}_{self.get_label()}__{self.get_num_folds()}_trials'
 
-    def update_thresholds(self):
+    def update_thresholds(self, threshold: int):
         # TODO: update thresholds for each of the analytics utils
-        pass
+        self.threshold = threshold
 
     def get_cv_report(self):
         cv_scores = []
         for k, analytics_util in enumerate(self.analytics_utils):
-            report = analytics_util.get_report_generation_util_filtered(self.filter).generate_report().get_report()
+            report_generation_util = analytics_util.get_report_generation_util_filtered(self.filter)
+            if self.threshold:
+                report_generation_util.apply_threshold(self.threshold)
+            report = report_generation_util.generate_report().get_report()
             cv_scores.append(report)
         cv_scores = pd.concat(cv_scores)
         cv_scores = cv_scores.reset_index()
@@ -55,7 +59,10 @@ class CvAnalyticsUtil:
     def get_confusion_matrix(self):
         confusion_matirices = []
         for k, analytics_util in enumerate(self.analytics_utils):
-            cm = analytics_util.get_report_generation_util_filtered(self.filter).get_confusion_matrix()
+            report_generation_util = analytics_util.get_report_generation_util_filtered(self.filter)
+            if self.threshold:
+                report_generation_util.apply_threshold(self.threshold)
+            cm = report_generation_util.get_confusion_matrix()
             confusion_matirices.append(cm)
         columns = confusion_matirices[0].columns
         index = confusion_matirices[0].index
@@ -69,7 +76,10 @@ class CvAnalyticsUtil:
         interp_tprs = []
         thresholds_list = []
         for k, analytics_util in enumerate(self.analytics_utils):
-            fpr, tpr, thresholds = analytics_util.get_report_generation_util_filtered(self.filter).get_roc_results_interp()
+            report_generation_util = analytics_util.get_report_generation_util_filtered(self.filter)
+            if self.threshold:
+                report_generation_util.apply_threshold(self.threshold)
+            fpr, tpr, thresholds = report_generation_util.get_roc_results_interp()
             interp_tprs.append(tpr)
             thresholds_list.append(thresholds)
         tpr_mean = np.mean(interp_tprs, axis=0)
@@ -82,7 +92,10 @@ class CvAnalyticsUtil:
         recall_mean = np.linspace(0, 1, 100)
         interp_precision = []
         for k, analytics_util in enumerate(self.analytics_utils):
-            precision, recall = analytics_util.get_report_generation_util_filtered(self.filter).get_precision_recall_results_interp()
+            report_generation_util = analytics_util.get_report_generation_util_filtered(self.filter)
+            if self.threshold:
+                report_generation_util.apply_threshold(self.threshold)
+            precision, recall = report_generation_util.get_precision_recall_results_interp()
             interp_precision.append(precision)
         precision_mean = np.mean(interp_precision, axis=0)
         precision_std = np.std(interp_precision, axis=0)

@@ -56,6 +56,13 @@ class AnalyticsUtil:
         X_test, y_test = self.data_util.get_test_data()
         return self.get_predictions_general(X_test)
     
+    def get_predictions_filtered(self, filter: Callable[[pd.DataFrame], pd.DataFrame]) -> GenerateReportUtil:
+        if filter is None: 
+            return self.get_report_generation_util()
+        X_test, y_test = self.data_util.get_filtered_test_data(filter)
+        y_pred, y_prob = self.get_predictions_general(X_test) 
+        return y_pred, y_prob
+    
     def get_report_generation_util(self) -> GenerateReportUtil:
         X_test, y_test = self.data_util.get_test_data()
         y_pred, y_prob = self.get_predictions() 
@@ -88,7 +95,14 @@ class AnalyticsUtil:
         X_test_mismatch[f'{label}_prob'] = y_prob
         X_test_mismatch = X_test_mismatch.drop_duplicates()
         X_test_mismatch = X_test_mismatch[X_test_mismatch[label] != X_test_mismatch[f'{label}_pred']]
-        
+        return X_test_mismatch
+    
+    def get_mismatches_neightbors(self, label_val: int = 0, top_n: int = 5):
+        label = self.data_util.label
+        X_train, y_train = self.data_util.get_train_data()
+        X_test, y_test = self.data_util.get_test_data()
+        X_test_mismatch = self.get_high_confidence_errors(label_val, top_n)
+
         # X_test_high_conf = X_test_mismatch[(X_test_mismatch[f'{label}_prob'] < 0.2) | (X_test_mismatch[f'{label}_prob'] > 0.8)]
         X_test_high_conf = X_test_mismatch
         X_test_high_conf = X_test_high_conf[X_test_high_conf[f'{label}_pred'] == label_val]
