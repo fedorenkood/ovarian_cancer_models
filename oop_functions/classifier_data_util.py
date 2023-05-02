@@ -8,7 +8,7 @@ from sklearn.model_selection import StratifiedKFold
 import pickle
 
 from .imputer_util import ImputerUtil
-from .util_functions import remove_featues_startswith, resample_max
+from .util_functions import remove_featues_startswith, resample_max, convert_numeric_to_float16
 
 
 class ClassifierDataUtil:
@@ -21,7 +21,7 @@ class ClassifierDataUtil:
         self.imputer = imputer
         self.debug = debug
         self.stratify_tests_over_cols = stratify_tests_over_cols
-        self.cols_to_remove = ['ovar_', 'cancer_', self.id_col, *stratify_tests_over_cols]
+        self.cols_to_remove = ['ovar_', 'cancer_', self.id_col, 'index', *stratify_tests_over_cols]
         self.train_size = train_size
 
     def copy(self) -> ClassifierDataUtil:
@@ -37,7 +37,9 @@ class ClassifierDataUtil:
     def load_train_test_df(self, filesuffix: str) -> ClassifierDataUtil:
         # be able to load and store the imputed data to be able to run experiments faster
         self.train_df = pd.read_csv(f'./imputed_data/train_{filesuffix}.csv')
+        self.train_df = convert_numeric_to_float16(self.train_df)
         self.test_df = pd.read_csv(f'./imputed_data/test_{filesuffix}.csv')
+        self.test_df = convert_numeric_to_float16(self.test_df)
         return self
     
     def store_train_test_df(self, filesuffix: str) -> ClassifierDataUtil:

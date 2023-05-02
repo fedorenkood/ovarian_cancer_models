@@ -128,9 +128,11 @@ def select_numeric_columns(df):
     return numeric_columns
 
 
-def convert_numeric_to_float16(df):
+def convert_numeric_to_float16(df: pd.DataFrame):
     numeric_cols = select_numeric_columns(df)
-    df[numeric_cols] = df[numeric_cols].astype(np.float16)
+    for col in numeric_cols:
+        if df[col].max() <= np.finfo(np.float16).max and df[col].min() >= np.finfo(np.float16).min:
+            df[col] = df[col].astype(np.float16)
     return df
 
 

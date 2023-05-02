@@ -147,7 +147,7 @@ class ExperimentDataHelperSingleLabelNotScreenedCols(ExperimentDataHelperWithImp
     
     def _process_source(self) -> None:
         super(ExperimentDataHelperSingleLabelNotScreenedCols, self)._process_source()
-        self.source_df = remove_featues_startswith(self.source_df, screened_cols, exclude=['plco_id', *self.stratify_over_cols], show_removed=False)
+        self.source_df = remove_featues_startswith(self.source_df, screened_cols, exclude=['plco_id', 'index', *self.stratify_over_cols], show_removed=False)
         
 class ExperimentDataHelperSingleLabelScreenedCols(ExperimentDataHelperWithImputerSingleLabel):
     @staticmethod
@@ -160,7 +160,7 @@ class ExperimentDataHelperSingleLabelScreenedCols(ExperimentDataHelperWithImpute
         condition = (self.source_df['was_screened'] == 1)
         self.source_df = self.source_df[condition]
         keep_cols_screen = []
-        for col in screened_cols + self.stratify_over_cols + [self.label]:
+        for col in screened_cols + self.stratify_over_cols + [self.label, 'index']:
             if col in self.source_df.columns:
                 keep_cols_screen.append(col)
         self.source_df = self.source_df[list(set(keep_cols_screen))]
@@ -203,7 +203,7 @@ class ExperimentDataHelperNotScreenedCols(ExperimentDataHelperWithImputer):
     
     def _process_source(self) -> None:
         super(ExperimentDataHelperNotScreenedCols, self)._process_source()
-        self.source_df = remove_featues_startswith(self.source_df, screened_cols, exclude=['plco_id', *self.stratify_over_cols], show_removed=False)
+        self.source_df = remove_featues_startswith(self.source_df, screened_cols, exclude=['plco_id', 'index', *self.stratify_over_cols], show_removed=False)
         
 class ExperimentDataHelperScreenedCols(ExperimentDataHelperWithImputer):
     @staticmethod
@@ -216,7 +216,7 @@ class ExperimentDataHelperScreenedCols(ExperimentDataHelperWithImputer):
         condition = (self.source_df['was_screened'] == 1)
         self.source_df = self.source_df[condition]
         keep_cols_screen = []
-        for col in screened_cols + self.stratify_over_cols + [self.label]:
+        for col in screened_cols + self.stratify_over_cols + [self.label, 'index']:
             if col in self.source_df.columns:
                 keep_cols_screen.append(col)
         self.source_df = self.source_df[list(set(keep_cols_screen))]
