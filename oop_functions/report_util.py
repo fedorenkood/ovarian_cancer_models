@@ -24,6 +24,9 @@ class GenerateReportUtil:
         self.accuracy = None
         self.generate_report()
 
+    def get_predictions(self) -> Tuple[np.array, np.array, np.array]:
+        return self.y_test, self.y_pred_threshold, self.y_prob
+
     def get_roc_threshold(self) -> float:
         fpr, tpr, thresholds = roc_curve(self.y_test, self.y_prob)
         optimal_threshold, _, _ = get_roc_threshold_point(fpr, tpr, thresholds)

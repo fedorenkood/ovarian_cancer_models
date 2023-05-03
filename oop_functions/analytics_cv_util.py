@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 import pickle
+from sklearn.metrics import roc_curve, precision_recall_curve
 
 from oop_functions.analytics_util import AnalyticsUtil
 from oop_functions.util_functions import print_df
@@ -67,9 +68,39 @@ class CvAnalyticsUtil:
         columns = confusion_matirices[0].columns
         index = confusion_matirices[0].index
         cv_cm = np.array(confusion_matirices)
-        cv_cm = cv_cm.mean(axis=0)
+        cv_cm = cv_cm.sum(axis=0)
         cv_cm = cv_cm.round(0)
         return pd.DataFrame(cv_cm, columns=columns, index=index).astype(np.int32)
+
+    def roc_curve(self):
+        y_test_all = []
+        y_prob_all = []
+        for k, analytics_util in enumerate(self.analytics_utils):
+            report_generation_util = analytics_util.get_report_generation_util_filtered(self.filter)
+            if self.threshold:
+                report_generation_util.apply_threshold(self.threshold)
+            y_test, y_pred, y_prob = report_generation_util.get_predictions()
+            y_test_all.append(y_test)
+            y_prob_all.append(y_prob)
+        y_test_all = np.concatenate(y_test_all, axis=0)
+        y_prob_all = np.concatenate(y_prob_all, axis=0)
+        fpr, tpr, thresholds = roc_curve(y_test_all, y_prob_all)
+        return fpr, tpr, thresholds
+
+    def precision_recall(self):
+        y_test_all = []
+        y_prob_all = []
+        for k, analytics_util in enumerate(self.analytics_utils):
+            report_generation_util = analytics_util.get_report_generation_util_filtered(self.filter)
+            if self.threshold:
+                report_generation_util.apply_threshold(self.threshold)
+            y_test, y_pred, y_prob = report_generation_util.get_predictions()
+            y_test_all.append(y_test)
+            y_prob_all.append(y_prob)
+        y_test_all = np.concatenate(y_test_all, axis=0)
+        y_prob_all = np.concatenate(y_prob_all, axis=0)
+        precision, recall, thresholds = precision_recall_curve(y_test_all, y_prob_all)
+        return precision, recall
 
     def roc_with_interval(self):
         fpr_mean = np.linspace(0, 1, 100)
@@ -102,6 +133,17 @@ class CvAnalyticsUtil:
         return precision_mean, recall_mean, precision_std * 1.96
 
     def display_graph(self) -> VisualizationUtil:
+        f, ax = plt.subplots(1, 3, figsize=(16, 5))
+        plt.yticks(rotation=0)
+        visualization_util = VisualizationUtil()
+        visualization_util.display_confusion_matrix(ax[0], self.get_confusion_matrix())
+        visualization_util.display_roc_graph(ax[-2], *self.roc_curve())
+        # visualization_util.display_roc_threshold(ax[-2], *self.roc_with_interval())
+        visualization_util.display_precision_recall(ax[-1], *self.precision_recall())
+        plt.show()
+        return visualization_util
+
+    def display_graph_interval(self) -> VisualizationUtil:
         f, ax = plt.subplots(1, 3, figsize=(16, 5))
         plt.yticks(rotation=0)
         visualization_util = VisualizationUtil()

@@ -139,6 +139,17 @@ class ExperimentDataHelperSingleLabelScreened(ExperimentDataHelperWithImputerSin
         # drop non-cancer records without screen records
         condition = (self.source_df['was_screened'] == 1)
         self.source_df = self.source_df[condition]
+
+class ExperimentDataHelperSingleLabelScreenedFirst5(ExperimentDataHelperSingleLabelScreened):
+    @staticmethod
+    def get_name() -> str:
+        return 'participants_screened_single_first_5'
+    
+    def _process_source(self) -> None:
+        super(ExperimentDataHelperSingleLabelScreenedFirst5, self)._process_source()
+        condition = ((self.source_df['ovar_observe_year'] <= 5)) 
+        self.source_df = self.source_df[condition]
+    
         
 class ExperimentDataHelperSingleLabelNotScreenedCols(ExperimentDataHelperWithImputerSingleLabel):
     @staticmethod
@@ -147,20 +158,17 @@ class ExperimentDataHelperSingleLabelNotScreenedCols(ExperimentDataHelperWithImp
     
     def _process_source(self) -> None:
         super(ExperimentDataHelperSingleLabelNotScreenedCols, self)._process_source()
-        self.source_df = remove_featues_startswith(self.source_df, screened_cols, exclude=['plco_id', 'index', *self.stratify_over_cols], show_removed=False)
+        self.source_df = remove_featues_startswith(self.source_df, screened_cols, exclude=['plco_id', 'index', 'ovar_observe_year', *self.stratify_over_cols], show_removed=False)
         
-class ExperimentDataHelperSingleLabelScreenedCols(ExperimentDataHelperWithImputerSingleLabel):
+class ExperimentDataHelperSingleLabelScreenedCols(ExperimentDataHelperSingleLabelScreened):
     @staticmethod
     def get_name() -> str:
         return 'screened_cols_single_label'
     
     def _process_source(self) -> None:
         super(ExperimentDataHelperSingleLabelScreenedCols, self)._process_source()
-        # drop non screen records
-        condition = (self.source_df['was_screened'] == 1)
-        self.source_df = self.source_df[condition]
         keep_cols_screen = []
-        for col in screened_cols + self.stratify_over_cols + [self.label, 'index']:
+        for col in screened_cols + self.stratify_over_cols + [self.label, 'index', 'ovar_observe_year']:
             if col in self.source_df.columns:
                 keep_cols_screen.append(col)
         self.source_df = self.source_df[list(set(keep_cols_screen))]
@@ -195,6 +203,17 @@ class ExperimentDataHelperScreened(ExperimentDataHelperWithImputer):
         # drop non-cancer records without screen records
         condition = (self.source_df['was_screened'] == 1)
         self.source_df = self.source_df[condition]
+
+
+class ExperimentDataHelperScreenedFirst5(ExperimentDataHelperScreened):
+    @staticmethod
+    def get_name() -> str:
+        return 'participants_screened_first_5'
+    
+    def _process_source(self) -> None:
+        super(ExperimentDataHelperScreenedFirst5, self)._process_source()
+        condition = (self.source_df['ovar_observe_year'] <= 5)
+        self.source_df = self.source_df[condition]
         
 class ExperimentDataHelperNotScreenedCols(ExperimentDataHelperWithImputer):
     @staticmethod
@@ -203,23 +222,31 @@ class ExperimentDataHelperNotScreenedCols(ExperimentDataHelperWithImputer):
     
     def _process_source(self) -> None:
         super(ExperimentDataHelperNotScreenedCols, self)._process_source()
-        self.source_df = remove_featues_startswith(self.source_df, screened_cols, exclude=['plco_id', 'index', *self.stratify_over_cols], show_removed=False)
+        self.source_df = remove_featues_startswith(self.source_df, screened_cols, exclude=['plco_id', 'index', 'ovar_observe_year', *self.stratify_over_cols], show_removed=False)
         
-class ExperimentDataHelperScreenedCols(ExperimentDataHelperWithImputer):
+class ExperimentDataHelperScreenedCols(ExperimentDataHelperScreened):
     @staticmethod
     def get_name() -> str:
         return 'screened_cols'
     
     def _process_source(self) -> None:
         super(ExperimentDataHelperScreenedCols, self)._process_source()
-        # drop non screen records
-        condition = (self.source_df['was_screened'] == 1)
-        self.source_df = self.source_df[condition]
         keep_cols_screen = []
-        for col in screened_cols + self.stratify_over_cols + [self.label, 'index']:
+        for col in screened_cols + self.stratify_over_cols + [self.label, 'index', 'ovar_observe_year']:
             if col in self.source_df.columns:
                 keep_cols_screen.append(col)
         self.source_df = self.source_df[list(set(keep_cols_screen))]
+
+
+class ExperimentDataHelperScreenedColsFirst5(ExperimentDataHelperScreenedCols):
+    @staticmethod
+    def get_name() -> str:
+        return 'participants_screened_cols_first_5'
+    
+    def _process_source(self) -> None:
+        super(ExperimentDataHelperScreenedColsFirst5, self)._process_source()
+        condition = (self.source_df['ovar_observe_year'] <= 5)
+        self.source_df = self.source_df[condition]
         
 class ExperimentDataHelperAll(ExperimentDataHelperWithImputer):
     @staticmethod

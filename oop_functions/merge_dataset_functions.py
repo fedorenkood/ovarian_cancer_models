@@ -74,6 +74,7 @@ def merge_data_over_years(person_df, screen_df, abnorm_df, screen_join='left', a
             # df[label_feature] = 0
             index = df[df[on_col] < base_year + window_size].index
             df.loc[index, label_feature] = 1
+        df['ovar_observe_year'] = base_year
         df_final = pd.concat([df_final, df])
         df_final = df_final.drop_duplicates()
     # Add a feature that says whether person was screened or not
