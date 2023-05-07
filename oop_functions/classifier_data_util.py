@@ -114,7 +114,7 @@ class TrainTestSplitUtil:
         self.data_util = data_util
         self.debug = debug
 
-    def split_kfold(self, num_folds: int = 10):        
+    def split_kfold(self, num_folds: int = 10, max_test: int = None):        
         # One person should not appear in train and test data since there are duplicates of a person
         # we splits of data on person id and then oversample from that sample 
         # this line of code determines whether the model is leaking info or not
@@ -125,6 +125,8 @@ class TrainTestSplitUtil:
         kfold = strtfdKFold.split(unique_id_df, unique_id_df[self.data_util.label])
         k_fold_lambdas = []
         for k, (train, test) in enumerate(kfold):
+            if max_test is not None and k > max_test:
+                break
             train = unique_id_df.iloc[train, :]
             test = unique_id_df.iloc[test, :]
             k_fold_lambdas.append(self.data_util.copy().process_train_test_split(self.source_df, train[self.data_util.id_col], test[self.data_util.id_col]))

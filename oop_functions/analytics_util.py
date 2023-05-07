@@ -164,7 +164,7 @@ class DecisionTreeAnalyticsUtil(TreeAnalyticsUtil):
             cn=['no cancer', 'cancer']
             fig, axes = plt.subplots(nrows = 1,ncols = 1, dpi=3000)
             tree.plot_tree(self.classifier,
-                        max_depth=5,
+                        max_depth=4,
                 feature_names = self.data_util.get_feature_names(), 
                 class_names=cn,
                 filled = True)

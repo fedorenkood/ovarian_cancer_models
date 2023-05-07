@@ -6,7 +6,7 @@ import pandas as pd
 
 from .classifier_data_util import ClassifierDataUtil, TrainTestSplitUtil
 from .imputer_util import ImputerUtil
-from .util_functions import remove_featues_startswith, select_numeric_columns
+from .util_functions import remove_featues_startswith, select_numeric_columns, get_cols_missing_percentage
 
 screen_data_cols = ['study_yr', 'detl_p', 'detr_p', 'lvol_p', 'rvol_p', 'lvol_q', 'rvol_q',
        'lantero_p', 'lantero_q', 'llong_p', 'llong_q', 'ltran_p', 'ltran_q',
@@ -25,6 +25,21 @@ screen_abnorm_data_cols = ['study_yr', 'solid', 'sepst', 'cyst', 'cystw', 'echo'
 
 screened_cols = screen_data_cols + screen_abnorm_data_cols + ['ca125ii', 'ca125_result']
 
+
+screen_data_cols_fill_last = ['detl_p', 'detr_p', 'lvol_p', 'rvol_p', 'lvol_q', 'rvol_q',
+       'lantero_p', 'lantero_q', 'llong_p', 'llong_q', 'ltran_p', 'ltran_q',
+       'rantero_p', 'rantero_q', 'rlong_p', 'rlong_q', 'rtran_p', 'rtran_q',
+       'tvu_ref', 'phycons', 'tvu_result', 'ca125_result', 'ovar_result',
+       'ovcyst_solidr', 'ovcyst_outliner', 'ovcyst_solidl', 'ovcyst_outlinel',
+       'ovcyst_solid', 'ovcyst_outline', 'ovcyst_diamr', 'ovcyst_diaml',
+       'ovcyst_diam', 'ovcyst_volr', 'ovcyst_voll', 'ovcyst_vol',
+       'ovcyst_morphr', 'ovcyst_morphl', 'ovcyst_morph', 'ovcyst_sumr',
+       'ovcyst_suml', 'ovcyst_sum', 'ovary_diam', 'ovary_diamr', 'ovary_diaml',
+       'ovary_volr', 'ovary_voll', 'ovary_vol', 'visl', 'visr', 'visboth',
+       'viseith', 'numcystl', 'numcystr', 'numcyst']
+
+screen_abnorm_data_fill_last = ['solid', 'sepst', 'cyst', 'cystw', 'echo', 'maxdi', 'volum']
+
 class ExperimentDataHelper:
     def __init__(self, source_df: pd.DataFrame, label: str, other_lebels: List[str], train_size: int = 10000, imputer_util: ImputerUtil = None,
                  data_util: ClassifierDataUtil = None, train_test_split_util: TrainTestSplitUtil = None) -> None:
@@ -36,7 +51,15 @@ class ExperimentDataHelper:
         self.train_test_split_util = train_test_split_util
         self.stratify_over_cols = self.set_stratify_over_cols_default()
         self.train_size = train_size
+        self.missing_df = None
         self._process_source()
+        self.source_df = self.source_df.drop_duplicates(list(set(self.source_df.columns) - set(['ovar_observe_year', 'index'])))
+        self._propagate_values()
+
+        # Propagate previous values
+        # Impute data for patient with the most recent value for a feature if at all present
+        # I removed ca125ii feature from being propagated because I noticed that doing that increased accuracy.
+
         
 
         if not imputer_util:
@@ -51,7 +74,7 @@ class ExperimentDataHelper:
         return 'experiment'
     
     def set_stratify_over_cols_default(self) -> List[str]:
-        return ['was_screened', 'ovar_histtype']
+        return ['was_screened', 'ovar_histtype', 'study_yr', 'ovar_observe_year']
     
     def set_train_size_to_val(self, val) -> None:
         self.train_size = val
@@ -73,6 +96,41 @@ class ExperimentDataHelper:
 
     def _init_train_test_split_util(self) -> None:
         self.train_test_split_util = TrainTestSplitUtil(self.source_df, self.data_util, False)
+
+    # def _use_most_recent(self, df, keep_last_on_col, col_id, on_cols):
+    #     impute_in_order = sorted(df[keep_last_on_col].unique(), reverse=True)
+    #     for col in on_cols:
+    #         # print(impute_values)
+    #         # TODO: fix this one only fill out the values that are past the study year
+    #         for unique_year in impute_in_order:
+    #             sorted_df = df[df[col].notnull()]
+    #             sorted_df = sorted_df[sorted_df[keep_last_on_col] == unique_year]
+    #             # sorted_df = sorted_df.sort_values(by=keep_last_on_col)
+    #             impute_values = sorted_df.drop_duplicates(col_id, keep='last')
+    #             impute_values = impute_values[[col_id, col]]
+    #             df_for_impute = df
+    #             df_for_impute = df_for_impute[(df_for_impute[col].isnull()) & (df_for_impute['ovar_observe_year'] > unique_year)][[col_id, 'ovar_observe_year', col]]
+    #             index = df_for_impute.index
+    #             df.loc[index, [col_id, 'ovar_observe_year', col]] = df_for_impute.set_index(col_id).combine_first(impute_values.set_index(col_id)).reset_index()
+    #     return df
+    
+    def _use_most_recent(self, df, keep_last_on_col, col_id, on_cols):
+        for col in on_cols:
+            if col in df.columns:
+                sorted_df = df[df[col].notnull()]
+                sorted_df = sorted_df.sort_values(by=keep_last_on_col)
+                impute_values = sorted_df.drop_duplicates(col_id, keep='last')
+                impute_values = impute_values[[col_id, col]]
+                df = df.set_index(col_id).combine_first(impute_values.set_index(col_id)).reset_index()
+        return df
+
+    def _propagate_values(self):
+        original_missing = get_cols_missing_percentage(0, self.source_df, 'merged_df', False)[['column_name', 'percent_missing']]
+        self.source_df['study_yr'] = self.source_df['study_yr'].fillna(-1)
+        self.source_df = self._use_most_recent(self.source_df, 'study_yr', 'plco_id', screen_data_cols_fill_last + screen_abnorm_data_fill_last)
+        # self.source_df = self.source_df.drop('study_yr', axis=1)
+        after_prop_missing = get_cols_missing_percentage(0, self.source_df, 'last_propagated_df', False)[['column_name', 'percent_missing']]
+        self.missing_df = original_missing.merge(after_prop_missing, suffixes=['_before_propagation', '_after_propagation'], on='column_name')
 
 
 class ExperimentDataHelperWithImputer(ExperimentDataHelper):
@@ -158,7 +216,7 @@ class ExperimentDataHelperSingleLabelNotScreenedCols(ExperimentDataHelperWithImp
     
     def _process_source(self) -> None:
         super(ExperimentDataHelperSingleLabelNotScreenedCols, self)._process_source()
-        self.source_df = remove_featues_startswith(self.source_df, screened_cols, exclude=['plco_id', 'index', 'ovar_observe_year', *self.stratify_over_cols], show_removed=False)
+        self.source_df = remove_featues_startswith(self.source_df, screened_cols, exclude=['plco_id', 'index', *self.stratify_over_cols], show_removed=False)
         
 class ExperimentDataHelperSingleLabelScreenedCols(ExperimentDataHelperSingleLabelScreened):
     @staticmethod
@@ -168,7 +226,7 @@ class ExperimentDataHelperSingleLabelScreenedCols(ExperimentDataHelperSingleLabe
     def _process_source(self) -> None:
         super(ExperimentDataHelperSingleLabelScreenedCols, self)._process_source()
         keep_cols_screen = []
-        for col in screened_cols + self.stratify_over_cols + [self.label, 'index', 'ovar_observe_year']:
+        for col in screened_cols + self.stratify_over_cols + [self.label, 'index']:
             if col in self.source_df.columns:
                 keep_cols_screen.append(col)
         self.source_df = self.source_df[list(set(keep_cols_screen))]
@@ -222,7 +280,7 @@ class ExperimentDataHelperNotScreenedCols(ExperimentDataHelperWithImputer):
     
     def _process_source(self) -> None:
         super(ExperimentDataHelperNotScreenedCols, self)._process_source()
-        self.source_df = remove_featues_startswith(self.source_df, screened_cols, exclude=['plco_id', 'index', 'ovar_observe_year', *self.stratify_over_cols], show_removed=False)
+        self.source_df = remove_featues_startswith(self.source_df, screened_cols, exclude=['plco_id', 'index', *self.stratify_over_cols], show_removed=False)
         
 class ExperimentDataHelperScreenedCols(ExperimentDataHelperScreened):
     @staticmethod
@@ -232,7 +290,7 @@ class ExperimentDataHelperScreenedCols(ExperimentDataHelperScreened):
     def _process_source(self) -> None:
         super(ExperimentDataHelperScreenedCols, self)._process_source()
         keep_cols_screen = []
-        for col in screened_cols + self.stratify_over_cols + [self.label, 'index', 'ovar_observe_year']:
+        for col in screened_cols + self.stratify_over_cols + [self.label, 'index']:
             if col in self.source_df.columns:
                 keep_cols_screen.append(col)
         self.source_df = self.source_df[list(set(keep_cols_screen))]

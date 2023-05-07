@@ -97,8 +97,8 @@ def get_cols_missing_percentage(cutoff_percentage, df, name, show_missing=True):
     if show_missing:
         print(
             f'{len(df_missing_value)} columns were over {cutoff_percentage} missing. This is the list of columns: {df_missing_value["column_name"].to_list()}')
-    print(f'The table of features missing over {cutoff_percentage} percentage: ')
     if show_missing:
+        print(f'The table of features missing over {cutoff_percentage} percentage: ')
         print_df(df_missing_value)
     return df_missing_value
 
@@ -124,7 +124,7 @@ def remove_featues_startswith(df, prefixes, exclude=[], show_removed=True):
 
 
 def select_numeric_columns(df):
-    numeric_columns = df.select_dtypes(include=['float64','int64']).columns.tolist()
+    numeric_columns = df.select_dtypes(include=['float16','int16','float64','int64']).columns.tolist()
     return numeric_columns
 
 
