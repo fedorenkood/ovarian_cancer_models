@@ -18,7 +18,8 @@ screen_data_cols = ['study_yr', 'detl_p', 'detr_p', 'lvol_p', 'rvol_p', 'lvol_q'
        'ovcyst_morphr', 'ovcyst_morphl', 'ovcyst_morph', 'ovcyst_sumr',
        'ovcyst_suml', 'ovcyst_sum', 'ovary_diam', 'ovary_diamr', 'ovary_diaml',
        'ovary_volr', 'ovary_voll', 'ovary_vol', 'visl', 'visr', 'visboth',
-       'viseith', 'numcystl', 'numcystr', 'numcyst', 'plco_id', 'ovar_days']
+       'viseith', 'numcystl', 'numcystr', 'numcyst', 'plco_id', 'ovar_days',
+       'ca125ii_level_binary']
 
 screen_abnorm_data_cols = ['study_yr', 'solid', 'sepst', 'cyst', 'cystw', 'echo', 'maxdi', 'volum',
        'plco_id']
@@ -36,7 +37,8 @@ screen_data_cols_fill_last = ['detl_p', 'detr_p', 'lvol_p', 'rvol_p', 'lvol_q', 
        'ovcyst_morphr', 'ovcyst_morphl', 'ovcyst_morph', 'ovcyst_sumr',
        'ovcyst_suml', 'ovcyst_sum', 'ovary_diam', 'ovary_diamr', 'ovary_diaml',
        'ovary_volr', 'ovary_voll', 'ovary_vol', 'visl', 'visr', 'visboth',
-       'viseith', 'numcystl', 'numcystr', 'numcyst']
+       'viseith', 'numcystl', 'numcystr', 'numcyst',
+       'ca125ii_level_binary']
 
 screen_abnorm_data_fill_last = ['solid', 'sepst', 'cyst', 'cystw', 'echo', 'maxdi', 'volum']
 

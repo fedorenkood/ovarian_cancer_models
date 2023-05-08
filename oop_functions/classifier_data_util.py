@@ -71,7 +71,7 @@ class ClassifierDataUtil:
         print(f'Distribution of positive labels based on duplicate plco_id: {np.sum(y_test)/(np.sum(y_train) + np.sum(y_test))}')
 
     def split_xy(self, df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.Series]:
-        df = remove_featues_startswith(df, self.cols_to_remove, [self.label], show_removed=False)
+        df = remove_featues_startswith(df, self.cols_to_remove, [self.label, 'ovar_result'], show_removed=False)
         y = df[self.label]
         X = df.drop([self.label], axis=1)
         return X, y
