@@ -45,8 +45,11 @@ class GenerateReportUtil:
 
     def generate_report(self) -> GenerateReportUtil:
         report = pd.DataFrame(
-            classification_report(self.y_test, self.y_pred_threshold, output_dict=True)).transpose().iloc[0:2, :]
-        self.auc = roc_auc_score(self.y_test, self.y_prob)
+            classification_report(self.y_test, self.y_pred_threshold, output_dict=True)).transpose().iloc[0:len(self.y_test.unique()), :]
+        try:
+            self.auc = roc_auc_score(self.y_test, self.y_prob)
+        except:
+            pass
         self.accuracy = accuracy_score(self.y_test, self.y_pred_threshold)
         report = report.drop(['support'], axis=1)
         report['class'] = report.index
@@ -72,7 +75,7 @@ class GenerateReportUtil:
         return self
 
     def get_confusion_matrix(self) -> pd.DataFrame:
-        return pd.DataFrame(confusion_matrix(self.y_test, self.y_pred_threshold),
+        return pd.DataFrame(confusion_matrix(self.y_test, self.y_pred_threshold, labels=[0, 1]),
                             columns=['Predicted Healthy', 'Predicted Cancer'], index=['Healthy', 'Cancer'])
 
     def get_roc_results(self) -> Tuple[np.array, np.array, np.array]:

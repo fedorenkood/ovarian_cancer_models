@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import List
 
 import pandas as pd
+import numpy as np
 
 from .classifier_data_util import ClassifierDataUtil, TrainTestSplitUtil
 from .imputer_util import ImputerUtil
@@ -30,7 +31,7 @@ screened_cols = screen_data_cols + screen_abnorm_data_cols + ['ca125ii', 'ca125_
 screen_data_cols_fill_last = ['detl_p', 'detr_p', 'lvol_p', 'rvol_p', 'lvol_q', 'rvol_q',
        'lantero_p', 'lantero_q', 'llong_p', 'llong_q', 'ltran_p', 'ltran_q',
        'rantero_p', 'rantero_q', 'rlong_p', 'rlong_q', 'rtran_p', 'rtran_q',
-       'tvu_ref', 'phycons', 'tvu_result', 'ca125_result', 'ovar_result',
+       'tvu_ref', 'phycons', 'tvu_result', 'ovar_result',
        'ovcyst_solidr', 'ovcyst_outliner', 'ovcyst_solidl', 'ovcyst_outlinel',
        'ovcyst_solid', 'ovcyst_outline', 'ovcyst_diamr', 'ovcyst_diaml',
        'ovcyst_diam', 'ovcyst_volr', 'ovcyst_voll', 'ovcyst_vol',
@@ -38,6 +39,7 @@ screen_data_cols_fill_last = ['detl_p', 'detr_p', 'lvol_p', 'rvol_p', 'lvol_q', 
        'ovcyst_suml', 'ovcyst_sum', 'ovary_diam', 'ovary_diamr', 'ovary_diaml',
        'ovary_volr', 'ovary_voll', 'ovary_vol', 'visl', 'visr', 'visboth',
        'viseith', 'numcystl', 'numcystr', 'numcyst',
+    #    'ca125_result', 
        'ca125ii_level_binary']
 
 screen_abnorm_data_fill_last = ['solid', 'sepst', 'cyst', 'cystw', 'echo', 'maxdi', 'volum']
@@ -127,6 +129,26 @@ class ExperimentDataHelper:
         return df
 
     def _propagate_values(self):
+        # Custom ca125 propagation
+        # if 'ca125ii_level' in self.source_df.columns:
+        #     did_not_get_cancer_after_elevated_index = []
+        #     for year in range(0,6):
+        #         filtered = self.source_df[(self.source_df['ovar_observe_year'] == year) & (self.source_df['ca125ii_level'] >= 35) & (self.source_df['ovar_cancer_years'] > year + 1)]
+        #         index = self.source_df[(self.source_df['ovar_observe_year'] == year + 1) 
+        #                             & (self.source_df['ca125ii_level'].isna()) 
+        #                             & (self.source_df['plco_id'].isin(filtered['plco_id']))].index
+        #         did_not_get_cancer_after_elevated_index.extend(index)
+        #     self.source_df.loc[did_not_get_cancer_after_elevated_index, 'ca125ii_level'] = 34
+        if 'ca125ii_level_binary' in self.source_df.columns:
+            did_not_get_cancer_after_elevated_index = []
+            for year in range(0,6):
+                filtered = self.source_df[(self.source_df['ovar_observe_year'] == year) & (self.source_df['ca125ii_level_binary'] >= 2) & (self.source_df['ovar_cancer_years'] > year + 1)]
+                index = self.source_df[(self.source_df['ovar_observe_year'] == year + 1) 
+                                    & (self.source_df['ca125ii_level_binary'].isna()) 
+                                    & (self.source_df['plco_id'].isin(filtered['plco_id']))].index
+                did_not_get_cancer_after_elevated_index.extend(index)
+            self.source_df.loc[did_not_get_cancer_after_elevated_index, 'ca125ii_level_binary'] = 1
+        # Other values propagation
         original_missing = get_cols_missing_percentage(0, self.source_df, 'merged_df', False)[['column_name', 'percent_missing']]
         self.source_df['study_yr'] = self.source_df['study_yr'].fillna(-1)
         self.source_df = self._use_most_recent(self.source_df, 'study_yr', 'plco_id', screen_data_cols_fill_last + screen_abnorm_data_fill_last)
@@ -263,6 +285,9 @@ class ExperimentDataHelperScreened(ExperimentDataHelperWithImputer):
         # drop non-cancer records without screen records
         condition = (self.source_df['was_screened'] == 1)
         self.source_df = self.source_df[condition]
+        self.source_df['ca125ii_level_binary'] = np.nan
+        self.source_df.loc[self.source_df['ca125ii_level'] < 35, 'ca125ii_level_binary'] = 1
+        self.source_df.loc[self.source_df['ca125ii_level'] >= 35 , 'ca125ii_level_binary'] = 2
 
 
 class ExperimentDataHelperScreenedFirst5(ExperimentDataHelperScreened):
@@ -274,6 +299,38 @@ class ExperimentDataHelperScreenedFirst5(ExperimentDataHelperScreened):
         super(ExperimentDataHelperScreenedFirst5, self)._process_source()
         condition = (self.source_df['ovar_observe_year'] <= 5)
         self.source_df = self.source_df[condition]
+
+
+class ExperimentDataHelperScreenedFirst5ca125AndBinary(ExperimentDataHelperScreenedFirst5):
+    @staticmethod
+    def get_name() -> str:
+        return 'participants_screened_first_5_ca125_and_binary'
+    
+    def _process_source(self) -> None:
+        super(ExperimentDataHelperScreenedFirst5ca125AndBinary, self)._process_source()
+        self.source_df['ca125ii_level_binary'] = np.nan
+        self.source_df.loc[self.source_df['ca125ii_level'] < 35, 'ca125ii_level_binary'] = 1
+        self.source_df.loc[self.source_df['ca125ii_level'] >= 35 , 'ca125ii_level_binary'] = 2
+
+
+class ExperimentDataHelperScreenedFirst5ca125Binary(ExperimentDataHelperScreenedFirst5ca125AndBinary):
+    @staticmethod
+    def get_name() -> str:
+        return 'participants_screened_first_5_ca125_binary'
+    
+    def _process_source(self) -> None:
+        super(ExperimentDataHelperScreenedFirst5ca125Binary, self)._process_source()
+        self.source_df = self.source_df.drop('ca125ii_level', axis=1)
+
+
+class ExperimentDataHelperScreenedFirst5ca125AndBinaryNoResult(ExperimentDataHelperScreenedFirst5ca125AndBinary):
+    @staticmethod
+    def get_name() -> str:
+        return 'participants_screened_first_5_ca125_and_binary_no_result'
+    
+    def _process_source(self) -> None:
+        super(ExperimentDataHelperScreenedFirst5ca125AndBinaryNoResult, self)._process_source()
+        self.source_df = self.source_df.drop('ca125_result', axis=1)
         
 class ExperimentDataHelperNotScreenedCols(ExperimentDataHelperWithImputer):
     @staticmethod

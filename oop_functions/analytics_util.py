@@ -84,9 +84,7 @@ class AnalyticsUtil:
     def get_high_confidence_errors(self, label_val: int = 0, top_n: int = 5):
         label = self.data_util.label
         # Insert predicted class and its likelihood
-        X_train, y_train = self.data_util.get_train_data()
         X_test, y_test = self.data_util.get_test_data()
-        X_train = X_train.copy()
         X_test = X_test.copy()
         y_pred, y_prob = self.get_predictions() 
         X_test_mismatch = X_test.copy()

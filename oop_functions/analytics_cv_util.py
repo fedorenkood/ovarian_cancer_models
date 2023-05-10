@@ -44,7 +44,12 @@ class CvAnalyticsUtil:
     def get_cv_report(self):
         cv_scores = []
         for k, analytics_util in enumerate(self.analytics_utils):
-            report_generation_util = analytics_util.get_report_generation_util_filtered(self.filter)
+            # TODO: cleanup and generalize
+            try:
+                report_generation_util = analytics_util.get_report_generation_util_filtered(self.filter)
+            except Exception as e:
+                # print(f'Filter resulted in error. i.e. no records with such filter')
+                continue
             if self.threshold:
                 report_generation_util.apply_threshold(self.threshold)
             report = report_generation_util.generate_report().get_report()
@@ -60,7 +65,11 @@ class CvAnalyticsUtil:
     def get_confusion_matrix(self):
         confusion_matirices = []
         for k, analytics_util in enumerate(self.analytics_utils):
-            report_generation_util = analytics_util.get_report_generation_util_filtered(self.filter)
+            try:
+                report_generation_util = analytics_util.get_report_generation_util_filtered(self.filter)
+            except Exception as e:
+                # print(f'Filter resulted in error. i.e. no records with such filter')
+                continue
             if self.threshold:
                 report_generation_util.apply_threshold(self.threshold)
             cm = report_generation_util.get_confusion_matrix()
@@ -76,7 +85,11 @@ class CvAnalyticsUtil:
         y_test_all = []
         y_prob_all = []
         for k, analytics_util in enumerate(self.analytics_utils):
-            report_generation_util = analytics_util.get_report_generation_util_filtered(self.filter)
+            try:
+                report_generation_util = analytics_util.get_report_generation_util_filtered(self.filter)
+            except Exception as e:
+                # print(f'Filter resulted in error. i.e. no records with such filter')
+                continue
             if self.threshold:
                 report_generation_util.apply_threshold(self.threshold)
             y_test, y_pred, y_prob = report_generation_util.get_predictions()
@@ -91,7 +104,11 @@ class CvAnalyticsUtil:
         y_test_all = []
         y_prob_all = []
         for k, analytics_util in enumerate(self.analytics_utils):
-            report_generation_util = analytics_util.get_report_generation_util_filtered(self.filter)
+            try:
+                report_generation_util = analytics_util.get_report_generation_util_filtered(self.filter)
+            except Exception as e:
+                # print(f'Filter resulted in error. i.e. no records with such filter')
+                continue
             if self.threshold:
                 report_generation_util.apply_threshold(self.threshold)
             y_test, y_pred, y_prob = report_generation_util.get_predictions()
@@ -107,7 +124,11 @@ class CvAnalyticsUtil:
         interp_tprs = []
         thresholds_list = []
         for k, analytics_util in enumerate(self.analytics_utils):
-            report_generation_util = analytics_util.get_report_generation_util_filtered(self.filter)
+            try:
+                report_generation_util = analytics_util.get_report_generation_util_filtered(self.filter)
+            except Exception as e:
+                # print(f'Filter resulted in error. i.e. no records with such filter')
+                continue
             if self.threshold:
                 report_generation_util.apply_threshold(self.threshold)
             fpr, tpr, thresholds = report_generation_util.get_roc_results_interp()
@@ -123,7 +144,11 @@ class CvAnalyticsUtil:
         recall_mean = np.linspace(0, 1, 100)
         interp_precision = []
         for k, analytics_util in enumerate(self.analytics_utils):
-            report_generation_util = analytics_util.get_report_generation_util_filtered(self.filter)
+            try:
+                report_generation_util = analytics_util.get_report_generation_util_filtered(self.filter)
+            except Exception as e:
+                # print(f'Filter resulted in error. i.e. no records with such filter')
+                continue
             if self.threshold:
                 report_generation_util.apply_threshold(self.threshold)
             precision, recall = report_generation_util.get_precision_recall_results_interp()
