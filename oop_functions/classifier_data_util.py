@@ -27,7 +27,7 @@ class ClassifierDataUtil:
     def copy(self) -> ClassifierDataUtil:
         return ClassifierDataUtil(
             label=self.label,
-            imputer=self.imputer,
+            imputer=self.imputer.copy(),
             id_col=self.id_col,
             train_size=self.train_size,
             stratify_tests_over_cols=self.stratify_tests_over_cols,

@@ -185,7 +185,8 @@ class ExperimentDataHelperWithImputer(ExperimentDataHelper):
             'visboth': 0,
             'viseith': 0,
             'visl': 0,
-            'visr': 0
+            'visr': 0,
+            'ovar_histtype': -1
         }
         numeric_columns = select_numeric_columns(self.source_df)
         numeric_columns = list(set(numeric_columns) - set(impute_const_dict.keys()))
@@ -221,6 +222,10 @@ class ExperimentDataHelperSingleLabelScreened(ExperimentDataHelperWithImputerSin
         # drop non-cancer records without screen records
         condition = (self.source_df['was_screened'] == 1)
         self.source_df = self.source_df[condition]
+        # TODO: why did I decide to keep this?
+        self.source_df['ca125ii_level_binary'] = np.nan
+        self.source_df.loc[self.source_df['ca125ii_level'] < 35, 'ca125ii_level_binary'] = 1
+        self.source_df.loc[self.source_df['ca125ii_level'] >= 35 , 'ca125ii_level_binary'] = 2
 
 class ExperimentDataHelperSingleLabelScreenedFirst5(ExperimentDataHelperSingleLabelScreened):
     @staticmethod
@@ -285,6 +290,7 @@ class ExperimentDataHelperScreened(ExperimentDataHelperWithImputer):
         # drop non-cancer records without screen records
         condition = (self.source_df['was_screened'] == 1)
         self.source_df = self.source_df[condition]
+        # TODO: why did I decide to keep this?
         self.source_df['ca125ii_level_binary'] = np.nan
         self.source_df.loc[self.source_df['ca125ii_level'] < 35, 'ca125ii_level_binary'] = 1
         self.source_df.loc[self.source_df['ca125ii_level'] >= 35 , 'ca125ii_level_binary'] = 2
