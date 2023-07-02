@@ -346,7 +346,19 @@ class ExperimentDataHelperNotScreenedCols(ExperimentDataHelperWithImputer):
     def _process_source(self) -> None:
         super(ExperimentDataHelperNotScreenedCols, self)._process_source()
         self.source_df = remove_featues_startswith(self.source_df, screened_cols, exclude=['plco_id', 'index', *self.stratify_over_cols], show_removed=False)
-        
+
+
+class ExperimentDataHelperNotScreenedColsFirst5(ExperimentDataHelperNotScreenedCols):
+    @staticmethod
+    def get_name() -> str:
+        return 'not_screened_cols_first_5'
+    
+    def _process_source(self) -> None:
+        super(ExperimentDataHelperNotScreenedColsFirst5, self)._process_source()
+        condition = (self.source_df['ovar_observe_year'] <= 5)
+        self.source_df = self.source_df[condition]
+
+     
 class ExperimentDataHelperScreenedCols(ExperimentDataHelperScreened):
     @staticmethod
     def get_name() -> str:
