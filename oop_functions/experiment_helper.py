@@ -9,6 +9,7 @@ from .classifier_data_util import ClassifierDataUtil, TrainTestSplitUtil
 from .imputer_util import ImputerUtil
 from .util_functions import remove_featues_startswith, select_numeric_columns, get_cols_missing_percentage
 
+# TODO: these have changed
 screen_data_cols = ['study_yr', 'detl_p', 'detr_p', 'lvol_p', 'rvol_p', 'lvol_q', 'rvol_q',
        'lantero_p', 'lantero_q', 'llong_p', 'llong_q', 'ltran_p', 'ltran_q',
        'rantero_p', 'rantero_q', 'rlong_p', 'rlong_q', 'rtran_p', 'rtran_q',
@@ -186,7 +187,10 @@ class ExperimentDataHelperWithImputer(ExperimentDataHelper):
             'viseith': 0,
             'visl': 0,
             'visr': 0,
-            'ovar_histtype': -1
+            'ovar_histtype': -1,
+            'ph_any_bq': 9,
+            'ph_ovar_bq': 9,
+            'ph_any_not_ovar_bq': 9,
         }
         numeric_columns = select_numeric_columns(self.source_df)
         numeric_columns = list(set(numeric_columns) - set(impute_const_dict.keys()))

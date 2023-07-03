@@ -44,6 +44,9 @@ class ExperimentRunner:
         analytics_utils = []
         for i in range(self.test_n_folds):
             data_util = data_util_lambdas[i]
-            analytics_util = self.get_analytics_util()(self.classifier, data_util).fit()
+            data_util = data_util.impute_transform()
+            analytics_util = self.get_analytics_util()(self.classifier, data_util)
+            # print(analytics_util.data_util.imputer.imputer_mean.statistics_)
+            analytics_util = analytics_util.fit()
             analytics_utils.append(analytics_util)
         return self.get_cv_analytics_util()(analytics_utils, self.experiment_data_helper.missing_df, self.experiment_data_helper.get_name())

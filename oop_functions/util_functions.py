@@ -122,6 +122,20 @@ def remove_featues_startswith(df, prefixes, exclude=[], show_removed=True):
         df = df.drop(remove_cols, axis=1)
     return df
 
+def select_features_endswith(df, suffixes):
+    for suffix in suffixes:
+        remove_cols = []
+        for col in df.columns:
+            if col.endswith(suffix):
+                remove_cols.append(col)
+    return remove_cols
+
+def remove_featues_endswith(df, suffixes, exclude=[], show_removed=True):
+    remove_cols = select_features_endswith(df, suffixes) 
+    remove_cols = list(set(remove_cols) - set(exclude))
+    df = df.drop(remove_cols, axis=1)
+    return df
+
 
 def select_numeric_columns(df):
     numeric_columns = df.select_dtypes(include=['float16','int16','float64','int64']).columns.tolist()

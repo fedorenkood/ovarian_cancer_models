@@ -48,6 +48,16 @@ class ClassifierDataUtil:
         self.test_df.to_csv(f'./imputed_data/test_{filesuffix}.csv', index=False)
         return self
     
+    def store_imputer(self, filesuffix: str) -> ClassifierDataUtil:
+        pickle.dump(self.imputer.imputer_mean, open(f'./stored_classes/imputers/{filesuffix}_mean.sav', 'wb'))
+        pickle.dump(self.imputer.imputer_median, open(f'./stored_classes/imputers/{filesuffix}_median.sav', 'wb'))
+        return self
+    
+    def load_imputer(self, filesuffix: str) -> ClassifierDataUtil:
+        self.imputer.imputer_mean = pickle.load(open(f'./stored_classes/imputers/{filesuffix}_mean.sav', 'rb'))
+        self.imputer.imputer_median = pickle.load(open(f'./stored_classes/imputers/{filesuffix}_median.sav', 'rb'))
+        return self
+    
     def check_if_data_util_initialized(self) -> None:
         if self.train_df is None or self.test_df is None:
             raise Exception("Data Util was not initialized")
@@ -91,6 +101,11 @@ class ClassifierDataUtil:
         filtered_test = remove_featues_startswith(filtered_test, self.cols_to_remove, [self.label, 'ovar_result'], show_removed=False)
         X_test_filtered, y_test_filtered = self.split_xy(filtered_test)
         return X_test_filtered, y_test_filtered
+    
+    def impute_transform(self):
+        self.train_df = self.imputer.imputer_transform(self.train_df)
+        self.test_df = self.imputer.imputer_transform(self.test_df)
+        return self
 
     def process_train_test_split(self, source_df: pd.DataFrame, train_ids: pd.Series, test_ids: pd.Series) -> ClassifierDataUtil:
         if self.imputer is None:
@@ -99,7 +114,9 @@ class ClassifierDataUtil:
         test = source_df[source_df[self.id_col].isin(test_ids)]
 
         # Perform imputation before oversampling
-        train, test = self.imputer.impute_data(train, test)
+        print(self.imputer)
+        train, test = self.imputer.imputer_fit(train, test)
+        print(self.imputer.imputer_mean.statistics_)
 
         # Perform oversamping and reshuffle
         train = resample_max(train, self.label, self.train_size).sample(frac = 1)
@@ -129,6 +146,7 @@ class TrainTestSplitUtil:
                 break
             train = unique_id_df.iloc[train, :]
             test = unique_id_df.iloc[test, :]
-            k_fold_lambdas.append(self.data_util.copy().process_train_test_split(self.source_df, train[self.data_util.id_col], test[self.data_util.id_col]))
+            new_data_util = self.data_util.copy().process_train_test_split(self.source_df.copy(), train[self.data_util.id_col], test[self.data_util.id_col])
+            k_fold_lambdas.append(new_data_util)
 
         return k_fold_lambdas

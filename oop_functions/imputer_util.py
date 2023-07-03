@@ -61,13 +61,17 @@ class ImputerUtil:
         df = self.imputer_transform_general(df, self.impute_mean_cols, 'mean')
         df = self.imputer_transform_general(df, self.impute_median_cols, 'median')
         return df
-
-    def impute_data(self, train: pd.DataFrame, test: pd.DataFrame):
+    
+    def imputer_fit(self, train: pd.DataFrame, test: pd.DataFrame):
         # keep in mind that it should stay float16 and not float64 use convert_numeric_to_float16(df)
         self.imputer_mean = SimpleImputer(missing_values=np.nan, strategy='mean')
         self.imputer_median = SimpleImputer(missing_values=np.nan, strategy='median')
         self.fit_imputer(train, self.impute_mean_cols, 'mean')
         self.fit_imputer(train, self.impute_median_cols, 'median')
+        return train, test
+
+    def impute_data(self, train: pd.DataFrame, test: pd.DataFrame):
+        train, test = self.imputer_fit(train, test)
         train = self.imputer_transform(train)
         test = self.imputer_transform(test)
         return convert_numeric_to_float16(train), convert_numeric_to_float16(test)
