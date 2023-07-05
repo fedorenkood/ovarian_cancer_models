@@ -114,9 +114,9 @@ class ClassifierDataUtil:
         test = source_df[source_df[self.id_col].isin(test_ids)]
 
         # Perform imputation before oversampling
-        print(self.imputer)
+        # print(self.imputer)
         train, test = self.imputer.imputer_fit(train, test)
-        print(self.imputer.imputer_mean.statistics_)
+        # print(self.imputer.imputer_mean.statistics_)
 
         # Perform oversamping and reshuffle
         train = resample_max(train, self.label, self.train_size).sample(frac = 1)
