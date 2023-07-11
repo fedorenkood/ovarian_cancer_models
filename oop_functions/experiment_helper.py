@@ -201,7 +201,8 @@ class ExperimentDataHelperWithImputerSingleLabel(ExperimentDataHelperWithImputer
     def _process_source(self) -> None:
         super(ExperimentDataHelperWithImputerSingleLabel, self)._process_source()
         # experiment where participants cannot be classified by two different labels i.e. first classfied as not having cancer and then classified as having cancer
-        condition = ~( (self.source_df[self.label] == 0) & (self.source_df['ovar_cancer'] == 1))
+        idx = self.source_df[self.source_df[self.label] == 1]['plco_id'].to_list()
+        condition = ~( (self.source_df[self.label] == 0) & self.source_df['plco_id'].isin(idx)) 
         self.source_df = self.source_df[ condition]
 
 
@@ -237,10 +238,9 @@ class ExperimentDataHelperSingleLabelScreenedFirst5(ExperimentDataHelperSingleLa
         return 'participants_screened_single_first_5'
     
     def _process_source(self) -> None:
-        super(ExperimentDataHelperSingleLabelScreenedFirst5, self)._process_source()
         condition = ((self.source_df['ovar_observe_year'] <= 5)) 
         self.source_df = self.source_df[condition]
-    
+        super(ExperimentDataHelperSingleLabelScreenedFirst5, self)._process_source()
         
 class ExperimentDataHelperSingleLabelNotScreenedCols(ExperimentDataHelperWithImputerSingleLabel):
     @staticmethod
@@ -306,9 +306,9 @@ class ExperimentDataHelperScreenedFirst5(ExperimentDataHelperScreened):
         return 'participants_screened_first_5'
     
     def _process_source(self) -> None:
-        super(ExperimentDataHelperScreenedFirst5, self)._process_source()
         condition = (self.source_df['ovar_observe_year'] <= 5)
         self.source_df = self.source_df[condition]
+        super(ExperimentDataHelperScreenedFirst5, self)._process_source()
 
 
 class ExperimentDataHelperScreenedFirst5ca125AndBinary(ExperimentDataHelperScreenedFirst5):
