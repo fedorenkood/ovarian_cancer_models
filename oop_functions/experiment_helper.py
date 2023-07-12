@@ -58,7 +58,7 @@ class ExperimentDataHelper:
         self.train_size = train_size
         self.missing_df = None
         self._process_source()
-        self.source_df = self.source_df.drop_duplicates(list(set(self.source_df.columns) - set(['ovar_observe_year', 'index'])))
+        self.source_df = self.source_df.drop_duplicates(list(set(self.source_df.columns) - set(['index', *self.stratify_over_cols])))
         self._propagate_values()
 
         # Propagate previous values
@@ -79,7 +79,7 @@ class ExperimentDataHelper:
         return 'experiment'
     
     def set_stratify_over_cols_default(self) -> List[str]:
-        return ['was_screened', 'ovar_histtype', 'study_yr', 'ovar_observe_year']
+        return ['was_screened', 'ovar_histtype', 'study_yr', 'ovar_observe_year', 'ovar_cancer_years']
     
     def set_train_size_to_val(self, val) -> None:
         self.train_size = val
