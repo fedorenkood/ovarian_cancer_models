@@ -113,32 +113,37 @@ def drop_cols_missing_percentage(cutoff_percentage, df, name, show_missing=True)
     return df.drop(df_missing_value['column_name'].to_list(), axis=1)
 
 
-def remove_featues_startswith(df, prefixes, exclude=[], show_removed=True):
-    for prefix in prefixes:
-        remove_cols = []
+def select_features_startswith(df, preffixes):
+    remove_cols = []
+    for preffix in preffixes:
         for col in df.columns:
-            if col.startswith(prefix):
+            if col.startswith(preffix):
                 remove_cols.append(col)
-        if show_removed:
-            print(f'Number of {prefix} cols: {len(remove_cols)}')
-            print(remove_cols)
-        remove_cols = list(set(remove_cols) - set(exclude))
-        df = df.drop(remove_cols, axis=1)
-    return df
+    return remove_cols
 
 def select_features_endswith(df, suffixes):
+    remove_cols = []
     for suffix in suffixes:
-        remove_cols = []
         for col in df.columns:
             if col.endswith(suffix):
                 remove_cols.append(col)
     return remove_cols
 
-def remove_featues_endswith(df, suffixes, exclude=[], show_removed=True):
-    remove_cols = select_features_endswith(df, suffixes) 
+def remove_featues(df, remove_cols, exclude=[], show_removed=False):
     remove_cols = list(set(remove_cols) - set(exclude))
     df = df.drop(remove_cols, axis=1)
+    if show_removed:
+        print(f'Number of cols: {len(remove_cols)}')
+        print(remove_cols)
     return df
+
+def remove_featues_startswith(df, prefixes, exclude=[], show_removed=False):
+    remove_cols = select_features_startswith(df, prefixes) 
+    return remove_featues(df, remove_cols, exclude, show_removed)
+
+def remove_featues_endswith(df, suffixes, exclude=[], show_removed=False):
+    remove_cols = select_features_endswith(df, suffixes) 
+    return remove_featues(df, remove_cols, exclude, show_removed)
 
 
 def select_numeric_columns(df):
