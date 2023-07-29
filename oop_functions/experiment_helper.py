@@ -5,6 +5,9 @@ from typing import List
 import pandas as pd
 import numpy as np
 
+from oop_functions.classifier_data_util import ClassifierDataUtil, TrainTestSplitUtil
+from oop_functions.imputer_util import ImputerUtil
+
 from .classifier_data_util import ClassifierDataUtil, TrainTestSplitUtil
 from .imputer_util import ImputerUtil
 from .util_functions import remove_featues_startswith, select_numeric_columns, get_cols_missing_percentage
@@ -47,7 +50,7 @@ screen_abnorm_data_fill_last = ['solid', 'sepst', 'cyst', 'cystw', 'echo', 'maxd
 
 class ExperimentDataHelper:
     def __init__(self, source_df: pd.DataFrame, label: str, other_lebels: List[str], train_size: int = 10000, imputer_util: ImputerUtil = None,
-                 data_util: ClassifierDataUtil = None, train_test_split_util: TrainTestSplitUtil = None) -> None:
+                 data_util: ClassifierDataUtil = None, train_test_split_util: TrainTestSplitUtil = None, select_features: List[str] = None) -> None:
         self.source_df = source_df
         self.label = label
         self.other_lebels = other_lebels
@@ -57,8 +60,16 @@ class ExperimentDataHelper:
         self.stratify_over_cols = self.set_stratify_over_cols_default()
         self.train_size = train_size
         self.missing_df = None
+        self.select_features = select_features
         self._process_source()
-        self.source_df = self.source_df.drop_duplicates(list(set(self.source_df.columns) - set(['index', *self.stratify_over_cols])))
+        # self.source_df = self.source_df.drop(['ca125_result'], axis=1)
+        # Top k cols
+        if select_features:
+            keep_cols_screen = []
+            for col in select_features + self.stratify_over_cols + [self.label, 'index', 'plco_id']:
+                if col in self.source_df.columns:
+                    keep_cols_screen.append(col)
+            self.source_df = self.source_df[list(set(keep_cols_screen))]
         self._propagate_values()
 
         # Propagate previous values
@@ -78,6 +89,12 @@ class ExperimentDataHelper:
     def get_name() -> str:
         return 'experiment'
     
+    def get_experiment_name(self) -> str:
+        name = self.get_name()
+        if self.select_features:
+            name += f'_top_{len(self.select_features)}_features'
+        return name
+    
     def set_stratify_over_cols_default(self) -> List[str]:
         return ['was_screened', 'ovar_histtype', 'study_yr', 'ovar_observe_year', 'ovar_cancer_years']
     
@@ -92,6 +109,7 @@ class ExperimentDataHelper:
         self.source_df = remove_featues_startswith(self.source_df, self.other_lebels, [self.label],
                                                    show_removed=False).drop_duplicates()
         self.source_df = self.source_df[self.source_df[self.label].notnull()]
+        self.source_df = self.source_df.drop_duplicates(list(set(self.source_df.columns) - set(['index', *self.stratify_over_cols])))
 
     def _init_imputer(self) -> None:
         pass
@@ -122,6 +140,8 @@ class ExperimentDataHelper:
     def _use_most_recent(self, df, keep_last_on_col, col_id, on_cols):
         for col in on_cols:
             if col in df.columns:
+                if len(df[df[col].isnull()]) == 0:
+                    continue
                 sorted_df = df[df[col].notnull()]
                 sorted_df = sorted_df.sort_values(by=keep_last_on_col)
                 impute_values = sorted_df.drop_duplicates(col_id, keep='last')
@@ -162,15 +182,13 @@ class ExperimentDataHelperWithImputer(ExperimentDataHelper):
     def _init_imputer(self) -> None:
         impute_const_dict = {
             'numcyst': 0,
+            'numcystl': 0,
+            'numcystr': 0,
             'ovcyst_morph': 0,
             'ovcyst_outline': 0,
             'ovcyst_solid': 0,
             'ovcyst_sum': 0,
             'ovcyst_vol': 0,
-            'numcyst': 0,
-            'tvu_result': 1,
-            'numcystl': 0,
-            'numcystr': 0,
             'ovcyst_diaml': 0,
             'ovcyst_diamr': 0,
             'ovcyst_morphl': 0,
@@ -188,13 +206,23 @@ class ExperimentDataHelperWithImputer(ExperimentDataHelper):
             'visl': 0,
             'visr': 0,
             'ovar_histtype': -1,
-            'ph_any_bq': 9,
-            'ph_ovar_bq': 9,
+            'tvu_result': 9, # Was 1. According to original research 9?
+            'ph_any_bq': 9, # According to original research 9
+            'ph_ovar_bq': 9, # According to original research 9
             'ph_any_not_ovar_bq': 9,
+            'ca125_result': 9, # According to original research 9
+            'mammo_history': 3, # According to original research 3
         }
         numeric_columns = select_numeric_columns(self.source_df)
         numeric_columns = list(set(numeric_columns) - set(impute_const_dict.keys()))
         self.imputer_util = ImputerUtil(impute_const_dict, impute_mean_cols=numeric_columns, impute_median_cols=[])
+
+
+class MockExperimentDataHelper(ExperimentDataHelperWithImputer):
+    def _process_source(self) -> None:
+        self.source_df = remove_featues_startswith(self.source_df, self.other_lebels, [self.label],
+                                                   show_removed=False).drop_duplicates()
+        self.source_df = self.source_df[self.source_df[self.label].notnull()]
     
 
 class ExperimentDataHelperWithImputerSingleLabel(ExperimentDataHelperWithImputer):
@@ -259,7 +287,7 @@ class ExperimentDataHelperSingleLabelScreenedCols(ExperimentDataHelperSingleLabe
     def _process_source(self) -> None:
         super(ExperimentDataHelperSingleLabelScreenedCols, self)._process_source()
         keep_cols_screen = []
-        for col in screened_cols + self.stratify_over_cols + [self.label, 'index']:
+        for col in screened_cols + self.stratify_over_cols + [self.label, 'index', 'plco_id']:
             if col in self.source_df.columns:
                 keep_cols_screen.append(col)
         self.source_df = self.source_df[list(set(keep_cols_screen))]
@@ -371,7 +399,7 @@ class ExperimentDataHelperScreenedCols(ExperimentDataHelperScreened):
     def _process_source(self) -> None:
         super(ExperimentDataHelperScreenedCols, self)._process_source()
         keep_cols_screen = []
-        for col in screened_cols + self.stratify_over_cols + [self.label, 'index']:
+        for col in screened_cols + self.stratify_over_cols + [self.label, 'index', 'plco_id']:
             if col in self.source_df.columns:
                 keep_cols_screen.append(col)
         self.source_df = self.source_df[list(set(keep_cols_screen))]

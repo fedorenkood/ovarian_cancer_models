@@ -45,7 +45,7 @@ class GenerateReportUtil:
 
     def generate_report(self) -> GenerateReportUtil:
         report = pd.DataFrame(
-            classification_report(self.y_test, self.y_pred_threshold, output_dict=True)).transpose().iloc[0:len(self.y_test.unique()), :]
+            classification_report(self.y_test, self.y_pred_threshold, output_dict=True)).transpose().iloc[0:len(np.unique(self.y_test)), :]
         try:
             self.auc = roc_auc_score(self.y_test, self.y_prob)
         except:

@@ -11,6 +11,7 @@ from sklearn.metrics import roc_curve, precision_recall_curve
 from oop_functions.analytics_util import AnalyticsUtil
 from oop_functions.util_functions import print_df
 from oop_functions.visualization_util import VisualizationUtil
+from oop_functions.report_util import GenerateReportUtil
 
 
 class CvAnalyticsUtil:
@@ -80,9 +81,10 @@ class CvAnalyticsUtil:
         cv_cm = cv_cm.sum(axis=0)
         cv_cm = cv_cm.round(0)
         return pd.DataFrame(cv_cm, columns=columns, index=index).astype(np.int32)
-
-    def roc_curve(self):
+    
+    def combined_predictions(self):
         y_test_all = []
+        y_pred_all = []
         y_prob_all = []
         for k, analytics_util in enumerate(self.analytics_utils):
             try:
@@ -94,28 +96,25 @@ class CvAnalyticsUtil:
                 report_generation_util.apply_threshold(self.threshold)
             y_test, y_pred, y_prob = report_generation_util.get_predictions()
             y_test_all.append(y_test)
+            y_pred_all.append(y_pred)
             y_prob_all.append(y_prob)
         y_test_all = np.concatenate(y_test_all, axis=0)
+        y_pred_all = np.concatenate(y_pred_all, axis=0)
         y_prob_all = np.concatenate(y_prob_all, axis=0)
+        return y_test_all, y_pred_all, y_prob_all
+    
+    def get_optimal_operating_point(self):
+        y_test_all, y_pred_all, y_prob_all = self.combined_predictions()
+        report_util = GenerateReportUtil(y_test_all, y_pred_all, y_prob_all)
+        return report_util.get_roc_threshold()
+
+    def roc_curve(self):
+        y_test_all, y_pred_all, y_prob_all = self.combined_predictions()
         fpr, tpr, thresholds = roc_curve(y_test_all, y_prob_all)
         return fpr, tpr, thresholds
 
     def precision_recall(self):
-        y_test_all = []
-        y_prob_all = []
-        for k, analytics_util in enumerate(self.analytics_utils):
-            try:
-                report_generation_util = analytics_util.get_report_generation_util_filtered(self.filter)
-            except Exception as e:
-                # print(f'Filter resulted in error. i.e. no records with such filter')
-                continue
-            if self.threshold:
-                report_generation_util.apply_threshold(self.threshold)
-            y_test, y_pred, y_prob = report_generation_util.get_predictions()
-            y_test_all.append(y_test)
-            y_prob_all.append(y_prob)
-        y_test_all = np.concatenate(y_test_all, axis=0)
-        y_prob_all = np.concatenate(y_prob_all, axis=0)
+        y_test_all, y_pred_all, y_prob_all = self.combined_predictions()
         precision, recall, thresholds = precision_recall_curve(y_test_all, y_prob_all)
         return precision, recall
 

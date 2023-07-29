@@ -132,6 +132,11 @@ class TrainTestSplitUtil:
         self.debug = debug
 
     def split_kfold(self, num_folds: int = 10, max_test: int = None):        
+        if num_folds == 1:
+            self.data_util.train_df = self.source_df.copy()
+            self.data_util.test_df = self.source_df.copy()
+            self.data_util.train_df, self.data_util.test_df = self.data_util.imputer.imputer_fit(self.data_util.train_df, self.data_util.test_df)
+            return [self.data_util]
         # One person should not appear in train and test data since there are duplicates of a person
         # we splits of data on person id and then oversample from that sample 
         # this line of code determines whether the model is leaking info or not

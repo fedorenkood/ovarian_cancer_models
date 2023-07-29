@@ -1,5 +1,5 @@
 from itertools import product
-from typing import Tuple
+from typing import Tuple, List
 
 import numpy as np
 import pandas as pd
@@ -10,7 +10,7 @@ from tabulate import tabulate
 import seaborn as sns
 
 from xgboost import XGBClassifier
-import matplotlib as plt
+import matplotlib.pyplot as plt
     
     
 def scale_features(df):
@@ -224,3 +224,13 @@ def get_dataset_with_predictions(cv_analytics_util, id_col = 'index', label = 'c
         id_and_confidence.append(X_test_mismatch)
     full_dataset = pd.concat(id_and_confidence)
     return full_dataset
+
+
+def feature_importance_reader(filesuffix) -> List[str]:
+    try:
+        filename = f'./feature_importance/feature_importance_mean_{filesuffix}.csv'
+        # print(filename)
+        df = pd.read_csv(filename)
+        return df['column_name'].to_list()
+    except:
+        return None
