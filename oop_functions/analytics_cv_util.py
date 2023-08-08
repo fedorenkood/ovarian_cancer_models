@@ -116,7 +116,7 @@ class CvAnalyticsUtil:
     def precision_recall(self):
         y_test_all, y_pred_all, y_prob_all = self.combined_predictions()
         precision, recall, thresholds = precision_recall_curve(y_test_all, y_prob_all)
-        return precision, recall
+        return precision, recall, thresholds
 
     def roc_with_interval(self):
         fpr_mean = np.linspace(0, 1, 100)
@@ -163,7 +163,8 @@ class CvAnalyticsUtil:
         visualization_util.display_confusion_matrix(ax[0], self.get_confusion_matrix())
         visualization_util.display_roc_graph(ax[-2], *self.roc_curve())
         # visualization_util.display_roc_threshold(ax[-2], *self.roc_with_interval())
-        visualization_util.display_precision_recall(ax[-1], *self.precision_recall())
+        precision, recall, thresholds = self.precision_recall()
+        visualization_util.display_precision_recall(ax[-1], precision, recall)
         plt.show()
         return visualization_util
 

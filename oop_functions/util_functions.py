@@ -151,6 +151,13 @@ def select_numeric_columns(df):
     return numeric_columns
 
 
+def get_column_values_count(df, get_counts_col):
+    df = pd.DataFrame(df[get_counts_col].value_counts().sort_index())
+    df = df.reset_index()
+    df.columns = [get_counts_col, 'count']
+    return df
+
+
 def convert_numeric_to_float16(df: pd.DataFrame):
     numeric_cols = select_numeric_columns(df)
     for col in numeric_cols:
@@ -218,7 +225,7 @@ def plot_hist_side_by_side_for_class(df, label, xaxis, normalize = True, title='
     plt.title(title)
     plt.show()
 
-def get_dataset_with_predictions(cv_analytics_util, id_col = 'index', label = 'cancer_in_next_1_years'):
+def get_dataset_with_predictions(cv_analytics_util, id_col = 'index', label = 'cancer_in_next_1_years', filter = None):
     id_and_confidence = []
     for analytics_util in cv_analytics_util.analytics_utils:
         X_test = analytics_util.data_util.test_df
@@ -228,6 +235,8 @@ def get_dataset_with_predictions(cv_analytics_util, id_col = 'index', label = 'c
         X_test_mismatch[f'{label}_prob'] = y_prob
         id_and_confidence.append(X_test_mismatch)
     full_dataset = pd.concat(id_and_confidence)
+    if filter:
+        full_dataset = filter(full_dataset)
     return full_dataset
 
 

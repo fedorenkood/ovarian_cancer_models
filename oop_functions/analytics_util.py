@@ -83,7 +83,7 @@ class AnalyticsUtil:
     def feature_selection(self):
         pass
     
-    def get_high_confidence_errors(self, label_val: int = 0, top_n: int = 5):
+    def get_high_confidence_errors(self):
         label = self.data_util.label
         # Insert predicted class and its likelihood
         X_test, y_test = self.data_util.get_test_data()
@@ -101,11 +101,13 @@ class AnalyticsUtil:
         label = self.data_util.label
         X_train, y_train = self.data_util.get_train_data()
         X_test, y_test = self.data_util.get_test_data()
-        X_test_mismatch = self.get_high_confidence_errors(label_val, top_n)
+        X_test_mismatch = self.get_high_confidence_errors()
 
         # X_test_high_conf = X_test_mismatch[(X_test_mismatch[f'{label}_prob'] < 0.2) | (X_test_mismatch[f'{label}_prob'] > 0.8)]
         X_test_high_conf = X_test_mismatch
         X_test_high_conf = X_test_high_conf[X_test_high_conf[f'{label}_pred'] == label_val]
+        if X_test_high_conf.shape[0] == 0:
+            return []
         
         # Select 5 nearest neightbors 
         X_train[label] = y_train
