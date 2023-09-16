@@ -67,12 +67,21 @@ def get_per_thereshold_metrics(df, probability, label, thresholds = np.linspace(
     return results_df
 
 
-def extract_full_dataset_filter_cancer(cv_analytics_util: CvAnalyticsUtil):
-    full_dataset = cv_analytics_util.get_dataset_with_predictions()
+def extract_full_dataset_filter_cancer(full_dataset: pd.DataFrame):
+    full_dataset = full_dataset.copy()
     full_dataset = full_dataset[full_dataset['ovar_cancer'] == 1]
     full_dataset = full_dataset[full_dataset['ovar_cancer_years'] <= 5]
     full_dataset = full_dataset[full_dataset['study_yr'] != -1]
     return full_dataset
+
+
+def extract_full_dataset_filter_no_cancer(full_dataset: pd.DataFrame):
+    full_dataset = full_dataset.copy()
+    full_dataset = full_dataset[full_dataset['ovar_cancer'] == 0]
+    full_dataset = full_dataset[full_dataset['ovar_observe_year'] <= 6]
+    full_dataset = full_dataset[full_dataset['study_yr'] != -1]
+    return full_dataset
+
 
 def plot_diff_in_confidence(full_dataset, title=''):
     
