@@ -204,11 +204,10 @@ def resample_class(df: pd.DataFrame, label: str, label_val: object, n_max_per_cl
                                     )
     return pd.concat([df_majority, df_minority])
 
-def plot_hist_side_by_side_for_class(df, label, xaxis, normalize = True, title=''):
+def plot_hist_side_by_side_for_class(df, label, xaxis, num_bins = 20, normalize = True, title=''):
     # Compute histogram
     plt.style.use('seaborn-deep')
     fig, ax = plt.subplots(1, 1, figsize=(20, 8))
-    num_bins = 20
     positive_df = df[df[label] == 1]
     bin_edges = np.linspace(0, 1, num_bins + 1)
     hist_positive, bin_edges = np.histogram(positive_df[xaxis], bins=bin_edges)
@@ -224,21 +223,6 @@ def plot_hist_side_by_side_for_class(df, label, xaxis, normalize = True, title='
     ax.set_xlabel(xaxis)
     plt.title(title)
     plt.show()
-
-def get_dataset_with_predictions(cv_analytics_util, id_col = 'index', label = 'cancer_in_next_1_years', filter = None):
-    id_and_confidence = []
-    for analytics_util in cv_analytics_util.analytics_utils:
-        X_test = analytics_util.data_util.test_df
-        X_test_mismatch = X_test.copy()
-        y_pred, y_prob = analytics_util.get_predictions() 
-        X_test_mismatch[f'{label}_pred'] = y_pred
-        X_test_mismatch[f'{label}_prob'] = y_prob
-        id_and_confidence.append(X_test_mismatch)
-    full_dataset = pd.concat(id_and_confidence)
-    if filter:
-        full_dataset = filter(full_dataset)
-    return full_dataset
-
 
 def feature_importance_reader(filesuffix) -> List[str]:
     try:

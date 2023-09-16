@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import List
+import math
 
 import numpy as np
 import pandas as pd
@@ -35,12 +36,48 @@ class CvAnalyticsUtil:
     def get_num_folds(self) -> int:
         return len(self.analytics_utils)
     
+    def get_features(self):
+        return self.analytics_utils[0].data_util.test_df.columns
+    
     def get_file_suffix(self) -> str:
         return f'_for_experiment_{self.experiment_name}_{self.get_classifier_type()}_{self.get_label()}__{self.get_num_folds()}_trials'
 
     def update_thresholds(self, threshold: int):
         # TODO: update thresholds for each of the analytics utils
         self.threshold = threshold
+
+    def get_dataset_with_predictions(self, filter = None):
+        id_and_confidence = []
+        for analytics_util in self.analytics_utils:
+            X_test = analytics_util.data_util.test_df
+            X_test_mismatch = X_test.copy()
+            y_pred, y_prob = analytics_util.get_predictions() 
+            X_test_mismatch[f'{self.get_label()}_pred'] = y_pred
+            X_test_mismatch[f'{self.get_label()}_prob'] = y_prob
+            id_and_confidence.append(X_test_mismatch)
+        full_dataset = pd.concat(id_and_confidence)
+        if filter:
+            full_dataset = filter(full_dataset)
+        return full_dataset
+
+    def merge_in_dataset(self, dataset):
+        cols = self.get_features()
+        full_dataset_original = self.get_dataset_with_predictions()[cols]
+        full_dataset = dataset[cols]
+        full_dataset = full_dataset[~full_dataset['index'].isin(full_dataset_original['index'])]
+        full_dataset = pd.concat([full_dataset, full_dataset_original])
+        # make sure that the original records stay the same and we just add new ones 249 new ones to be exact
+        # Add those records to the test datasets of the single label dataset and test its validity
+        for analytics_util in self.analytics_utils:
+            idx = analytics_util.data_util.test_df['plco_id'].to_list()
+            # print(analytics_util.data_util.test_df.shape)
+            # print((full_dataset[full_dataset['plco_id'].isin(idx)].shape))
+            analytics_util.data_util.test_df = full_dataset[full_dataset['plco_id'].isin(idx)]
+            analytics_util.data_util.test_df = analytics_util.data_util.imputer.imputer_transform(analytics_util.data_util.test_df)
+
+        full_dataset_single_new = self.get_dataset_with_predictions()
+        print(f"Added new records: {len(full_dataset_single_new) - len(full_dataset_original)}")
+
 
     def get_cv_report(self):
         cv_scores = []
@@ -211,16 +248,30 @@ class CvAnalyticsUtil:
 class FeatureImportanceCvAnalyticsUtil(CvAnalyticsUtil):
     def get_cv_feature_selection(self) -> pd.DataFrame:
         df_feature_importance_tree = None
+        dfs = []
         for k, analytics_util in enumerate(self.analytics_utils):
             fn = analytics_util.data_util.get_feature_names()
             top_feature_stats, feature_importances = analytics_util.feature_selection()
             feature_importances = feature_importances[feature_importances['importance'] > 0]
+            dfs.append(feature_importances)
             if df_feature_importance_tree is not None:
                 df_feature_importance_tree = df_feature_importance_tree.merge(feature_importances, on='column_name',
                                                                               how='outer', suffixes=[f'_tiral_{k}',
                                                                                                      f'_tiral_{k + 1}'])
             else:
                 df_feature_importance_tree = feature_importances
+
+        print(f"Number of dfs: {len(dfs)}")
+        # Concatenate the DataFrames into a single DataFrame
+        combined_df = pd.concat(dfs, ignore_index=True)
+
+        # Group by 'column_name' and aggregate the 'importance' and 'std' columns
+        agg_result = combined_df.groupby('column_name').agg({
+            'importance': 'mean',              # Calculate the mean of 'importance'
+            'std': lambda x: math.sqrt(sum(x**2)),  # Combine 'std' using the root of sum of squares
+        }).reset_index()
+        agg_result.columns = ['column_name', 'mean', 'std']
+        agg_result.sort_values('mean', ascending=False, inplace=True)
         # Mean of feature importance over trials
         df_feature_importance_mean = df_feature_importance_tree.drop('column_name', axis=1)
         df_feature_importance_mean = df_feature_importance_mean.T
@@ -228,12 +279,15 @@ class FeatureImportanceCvAnalyticsUtil(CvAnalyticsUtil):
         df_feature_importance_mean = df_feature_importance_mean.astype('float')
         df_feature_importance_mean_describe = df_feature_importance_mean.describe().T
         df_feature_importance_mean_describe.sort_values('mean', ascending=False, inplace=True)
+        df_feature_importance_mean_describe = df_feature_importance_mean_describe[['count']]
         # print(df_feature_importance_mean_describe.columns)
-        df_feature_importance_mean_describe = df_feature_importance_mean_describe[['count', 'mean']]
+        # df_feature_importance_mean_describe = df_feature_importance_mean_describe[['count', 'mean']]
         # print_df(df_feature_importance_mean_describe)
         df_feature_importance_mean_describe = df_feature_importance_mean_describe.merge(self.missing_df,
                                                                                         on='column_name')
-        return df_feature_importance_mean_describe
+        agg_result = agg_result.merge(df_feature_importance_mean_describe, on='column_name')
+        print_df(agg_result)
+        return agg_result
 
     def store_cv_results(self) -> None:
         super(FeatureImportanceCvAnalyticsUtil, self).store_cv_results()

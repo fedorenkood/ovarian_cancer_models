@@ -10,11 +10,12 @@ from scipy.spatial import distance
 from sklearn import tree
 from sklearn.base import clone
 from sklearn.preprocessing import StandardScaler
+from sklearn.inspection import permutation_importance
 import pickle
 
 from .classifier_data_util import ClassifierDataUtil
 from .report_util import GenerateReportUtil
-from .util_functions import get_nearest_neighbors
+from .util_functions import get_nearest_neighbors, print_df
 
 
 class AnalyticsUtil:
@@ -135,13 +136,21 @@ class TreeAnalyticsUtil(AnalyticsUtil):
         return 0
     
     def feature_selection(self):
-    
-        feature_importances = pd.DataFrame(self.classifier.feature_importances_,
-                            index = self.data_util.get_feature_names(),
-                            columns=['importance']).sort_values('importance', 
-                                                                ascending=False)
+        X_test, y_test = self.data_util.get_test_data()
+        result = permutation_importance(
+            self.classifier, X_test, y_test, n_repeats=10, n_jobs=2
+        )
+        # feature_importances = pd.DataFrame(self.classifier.feature_importances_,
+        #                     index = self.data_util.get_feature_names(),
+        #                     columns=['importance']).sort_values('importance', 
+        #                                                         ascending=False)
+        feature_importances = pd.DataFrame({
+            'importance': result.importances_mean, 
+            'std': result.importances_std
+            }, index = self.data_util.get_feature_names()).sort_values('importance', ascending=False)
         feature_importances['column_name'] = feature_importances.index
-        feature_importances = feature_importances[['column_name', 'importance']]
+        feature_importances = feature_importances[['column_name', 'importance', 'std']]
+        print_df(feature_importances)
         tree_depth = self.get_max_depth()
         report_util = self.get_report_generation_util()
         top_feature_stats = {

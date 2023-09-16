@@ -4,7 +4,7 @@ import pandas as pd
 from sklearn import clone
 
 from oop_functions.analytics_cv_util import FeatureImportanceCvAnalyticsUtil, CvAnalyticsUtil
-from oop_functions.analytics_util import AnalyticsUtil, DecisionTreeAnalyticsUtil, XgbAnalyticsUtil
+from oop_functions.analytics_util import AnalyticsUtil, DecisionTreeAnalyticsUtil, XgbAnalyticsUtil, TreeAnalyticsUtil
 from oop_functions.experiment_helper import ExperimentDataHelper
 
 
@@ -28,12 +28,16 @@ class ExperimentRunner:
     def get_analytics_util(self) -> Type[AnalyticsUtil]:
         if self.classifier.__class__.__name__ == 'DecisionTreeClassifier':
             return DecisionTreeAnalyticsUtil
+        if self.classifier.__class__.__name__ == 'RandomForestClassifier':
+            return TreeAnalyticsUtil
         if self.classifier.__class__.__name__ == 'XGBClassifier':
             return XgbAnalyticsUtil
         return AnalyticsUtil
 
     def get_cv_analytics_util(self) -> Type[CvAnalyticsUtil]:
         if self.classifier.__class__.__name__ == 'DecisionTreeClassifier':
+            return FeatureImportanceCvAnalyticsUtil
+        if self.classifier.__class__.__name__ == 'RandomForestClassifier':
             return FeatureImportanceCvAnalyticsUtil
         if self.classifier.__class__.__name__ == 'XGBClassifier':
             return FeatureImportanceCvAnalyticsUtil
