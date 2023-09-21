@@ -135,7 +135,7 @@ class TreeAnalyticsUtil(AnalyticsUtil):
     def get_max_depth(self) -> int:
         return 0
     
-    def feature_selection(self):
+    def feature_selection_ver2(self):
         X_test, y_test = self.data_util.get_test_data()
         result = permutation_importance(
             self.classifier, X_test, y_test, n_repeats=10, n_jobs=2
@@ -151,6 +151,30 @@ class TreeAnalyticsUtil(AnalyticsUtil):
         feature_importances['column_name'] = feature_importances.index
         feature_importances = feature_importances[['column_name', 'importance', 'std']]
         print_df(feature_importances)
+        tree_depth = self.get_max_depth()
+        report_util = self.get_report_generation_util()
+        top_feature_stats = {
+            'top_feature': feature_importances.iloc[0]['column_name'],
+            # 'boundary': 0,
+            'num_features_used': len(feature_importances[feature_importances['importance'] > 0]),
+            'importance': round(feature_importances.iloc[0]['importance'], 3),
+            'tree_depth': tree_depth,
+            'accuracy': report_util.accuracy,
+            'auc': report_util.auc,
+            # 'precision': precision,
+            # 'recall':    recall,
+            # 'f1-score':  f1,
+        }
+        return top_feature_stats, feature_importances
+    
+    def feature_selection(self):
+    
+        feature_importances = pd.DataFrame(self.classifier.feature_importances_,
+                            index = self.data_util.get_feature_names(),
+                            columns=['importance']).sort_values('importance', 
+                                                                ascending=False)
+        feature_importances['column_name'] = feature_importances.index
+        feature_importances = feature_importances[['column_name', 'importance']]
         tree_depth = self.get_max_depth()
         report_util = self.get_report_generation_util()
         top_feature_stats = {

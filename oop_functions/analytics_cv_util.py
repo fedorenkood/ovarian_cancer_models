@@ -246,7 +246,7 @@ class CvAnalyticsUtil:
 
 
 class FeatureImportanceCvAnalyticsUtil(CvAnalyticsUtil):
-    def get_cv_feature_selection(self) -> pd.DataFrame:
+    def get_cv_feature_selection_ver2(self) -> pd.DataFrame:
         df_feature_importance_tree = None
         dfs = []
         for k, analytics_util in enumerate(self.analytics_utils):
@@ -288,6 +288,32 @@ class FeatureImportanceCvAnalyticsUtil(CvAnalyticsUtil):
         agg_result = agg_result.merge(df_feature_importance_mean_describe, on='column_name')
         print_df(agg_result)
         return agg_result
+    
+    def get_cv_feature_selection(self) -> pd.DataFrame:
+        df_feature_importance_tree = None
+        for k, analytics_util in enumerate(self.analytics_utils):
+            fn = analytics_util.data_util.get_feature_names()
+            top_feature_stats, feature_importances = analytics_util.feature_selection()
+            feature_importances = feature_importances[feature_importances['importance'] > 0]
+            if df_feature_importance_tree is not None:
+                df_feature_importance_tree = df_feature_importance_tree.merge(feature_importances, on='column_name',
+                                                                              how='outer', suffixes=[f'_tiral_{k}',
+                                                                                                     f'_tiral_{k + 1}'])
+            else:
+                df_feature_importance_tree = feature_importances
+        # Mean of feature importance over trials
+        df_feature_importance_mean = df_feature_importance_tree.drop('column_name', axis=1)
+        df_feature_importance_mean = df_feature_importance_mean.T
+        df_feature_importance_mean.columns = df_feature_importance_tree['column_name']
+        df_feature_importance_mean = df_feature_importance_mean.astype('float')
+        df_feature_importance_mean_describe = df_feature_importance_mean.describe().T
+        df_feature_importance_mean_describe.sort_values('mean', ascending=False, inplace=True)
+        # print(df_feature_importance_mean_describe.columns)
+        df_feature_importance_mean_describe = df_feature_importance_mean_describe[['count', 'mean']]
+        # print_df(df_feature_importance_mean_describe)
+        df_feature_importance_mean_describe = df_feature_importance_mean_describe.merge(self.missing_df,
+                                                                                        on='column_name')
+        return df_feature_importance_mean_describe
 
     def store_cv_results(self) -> None:
         super(FeatureImportanceCvAnalyticsUtil, self).store_cv_results()
