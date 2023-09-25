@@ -146,9 +146,19 @@ def remove_featues_endswith(df, suffixes, exclude=[], show_removed=False):
     return remove_featues(df, remove_cols, exclude, show_removed)
 
 
-def select_numeric_columns(df):
-    numeric_columns = df.select_dtypes(include=['float16','int16','float64','int64']).columns.tolist()
+def select_numeric_columns(df, types=['float16','int16','float64','int64']):
+    numeric_columns = df.select_dtypes(include=types).columns.tolist()
     return numeric_columns
+
+
+def convert_columns_to_integers(df):
+    for column in df.columns:
+        # Check if the column contains only numeric values
+        if pd.api.types.is_numeric_dtype(df[column]):
+            # Check if all values in the column can be safely converted to integers
+            if df[column].apply(lambda x: isinstance(x, (int, float))).all():
+                df[column] = df[column].astype(int)
+    return df
 
 
 def get_column_values_count(df, get_counts_col):
