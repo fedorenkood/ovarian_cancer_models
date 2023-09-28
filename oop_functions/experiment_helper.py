@@ -96,7 +96,7 @@ class ExperimentDataHelper:
         return name
     
     def set_stratify_over_cols_default(self) -> List[str]:
-        return ['was_screened', 'ovar_histtype', 'study_yr', 'ovar_observe_year', 'ovar_cancer_years']
+        return ['was_screened', 'is_ca125_screening_record', 'is_ultra_screening_record', 'ovar_histtype', 'study_yr', 'ovar_observe_year', 'ovar_cancer_years']
     
     def set_train_size_to_val(self, val) -> None:
         self.train_size = val
@@ -253,7 +253,7 @@ class ExperimentDataHelperSingleLabelScreened(ExperimentDataHelperWithImputerSin
     def _process_source(self) -> None:
         super(ExperimentDataHelperSingleLabelScreened, self)._process_source()
         # drop non-cancer records without screen records
-        condition = (self.source_df['was_screened'] == 1)
+        condition = (self.source_df['is_ca125_screening_record'] == 1)
         self.source_df = self.source_df[condition]
         # TODO: why did I decide to keep this?
         self.source_df['ca125ii_level_binary'] = np.nan
@@ -320,7 +320,7 @@ class ExperimentDataHelperScreened(ExperimentDataHelperWithImputer):
     def _process_source(self) -> None:
         super(ExperimentDataHelperScreened, self)._process_source()
         # drop non-cancer records without screen records
-        condition = (self.source_df['was_screened'] == 1)
+        condition = (self.source_df['is_ca125_screening_record'] == 1)
         self.source_df = self.source_df[condition]
         # TODO: why did I decide to keep this?
         self.source_df['ca125ii_level_binary'] = np.nan
@@ -398,6 +398,20 @@ class ExperimentDataHelperScreenedCols(ExperimentDataHelperScreened):
     
     def _process_source(self) -> None:
         super(ExperimentDataHelperScreenedCols, self)._process_source()
+        keep_cols_screen = []
+        for col in screened_cols + self.stratify_over_cols + [self.label, 'index', 'plco_id']:
+            if col in self.source_df.columns:
+                keep_cols_screen.append(col)
+        self.source_df = self.source_df[list(set(keep_cols_screen))]
+
+     
+class ExperimentDataHelperScreenedColsSingleLabelFirst5(ExperimentDataHelperSingleLabelScreenedFirst5):
+    @staticmethod
+    def get_name() -> str:
+        return 'screened_cols_single_first_5'
+    
+    def _process_source(self) -> None:
+        super(ExperimentDataHelperScreenedColsSingleLabelFirst5, self)._process_source()
         keep_cols_screen = []
         for col in screened_cols + self.stratify_over_cols + [self.label, 'index', 'plco_id']:
             if col in self.source_df.columns:

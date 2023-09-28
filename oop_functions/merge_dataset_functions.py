@@ -45,6 +45,8 @@ def merge_data_over_years(person_df, screen_df, abnorm_df, screen_join='left', a
     on_col = 'ovar_cancer_years'
     # Select max data for each of the features in the abnorm_df, while varied over plco_id and study_yr
     abnorm_df = abnorm_df.groupby(['plco_id', 'study_yr'], as_index=False).max()
+    screen_df['is_ca125_screening_record'] = 1
+    abnorm_df['is_ultra_screening_record'] = 1
     df_list = []
     df_final = pd.DataFrame()
     for base_year in range(0, 19):
@@ -80,5 +82,7 @@ def merge_data_over_years(person_df, screen_df, abnorm_df, screen_join='left', a
     # Add a feature that says whether person was screened or not
     condition = df_final['plco_id'].isin(screen_df['plco_id'])
     df_final['was_screened'] = 0
+    df_final['is_ca125_screening_record'].fillna(0, inplace=True)
+    df_final['is_ultra_screening_record'].fillna(0, inplace=True)
     df_final.loc[condition, 'was_screened'] = 1
     return df_final

@@ -123,7 +123,7 @@ def plot_diff_in_confidence(full_dataset, title=''):
 
 
 def plot_change_in_confidence(full_dataset, title = '', label = f'cancer_in_next_1_years'):    
-    grouped_df = full_dataset.groupby(['plco_id'])
+    grouped_df = full_dataset.groupby('plco_id')
     diff_df = []
     ordered_cols = set()
 
