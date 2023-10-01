@@ -12,24 +12,24 @@ from .classifier_data_util import ClassifierDataUtil, TrainTestSplitUtil
 from .imputer_util import ImputerUtil
 from .util_functions import remove_featues_startswith, select_numeric_columns, get_cols_missing_percentage
 
+screen_ca125_data_cols = ['ca125ii_level', 'ca125_result', 'ca125ii_level_binary']
+
 # TODO: these have changed
-screen_data_cols = ['study_yr', 'detl_p', 'detr_p', 'lvol_p', 'rvol_p', 'lvol_q', 'rvol_q',
+screen_ultra_data_cols = ['detl_p', 'detr_p', 'lvol_p', 'rvol_p', 'lvol_q', 'rvol_q',
        'lantero_p', 'lantero_q', 'llong_p', 'llong_q', 'ltran_p', 'ltran_q',
        'rantero_p', 'rantero_q', 'rlong_p', 'rlong_q', 'rtran_p', 'rtran_q',
-       'tvu_ref', 'phycons', 'tvu_result', 'ca125_result', 'ovar_result',
+       'tvu_ref', 'phycons', 'tvu_result', 'ovar_result',
        'ovcyst_solidr', 'ovcyst_outliner', 'ovcyst_solidl', 'ovcyst_outlinel',
        'ovcyst_solid', 'ovcyst_outline', 'ovcyst_diamr', 'ovcyst_diaml',
        'ovcyst_diam', 'ovcyst_volr', 'ovcyst_voll', 'ovcyst_vol',
        'ovcyst_morphr', 'ovcyst_morphl', 'ovcyst_morph', 'ovcyst_sumr',
        'ovcyst_suml', 'ovcyst_sum', 'ovary_diam', 'ovary_diamr', 'ovary_diaml',
        'ovary_volr', 'ovary_voll', 'ovary_vol', 'visl', 'visr', 'visboth',
-       'viseith', 'numcystl', 'numcystr', 'numcyst', 'plco_id', 'ovar_days',
-       'ca125ii_level_binary']
+       'viseith', 'numcystl', 'numcystr', 'numcyst', 'ovar_days']
 
-screen_abnorm_data_cols = ['study_yr', 'solid', 'sepst', 'cyst', 'cystw', 'echo', 'maxdi', 'volum',
-       'plco_id']
+screen_abnorm_data_cols = ['solid', 'sepst', 'cyst', 'cystw', 'echo', 'maxdi', 'volum']
 
-screened_cols = screen_data_cols + screen_abnorm_data_cols + ['ca125ii', 'ca125_result']
+screened_cols = ['study_yr', 'plco_id'] + screen_ultra_data_cols + screen_abnorm_data_cols + screen_ca125_data_cols
 
 
 screen_data_cols_fill_last = ['detl_p', 'detr_p', 'lvol_p', 'rvol_p', 'lvol_q', 'rvol_q',
@@ -96,7 +96,7 @@ class ExperimentDataHelper:
         return name
     
     def set_stratify_over_cols_default(self) -> List[str]:
-        return ['was_screened', 'is_ca125_screening_record', 'is_ultra_screening_record', 'ovar_histtype', 'study_yr', 'ovar_observe_year', 'ovar_cancer_years']
+        return ['was_screened', 'ovar_cancer', 'is_ca125_screening_record', 'is_ultra_screening_record', 'ovar_histtype', 'study_yr', 'ovar_observe_year', 'ovar_cancer_years']
     
     def set_train_size_to_val(self, val) -> None:
         self.train_size = val
@@ -269,6 +269,24 @@ class ExperimentDataHelperSingleLabelScreenedFirst5(ExperimentDataHelperSingleLa
         condition = ((self.source_df['ovar_observe_year'] <= 5)) 
         self.source_df = self.source_df[condition]
         super(ExperimentDataHelperSingleLabelScreenedFirst5, self)._process_source()
+
+class ExperimentDataHelperSingleLabelScreenedCA125First5(ExperimentDataHelperSingleLabelScreenedFirst5):
+    @staticmethod
+    def get_name() -> str:
+        return 'participants_screened_ca125_single_first_5'
+    
+    def _process_source(self) -> None:
+        super(ExperimentDataHelperSingleLabelScreenedCA125First5, self)._process_source() 
+        self.source_df = self.source_df.drop(screen_ultra_data_cols + screen_abnorm_data_cols, axis=1, errors='ignore')
+
+class ExperimentDataHelperSingleLabelScreenedUltraFirst5(ExperimentDataHelperSingleLabelScreenedFirst5):
+    @staticmethod
+    def get_name() -> str:
+        return 'participants_screened_ultra_single_first_5'
+    
+    def _process_source(self) -> None:
+        super(ExperimentDataHelperSingleLabelScreenedUltraFirst5, self)._process_source() 
+        self.source_df = self.source_df.drop(screen_ca125_data_cols, axis=1, errors='ignore')
         
 class ExperimentDataHelperSingleLabelNotScreenedCols(ExperimentDataHelperWithImputerSingleLabel):
     @staticmethod

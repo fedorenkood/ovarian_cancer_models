@@ -85,13 +85,15 @@ class CvAnalyticsUtil:
             # TODO: cleanup and generalize
             try:
                 report_generation_util = analytics_util.get_report_generation_util_filtered(self.filter)
+                if self.threshold:
+                    report_generation_util.apply_threshold(self.threshold)
+                report = report_generation_util.generate_report().get_report()
+                cv_scores.append(report)
             except Exception as e:
                 # print(f'Filter resulted in error. i.e. no records with such filter')
                 continue
-            if self.threshold:
-                report_generation_util.apply_threshold(self.threshold)
-            report = report_generation_util.generate_report().get_report()
-            cv_scores.append(report)
+        if len(cv_scores) == 0:
+            return
         cv_scores = pd.concat(cv_scores)
         cv_scores = cv_scores.reset_index()
         cv_scores = cv_scores.drop('index', axis=1)
@@ -126,15 +128,15 @@ class CvAnalyticsUtil:
         for k, analytics_util in enumerate(self.analytics_utils):
             try:
                 report_generation_util = analytics_util.get_report_generation_util_filtered(self.filter)
+                if self.threshold:
+                    report_generation_util.apply_threshold(self.threshold)
+                y_test, y_pred, y_prob = report_generation_util.get_predictions()
+                y_test_all.append(y_test)
+                y_pred_all.append(y_pred)
+                y_prob_all.append(y_prob)
             except Exception as e:
                 # print(f'Filter resulted in error. i.e. no records with such filter')
                 continue
-            if self.threshold:
-                report_generation_util.apply_threshold(self.threshold)
-            y_test, y_pred, y_prob = report_generation_util.get_predictions()
-            y_test_all.append(y_test)
-            y_pred_all.append(y_pred)
-            y_prob_all.append(y_prob)
         y_test_all = np.concatenate(y_test_all, axis=0)
         y_pred_all = np.concatenate(y_pred_all, axis=0)
         y_prob_all = np.concatenate(y_prob_all, axis=0)
