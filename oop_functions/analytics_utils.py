@@ -2,6 +2,8 @@ from oop_functions.analytics_cv_util import *
 from oop_functions.util_functions import *
 from oop_functions.experiment_helper import *
 
+from typing import List, Dict
+
 
 def load_cv_analytics_util_see_stats(filesuffix):
     cv_analytics_util = CvAnalyticsUtil.load_cv_analytics_utils(filesuffix)
@@ -265,3 +267,48 @@ def map_label_prob_to_bucket(per_thereshold_metrics, row, label):
             return per_thereshold_metrics.iloc[index + 1]['per_bucket_probability']
     return None  # Handle cases where label_prob is above all thresholds
 
+
+def load_cv_analytics_utils(filesuffixes: List[str]) -> Dict[str, CvAnalyticsUtil]:
+    cv_analytics_utils: Dict[str, CvAnalyticsUtil] = {}
+    for filesuffix in filesuffixes:
+        print(filesuffix)
+        cv_analytics_util = CvAnalyticsUtil.load_cv_analytics_utils(filesuffix)
+        cv_analytics_utils[filesuffix] = cv_analytics_util
+        label = cv_analytics_util.get_label()
+        if 'single' in filesuffix:
+            cv_analytics_util.merge_in_dataset(get_screened_first_5_no_process_dataset(label = label))
+    return cv_analytics_utils
+
+
+def find_intersection(list_of_arrays):
+    if not list_of_arrays:
+        return None
+
+    # Start with the first array as the initial intersection
+    intersection = list_of_arrays[0]
+
+    # Iterate through the remaining arrays and find their intersection
+    for arr in list_of_arrays[1:]:
+        intersection = np.intersect1d(intersection, arr)
+
+    return intersection
+
+
+def get_intersecting_indexes(cv_analytics_utils: Dict[str, CvAnalyticsUtil]) -> np.array:
+    list_of_arrays = []
+    for filesuffix, cv_analytics_util in cv_analytics_utils.items():
+        full_dataset = cv_analytics_util.get_dataset_with_predictions()
+        print(filesuffix)
+        print(f'Number of records: {len(full_dataset)}')
+        list_of_arrays.append(full_dataset['index'].astype(int).to_numpy())
+    intersecting_indexes = find_intersection(list_of_arrays)
+    print(f'Number of indersecting indexes: {len(intersecting_indexes)}')
+    return intersecting_indexes
+
+
+def commonized_datasets(filesuffixes) -> Dict[str, CvAnalyticsUtil]:
+    cv_analytics_utils = load_cv_analytics_utils(filesuffixes)
+    intersecting_indexes = get_intersecting_indexes(cv_analytics_utils)
+    for filesuffix, cv_analytics_util in cv_analytics_utils.items():
+        cv_analytics_util.keep_indexes(intersecting_indexes)
+    return cv_analytics_utils
