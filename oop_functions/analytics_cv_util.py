@@ -48,13 +48,21 @@ class CvAnalyticsUtil:
 
     def get_dataset_with_predictions(self, filter = None):
         id_and_confidence = []
-        for analytics_util in self.analytics_utils:
-            X_test = analytics_util.data_util.test_df
-            X_test_mismatch = X_test.copy()
-            y_pred, y_prob = analytics_util.get_predictions() 
-            X_test_mismatch[f'{self.get_label()}_pred'] = y_pred
-            X_test_mismatch[f'{self.get_label()}_prob'] = y_prob
-            id_and_confidence.append(X_test_mismatch)
+        for k, analytics_util in enumerate(self.analytics_utils):
+            # TODO: cleanup and generalize
+            try:
+                report_generation_util = analytics_util.get_report_generation_util_filtered(self.filter)
+                if self.threshold:
+                    report_generation_util.apply_threshold(self.threshold)
+                X_test = analytics_util.data_util.test_df
+                X_test_mismatch = X_test.copy()
+                y_test, y_pred, y_prob = report_generation_util.get_predictions()
+                X_test_mismatch[f'{self.get_label()}_pred'] = y_pred
+                X_test_mismatch[f'{self.get_label()}_prob'] = y_prob
+                id_and_confidence.append(X_test_mismatch)
+            except Exception as e:
+                # print(f'Filter resulted in error. i.e. no records with such filter')
+                continue
         full_dataset = pd.concat(id_and_confidence)
         if filter:
             full_dataset = filter(full_dataset)
