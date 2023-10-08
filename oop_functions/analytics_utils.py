@@ -169,3 +169,96 @@ def get_screened_first_5_no_process_dataset(label = f'cancer_in_next_1_years'):
     processed_data = convert_numeric_to_float16(processed_data)
     experiment_data_helper: ExperimentDataHelper = ExperimentDataHelperScreenedFirst5(processed_data, label, ['cancer_'], train_size = 15000)
     return experiment_data_helper.source_df
+
+
+def find_boundaries(arr, n):
+    # Sort the array
+    sorted_arr = np.sort(arr)
+    
+    # Calculate the percentiles
+    percentiles = np.linspace(0, 100, n + 1)
+    boundaries = np.percentile(sorted_arr, percentiles)
+    
+    # Remove duplicate boundaries
+    return np.unique(boundaries).tolist()
+
+
+def get_predefined_boundaries(full_dataset: pd.DataFrame, label, threshold):
+    predictions = full_dataset[f'{label}_prob'].to_numpy()
+    sorted_arr = np.sort(predictions)
+    # percentile_25 = np.percentile(sorted_arr, 25)
+    # percentile_50 = np.percentile(sorted_arr, 50)
+    # percentile_75 = np.percentile(sorted_arr, 75)
+    # percentile_99 = np.percentile(sorted_arr, 99)
+    # predictions = predictions[predictions > np.percentile(sorted_arr, 99.5)]
+    # boundaries = find_boundaries(predictions, 5)
+    boundaries = [
+        0, 
+        threshold, 
+        np.percentile(sorted_arr, 99),
+        np.percentile(sorted_arr, 99.25),
+        np.percentile(sorted_arr, 99.5),
+        np.percentile(sorted_arr, 99.6),
+        np.percentile(sorted_arr, 99.7),
+        np.percentile(sorted_arr, 99.8),
+        np.percentile(sorted_arr, 99.9),
+        1
+        # *boundaries
+        # np.percentile(sorted_arr, 99.5),
+        # np.percentile(sorted_arr, 99.75),
+        # np.percentile(sorted_arr, 99.9),
+        # 1,
+        ]
+    boundaries[-1] = 1
+    # del boundaries[-1]
+    print(boundaries)
+    return boundaries
+
+
+def bucket_predictions_by_thresholds(cv_analytics_util: CvAnalyticsUtil):
+    threshold = cv_analytics_util.get_optimal_operating_point()
+    label = cv_analytics_util.get_label()
+    full_dataset = cv_analytics_util.get_dataset_with_predictions()
+    boundaries = get_predefined_boundaries(full_dataset, label, threshold)
+    per_thereshold_metrics = get_per_thereshold_metrics(full_dataset, f'{label}_prob', label, thresholds = boundaries)
+    per_thereshold_metrics['bucket_positives'] = per_thereshold_metrics['True_Positive'].diff().abs()
+    per_thereshold_metrics['bucket_negatives'] = per_thereshold_metrics['False_Positive'].diff().abs()
+    per_thereshold_metrics['per_bucket_probability'] = per_thereshold_metrics['bucket_positives'] / (per_thereshold_metrics['bucket_positives'] + per_thereshold_metrics['bucket_negatives'])
+    return per_thereshold_metrics
+
+
+def plot_threhold_probabilities(per_thereshold_metrics):
+    title = ""
+    x = per_thereshold_metrics['Threshold'][:-1]
+    y = per_thereshold_metrics['per_bucket_probability'][1:]
+    plt.plot(x, y, label="Probability of getting cancer")
+    y = per_thereshold_metrics['Precision'][:-1]
+    plt.plot(x, y, label="Precision")
+    plt.ylabel("Probability of getting cancer")
+    plt.xlabel("Threshold")
+    plt.title(title)
+    plt.ylim([0, 1])
+    plt.legend()
+    plt.show()
+
+
+def create_buckets(thresholds):
+    # Ensure the thresholds are sorted
+    sorted_thresholds = sorted(thresholds)
+    
+    # Create buckets using the sorted thresholds
+    buckets = [(sorted_thresholds[i], sorted_thresholds[i + 1]) for i in range(len(sorted_thresholds) - 1)]
+    
+    return buckets
+
+
+def map_label_prob_to_bucket(per_thereshold_metrics, row, label):
+    thresholds = per_thereshold_metrics['Threshold'].to_list()
+    buckets = create_buckets(thresholds)
+    for index, (left, right) in enumerate(buckets):
+        if index == 0:
+            left = -0.1
+        if left < row[f'{label}_prob'] <= right:
+            return per_thereshold_metrics.iloc[index + 1]['per_bucket_probability']
+    return None  # Handle cases where label_prob is above all thresholds
+
