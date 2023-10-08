@@ -87,6 +87,14 @@ class CvAnalyticsUtil:
         print(f"Added new records: {len(full_dataset_single_new) - len(full_dataset_original)}")
 
 
+    def keep_indexes(self, idx):
+        for analytics_util in self.analytics_utils:
+            dataset = analytics_util.data_util.test_df
+            dataset['index'] = dataset['index'].astype(int)
+            dataset = dataset[dataset['index'].isin(idx)]
+            analytics_util.data_util.test_df = dataset
+
+
     def get_cv_report(self):
         cv_scores = []
         for k, analytics_util in enumerate(self.analytics_utils):
