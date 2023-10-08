@@ -184,31 +184,34 @@ def find_boundaries(arr, n):
 
 
 def get_predefined_boundaries(full_dataset: pd.DataFrame, label, threshold):
+    # full_dataset = full_dataset.copy()
+    full_dataset = full_dataset[full_dataset[label] == 1]
     predictions = full_dataset[f'{label}_prob'].to_numpy()
-    sorted_arr = np.sort(predictions)
+    # sorted_arr = np.sort(predictions)
     # percentile_25 = np.percentile(sorted_arr, 25)
     # percentile_50 = np.percentile(sorted_arr, 50)
     # percentile_75 = np.percentile(sorted_arr, 75)
     # percentile_99 = np.percentile(sorted_arr, 99)
     # predictions = predictions[predictions > np.percentile(sorted_arr, 99.5)]
-    # boundaries = find_boundaries(predictions, 5)
-    boundaries = [
-        0, 
-        threshold, 
-        np.percentile(sorted_arr, 99),
-        np.percentile(sorted_arr, 99.25),
-        np.percentile(sorted_arr, 99.5),
-        np.percentile(sorted_arr, 99.6),
-        np.percentile(sorted_arr, 99.7),
-        np.percentile(sorted_arr, 99.8),
-        np.percentile(sorted_arr, 99.9),
-        1
-        # *boundaries
-        # np.percentile(sorted_arr, 99.5),
-        # np.percentile(sorted_arr, 99.75),
-        # np.percentile(sorted_arr, 99.9),
-        # 1,
-        ]
+    boundaries = find_boundaries(predictions, 5)
+    # boundaries = [
+    #     0, 
+    #     threshold, 
+    #     np.percentile(sorted_arr, 99),
+    #     np.percentile(sorted_arr, 99.25),
+    #     np.percentile(sorted_arr, 99.5),
+    #     np.percentile(sorted_arr, 99.6),
+    #     np.percentile(sorted_arr, 99.7),
+    #     np.percentile(sorted_arr, 99.8),
+    #     np.percentile(sorted_arr, 99.9),
+    #     1
+    #     # *boundaries
+    #     # np.percentile(sorted_arr, 99.5),
+    #     # np.percentile(sorted_arr, 99.75),
+    #     # np.percentile(sorted_arr, 99.9),
+    #     # 1,
+    #     ]
+    boundaries[0] = 0
     boundaries[-1] = 1
     # del boundaries[-1]
     print(boundaries)
