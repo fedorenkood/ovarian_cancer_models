@@ -235,7 +235,7 @@ def bucket_predictions_by_thresholds(cv_analytics_util: CvAnalyticsUtil):
 
 def plot_threhold_probabilities(per_thereshold_metrics):
     title = ""
-    x = per_thereshold_metrics['Threshold'][:-1]
+    x = per_thereshold_metrics['Threshold'][1:]
     y = per_thereshold_metrics['per_bucket_probability'][1:]
     plt.plot(x, y, label="Probability of getting cancer")
     y = per_thereshold_metrics['Precision'][:-1]
