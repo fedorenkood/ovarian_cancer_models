@@ -119,7 +119,10 @@ class ClassifierDataUtil:
         # print(self.imputer.imputer_mean.statistics_)
 
         # Perform oversamping and reshuffle
-        train = resample_max(train, self.label, self.train_size).sample(frac = 1)
+        if self.train_size:
+            train = resample_max(train, self.label, self.train_size).sample(frac = 1)
+        else:
+            train = resample_max(train, self.label, len(train[train[self.label] == 0])).sample(frac = 1)
         # TODO: if memory becomes tight, only store index to id tuples
         self.train_df, self.test_df = train, test
         return self

@@ -14,7 +14,7 @@ def load_cv_analytics_util_see_stats(filesuffix):
 
 def evaluate_threshold(threshold, predictions, targets):
     # Create binary predictions based on the threshold
-    binary_predictions = (predictions >= threshold).astype(int)
+    binary_predictions = (predictions > threshold).astype(int)
     
     # Calculate evaluation metrics
     tp = np.sum((binary_predictions == 1) & (targets == 1))
@@ -213,7 +213,8 @@ def get_predefined_boundaries(full_dataset: pd.DataFrame, label, threshold):
     #     # np.percentile(sorted_arr, 99.9),
     #     # 1,
     #     ]
-    boundaries[0] = 0
+    boundaries[0] = -0.0001
+    # boundaries.insert(0, 0)
     boundaries[-1] = 1
     # del boundaries[-1]
     print(boundaries)
@@ -308,7 +309,11 @@ def get_intersecting_indexes(cv_analytics_utils: Dict[str, CvAnalyticsUtil]) -> 
 
 def commonized_datasets(filesuffixes) -> Dict[str, CvAnalyticsUtil]:
     cv_analytics_utils = load_cv_analytics_utils(filesuffixes)
-    intersecting_indexes = get_intersecting_indexes(cv_analytics_utils)
-    for filesuffix, cv_analytics_util in cv_analytics_utils.items():
-        cv_analytics_util.keep_indexes(intersecting_indexes)
+    labels = [cv_analytics_util.get_label() for filesuffix, cv_analytics_util in cv_analytics_utils.items()]
+    labels = set(labels)
+    for label in labels:
+        intersecting_indexes = get_intersecting_indexes({key: cv_analytics_util for key, cv_analytics_util in cv_analytics_utils.items() if cv_analytics_util.get_label() == label})
+        for filesuffix, cv_analytics_util in cv_analytics_utils.items():
+            if cv_analytics_util.get_label() == label:
+                cv_analytics_util.keep_indexes(intersecting_indexes)
     return cv_analytics_utils
