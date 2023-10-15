@@ -19,18 +19,27 @@ class VisualizationUtil:
         ax.set_title('Confusion Matrix')
         return self
 
-    def display_roc_graph(self, ax: plt.axis, fpr: np.array, tpr: np.array, thresholds: np.array, tpr_std: np.array = None) -> VisualizationUtil:
+    def display_roc_graph(self, ax: plt.axis, fpr: np.array, tpr: np.array, thresholds: np.array, tpr_std: np.array = None, label='', color=None) -> VisualizationUtil:
         roc_auc = auc(fpr, tpr)
-        ax.plot(fpr,tpr, color = '#b50000', label = 'AUC = %0.3f' % roc_auc)
+        if len(label) > 0:
+            label += '. '
+        label = label + 'AUC = %0.3f' % roc_auc
+        if color:
+            ax.plot(fpr, tpr, label = label, color=color)
+        else:
+            ax.plot(fpr, tpr, label = label)
         ax.plot([0, 1], [0, 1], linestyle = '-.', color = 'gray')
         if tpr_std is not None:
             tpr_upper = np.clip(tpr+tpr_std, 0, 1)
             tpr_lower = np.clip(tpr-tpr_std, 0, 1)
             ax.fill_between(fpr, tpr_lower, tpr_upper, color='b', alpha=.1, label='Confidence Interval')
+
+        # Put a legend to the right of the current axis
+        ax.legend(loc='center left', bbox_to_anchor=(0.2, 0.2))
+
         ax.set_ylabel('TP Rate')
         ax.set_xlabel('FP Rate')
         ax.set_title('ROC AUC Curve')
-        ax.legend()
         return self
 
     def display_roc_threshold(self, ax: plt.axis, fpr: np.array, tpr: np.array, thresholds: np.array, tpr_std: np.array = None) -> VisualizationUtil:
@@ -39,15 +48,19 @@ class VisualizationUtil:
         ax.legend()
         return self
 
-    def display_precision_recall(self, ax: plt.axis, precision: np.array, recall: np.array, std: np.array = None) -> VisualizationUtil:
+    def display_precision_recall(self, ax: plt.axis, precision: np.array, recall: np.array, std: np.array = None, label='') -> VisualizationUtil:
         disp = PrecisionRecallDisplay(precision=precision, recall=recall)
-        disp.plot(ax=ax)
+        disp.plot(ax=ax, label=label)
         if std is not None:
             precision_upper = np.clip(precision+std, 0, 1)
             precision_lower = np.clip(precision-std, 0, 1)
             ax.fill_between(recall, precision_lower, precision_upper, color='b', alpha=.1, label='Confidence Interval')
+
+        if len(label) > 0:
+            # Put a legend to the right of the current axis
+            ax.legend(loc='center left', bbox_to_anchor=(0.1, 0.8))
+        
         ax.set_ylabel('Precision')
         ax.set_xlabel('Recall')
         ax.set_title('Precision-Recall Curve')
-        ax.legend()
         return self

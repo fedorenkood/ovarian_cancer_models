@@ -45,6 +45,7 @@ def merge_data_over_years(person_df, screen_df, abnorm_df, screen_join='left', a
     on_col = 'ovar_cancer_years'
     # Select max data for each of the features in the abnorm_df, while varied over plco_id and study_yr
     abnorm_df = abnorm_df.groupby(['plco_id', 'study_yr'], as_index=False).max()
+    # TODO: I am an idiot with these names the first one should be screened and the other one should be abnorm
     screen_df['is_ca125_screening_record'] = 1
     abnorm_df['is_ultra_screening_record'] = 1
     df_list = []

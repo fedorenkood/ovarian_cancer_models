@@ -216,7 +216,7 @@ class CvAnalyticsUtil:
         plt.yticks(rotation=0)
         visualization_util = VisualizationUtil()
         visualization_util.display_confusion_matrix(ax[0], self.get_confusion_matrix())
-        visualization_util.display_roc_graph(ax[-2], *self.roc_curve())
+        visualization_util.display_roc_graph(ax[-2], *self.roc_curve(), color='#b50000')
         # visualization_util.display_roc_threshold(ax[-2], *self.roc_with_interval())
         precision, recall, thresholds = self.precision_recall()
         visualization_util.display_precision_recall(ax[-1], precision, recall)

@@ -160,7 +160,7 @@ def plot_change_in_confidence(full_dataset, title = '', label = f'cancer_in_next
     ci = np.array(stats.loc['std'].to_list())
     plt.plot(x, y)
     plt.fill_between(x, (y-ci), (y+ci), color='b', alpha=.1)
-    plt.ylabel("Probability of getting cancer")
+    plt.ylabel("Cancer prediction score")
     plt.xlabel("Years before getting cancer")
     plt.ylim([0, 1])
     plt.title(title)
@@ -233,19 +233,19 @@ def bucket_predictions_by_thresholds(cv_analytics_util: CvAnalyticsUtil):
     return per_thereshold_metrics
 
 
-def plot_threhold_probabilities(per_thereshold_metrics):
+def plot_threhold_probabilities(per_thereshold_metrics, title=''):
     title = ""
     x = per_thereshold_metrics['Threshold'][1:]
     y = per_thereshold_metrics['per_bucket_probability'][1:]
-    plt.plot(x, y, label="Probability of getting cancer")
+    plt.plot(x, y, label="Fraction of patients with cancer")
     y = per_thereshold_metrics['Precision'][:-1]
     plt.plot(x, y, label="Precision")
-    plt.ylabel("Probability of getting cancer")
+    plt.ylabel("Fraction of patients with cancer")
     plt.xlabel("Threshold")
     plt.title(title)
     plt.ylim([0, 1])
     plt.legend()
-    plt.show()
+    plt.title(title)
 
 
 def create_buckets(thresholds):
