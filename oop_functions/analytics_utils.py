@@ -124,7 +124,7 @@ def plot_diff_in_confidence(full_dataset, title=''):
     plt.title(title)
 
 
-def plot_change_in_confidence(full_dataset, title = '', label = f'cancer_in_next_1_years'):    
+def plot_change_in_confidence(full_dataset, title = '', label = f'cancer_in_next_1_years', xlabel='Years before getting cancer'):    
     grouped_df = full_dataset.groupby('plco_id')
     diff_df = []
     ordered_cols = set()
@@ -161,7 +161,7 @@ def plot_change_in_confidence(full_dataset, title = '', label = f'cancer_in_next
     plt.plot(x, y)
     plt.fill_between(x, (y-ci), (y+ci), color='b', alpha=.1)
     plt.ylabel("Cancer prediction score")
-    plt.xlabel("Years before getting cancer")
+    plt.xlabel(xlabel)
     plt.ylim([0, 1])
     plt.title(title)
 
@@ -235,9 +235,10 @@ def bucket_predictions_by_thresholds(cv_analytics_util: CvAnalyticsUtil):
 
 def plot_threhold_probabilities(per_thereshold_metrics, title=''):
     title = ""
-    x = per_thereshold_metrics['Threshold'][1:]
-    y = per_thereshold_metrics['per_bucket_probability'][1:]
-    plt.plot(x, y, label="Fraction of patients with cancer")
+    x = per_thereshold_metrics['Threshold']
+    y = per_thereshold_metrics['per_bucket_probability']
+    plt.step(x, y, label="Fraction of patients with cancer")
+    x = per_thereshold_metrics['Threshold'][:-1]
     y = per_thereshold_metrics['Precision'][:-1]
     plt.plot(x, y, label="Precision")
     plt.ylabel("Fraction of patients with cancer")
@@ -276,7 +277,7 @@ def load_cv_analytics_utils(filesuffixes: List[str]) -> Dict[str, CvAnalyticsUti
         cv_analytics_util = CvAnalyticsUtil.load_cv_analytics_utils(filesuffix)
         cv_analytics_utils[filesuffix] = cv_analytics_util
         label = cv_analytics_util.get_label()
-        if 'single' in filesuffix:
+        if ('single' in filesuffix) or ('not_screened' in filesuffix):
             cv_analytics_util.merge_in_dataset(get_screened_first_5_no_process_dataset(label = label))
     return cv_analytics_utils
 
@@ -311,8 +312,9 @@ def commonized_datasets(filesuffixes) -> Dict[str, CvAnalyticsUtil]:
     cv_analytics_utils = load_cv_analytics_utils(filesuffixes)
     labels = [cv_analytics_util.get_label() for filesuffix, cv_analytics_util in cv_analytics_utils.items()]
     labels = set(labels)
+    intersecting_indexes = get_intersecting_indexes({key: cv_analytics_util for key, cv_analytics_util in cv_analytics_utils.items() if 'not_screened_cols' not in cv_analytics_util.get_file_suffix()})
     for label in labels:
-        intersecting_indexes = get_intersecting_indexes({key: cv_analytics_util for key, cv_analytics_util in cv_analytics_utils.items() if cv_analytics_util.get_label() == label})
+        # intersecting_indexes = get_intersecting_indexes({key: cv_analytics_util for key, cv_analytics_util in cv_analytics_utils.items() if cv_analytics_util.get_label() == label})
         for filesuffix, cv_analytics_util in cv_analytics_utils.items():
             if cv_analytics_util.get_label() == label:
                 cv_analytics_util.keep_indexes(intersecting_indexes)
