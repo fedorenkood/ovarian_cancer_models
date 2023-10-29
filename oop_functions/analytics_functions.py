@@ -60,7 +60,7 @@ def get_accuracy(y_test, y_pred):
 def display_confusion_matrix(ax, y_test, y_pred):
     cm = pd.DataFrame(confusion_matrix(y_test, y_pred), columns=['Predicted Healthy', 'Predicted Cancer'], index=['Healthy', 'Cancer'])
     sns.heatmap(cm, annot = True, fmt = 'd', cbar = False, ax=ax)
-    ax.set_title('Confusion Matrix')
+    # ax.set_title('Confusion Matrix')
     # ax.set_yticks(rotation = 0)
 
 
@@ -79,7 +79,7 @@ def display_auc(ax, y_test, y_pred):
     ax.plot(fpr[optimal_idx],tpr[optimal_idx],'ro', label='Optimal point')
     ax.set_ylabel('TP Rate')
     ax.set_xlabel('FP Rate')
-    ax.set_title('ROC AUC Curve')
+    # ax.set_title('ROC AUC Curve')
     ax.legend()
     # return list(roc_t['threshold'])
     return optimal_threshold
@@ -89,4 +89,4 @@ def display_precision_recall(ax, y_pred, y_test):
     precision, recall, _ = precision_recall_curve(y_test, y_pred)
     disp = PrecisionRecallDisplay(precision=precision, recall=recall)
     disp.plot(ax=ax)
-    ax.set_title('Precision-Recall Curve')
+    # ax.set_title('Precision-Recall Curve')
