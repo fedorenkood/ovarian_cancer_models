@@ -270,6 +270,33 @@ def map_label_prob_to_bucket(per_thereshold_metrics, row, label):
     return None  # Handle cases where label_prob is above all thresholds
 
 
+def map_prob_to_bucket(per_thereshold_metrics, prob):
+    thresholds = per_thereshold_metrics['Threshold'].to_list()
+    buckets = create_buckets(thresholds)
+    for index, (left, right) in enumerate(buckets):
+        if index == 0:
+            left = -0.1
+        if left < prob <= right:
+            return per_thereshold_metrics.iloc[index + 1]['per_bucket_probability']
+    return None 
+
+def load_analytics_util_no_datasets(filesuffix: str) -> AnalyticsUtil:
+    # load trained classifier from file
+    analytics_util = pickle.load(open(f'./stored_classes/analytics_util/{filesuffix}.sav', 'rb'))
+    # analytics_util.data_util.load_train_test_df(filesuffix)
+    analytics_util.data_util.load_imputer(filesuffix)
+    return analytics_util
+
+def load_cv_analytics_utils_no_datasets(filesuffix: str) -> CvAnalyticsUtil:
+    cv_analytics_util = pickle.load(open(f'./stored_classes/cv_analytics_util/{filesuffix}.sav', 'rb'))
+    analytics_utils = []
+    for k in range(cv_analytics_util.k):
+        analytics_util = load_analytics_util_no_datasets(f'{filesuffix}_{k+1}_fold')
+        analytics_utils.append(analytics_util)
+    cv_analytics_util.analytics_utils = analytics_utils
+    return cv_analytics_util
+
+
 def load_cv_analytics_utils(filesuffixes: List[str]) -> Dict[str, CvAnalyticsUtil]:
     cv_analytics_utils: Dict[str, CvAnalyticsUtil] = {}
     for filesuffix in filesuffixes:

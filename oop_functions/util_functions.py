@@ -234,7 +234,9 @@ def plot_hist_side_by_side_for_class(df, label, xaxis, num_bins = 20, normalize 
     plt.title(title)
     plt.show()
 
-def feature_importance_reader(filesuffix) -> List[str]:
+def feature_importance_reader(filesuffix: str) -> List[str]:
+    if "1_trials" in filesuffix:
+        filesuffix = filesuffix.replace("1_trials", "15_trials")
     try:
         filename = f'./feature_importance/feature_importance_mean_{filesuffix}.csv'
         # print(filename)
